@@ -18,7 +18,7 @@ The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-
 
 **Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting) and Up. Until the virtual folder note view exists, landing on a subfolder reveals it in the File explorer, and the navigator remembers it as the current item while the active file stays the same, so the next step continues from it. The demo vault covers these commands. The navigator bar, the virtual folder note and the map are not built yet. The coverage thresholds are still 0.
 
-**No GitHub remote exists yet.** `mnaoumov/obsidian-sibling-notes` has not been created, so nothing is pushed and nothing is released. The plugin id `sibling-notes` was free in the community directory on 2026-10-17. An id can never change once it is published, so check it again right before the first submission.
+**The public repo `mnaoumov/obsidian-sibling-notes` exists (created 2026-10-18), and `main` is pushed to it. Nothing is released yet.** The plugin id `sibling-notes` was free in the community directory on 2026-10-17. An id can never change once it is published, so check it again right before the first submission.
 
 ## Design
 
