@@ -1,0 +1,11 @@
+{
+  "author": "mnaoumov",
+  "authorUrl": "https://github.com/mnaoumov/",
+  "description": "Step through the notes of a folder in File explorer order, with a navigator bar above and below the note and a folder map.",
+  "fundingUrl": "https://www.buymeacoffee.com/mnaoumov",
+  "id": "sibling-notes",
+  "isDesktopOnly": false,
+  "minAppVersion": "1.14.4",
+  "name": "Sibling Notes",
+  "version": "0.0.0"
+}
