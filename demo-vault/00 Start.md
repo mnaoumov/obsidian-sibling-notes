@@ -10,12 +10,13 @@ Below this paragraph is a **code button** — a captioned rectangle. It is not a
 
 ```code-button
 ---
-caption: Run the Sample command
+caption: Open Chapter 1, then go to the next item
 ---
-require('/demoSetup.ts').runSampleCommand(app);
+await require('/demoSetup.ts').openMaterial(app, 'Chapter 1.md');
+await require('/demoSetup.ts').runNavigationCommand(app, 'go-to-next');
 ```
 
-A notice should have appeared in the top-right corner. That is the plugin's `Sample` command running — the same thing you get from **`Sibling Notes`: Sample** in the Command Palette (`Ctrl+P` / `Cmd+P`).
+`Chapter 2` should now be open: it is the item after `Chapter 1` in the File explorer. That is the plugin's **Go to the next item in the folder** command, the same thing you get from **`Sibling Notes`: Go to the next item in the folder** in the Command Palette (`Ctrl+P` / `Cmd+P`).
 
 Every button in this vault also states its **manual equivalent**, so you learn the real steps rather than depending on the buttons.
 
@@ -23,7 +24,7 @@ Every button in this vault also states its **manual equivalent**, so you learn t
 
 | Note | What it covers |
 | --- | --- |
-| [01 Sample commands](<./01 Sample commands.md>) | The commands the plugin adds, and how to run them. |
+| [01 Folder navigation](<./01 Folder navigation.md>) | The commands that step through a folder, and how they follow the File explorer. |
 | [02 Settings](<./02 Settings.md>) | Every setting, by the key it is stored under in `data.json`. |
 
 ## Materials

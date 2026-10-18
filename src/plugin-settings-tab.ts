@@ -13,11 +13,12 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
   protected override getSettingDefinitionItems(): SettingDefinitionItem[] {
     return [
       this.settingEx({
-        desc: 'Text setting description.',
-        name: 'Text setting name',
+        desc: 'How many items Page up and Page down move through the folder. They stop at the first and the last item.',
+        name: 'Page size',
         render: (setting) => {
-          setting.addText((text) => {
-            this.bind({ propertyName: 'textSetting', valueComponent: text });
+          setting.addNumber((number) => {
+            number.setMin(1);
+            this.bind({ propertyName: 'pageSize', valueComponent: number });
           });
         }
       })

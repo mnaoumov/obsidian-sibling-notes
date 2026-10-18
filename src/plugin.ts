@@ -1,14 +1,28 @@
-import type { Editor } from 'obsidian';
-
 import { OpenDemoVaultCommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/open-demo-vault-command-handler';
 import { PluginSettingsTabComponent } from '@mnaoumov/obsidian-lib/components/plugin-settings-tab-component';
 import { PluginDataHandler } from '@mnaoumov/obsidian-lib/data-handler';
 import { PluginBase } from '@mnaoumov/obsidian-lib/plugin/plugin';
 import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
-import { Notice } from 'obsidian';
 
+import { NavigationAction } from './navigation-action.ts';
+import { NavigationCommandHandler } from './navigation-command-handler.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
+import { SiblingNavigator } from './sibling-navigator.ts';
+
+/**
+ * The navigation commands in the order the command palette lists them, which is the order of the
+ * navigator bar.
+ */
+const NAVIGATION_ACTIONS: readonly NavigationAction[] = [
+  NavigationAction.Up,
+  NavigationAction.Home,
+  NavigationAction.PageUp,
+  NavigationAction.Previous,
+  NavigationAction.Next,
+  NavigationAction.PageDown,
+  NavigationAction.End
+];
 
 export class Plugin extends PluginBase {
   protected override async onloadImpl(): Promise<void> {
@@ -30,16 +44,10 @@ export class Plugin extends PluginBase {
       })
     );
 
-    this.addCommand({
-      callback: this.runSampleCommand.bind(this),
-      id: 'sample',
-      name: 'Sample'
-    });
-
-    this.addCommand({
-      editorCallback: this.runSampleEditorCommand.bind(this),
-      id: 'sample-editor',
-      name: 'Sample editor'
+    const siblingNavigator = new SiblingNavigator({
+      app: this.app,
+      getPageSize: (): number => pluginSettingsComponent.settings.pageSize,
+      pluginNoticeComponent: this.pluginNoticeComponent
     });
 
     // `OpenDemoVaultCommandHandler` is what makes the README's first demo-vault route real: it downloads
@@ -47,6 +55,7 @@ export class Plugin extends PluginBase {
     // A new window. It is not registered automatically -- a demo vault without this command can only be
     // Reached by downloading the asset by hand. It hides itself on mobile, so no platform guard is needed.
     await this.commandHandlerComponent.registerCommandHandlers(() => [
+      ...NAVIGATION_ACTIONS.map((action) => new NavigationCommandHandler({ action, siblingNavigator })),
       new OpenDemoVaultCommandHandler({
         app: this.app,
         pluginId: this.manifest.id,
@@ -54,13 +63,5 @@ export class Plugin extends PluginBase {
         pluginVersion: this.manifest.version
       })
     ]);
-  }
-
-  private runSampleCommand(): void {
-    new Notice('Sample command');
-  }
-
-  private runSampleEditorCommand(editor: Editor): void {
-    editor.replaceSelection('Sample Editor Command');
   }
 }
