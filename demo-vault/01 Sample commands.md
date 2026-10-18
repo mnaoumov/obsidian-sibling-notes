@@ -1,6 +1,6 @@
 # Sample commands
 
-Sibling Notes adds the sample commands below to the Command Palette. They are the scaffolded samples the generator gives every new plugin — replace them with your own, and rewrite this note as you do.
+`Sibling Notes` adds the sample commands below to the Command Palette. They are the scaffolded samples the generator gives every new plugin — replace them with your own, and rewrite this note as you do.
 
 ## Sample
 
@@ -13,7 +13,7 @@ caption: Run Sample
 require('/demoSetup.ts').runSampleCommand(app);
 ```
 
-Manual equivalent: open the Command Palette (`Ctrl+P` / `Cmd+P`) and run **Sibling Notes: Sample**.
+Manual equivalent: open the Command Palette (`Ctrl+P` / `Cmd+P`) and run **`Sibling Notes`: Sample**.
 
 ## Sample editor
 
@@ -28,7 +28,7 @@ caption: Run Sample editor on the scratch note
 await require('/demoSetup.ts').runSampleEditorCommandOnScratchNote(app);
 ```
 
-Manual equivalent: open `Scratch note`, switch it to Source mode (`Ctrl+E` / `Cmd+E`), place the cursor, and run **Sibling Notes: Sample editor**.
+Manual equivalent: open `Scratch note`, switch it to Source mode (`Ctrl+E` / `Cmd+E`), place the cursor, and run **`Sibling Notes`: Sample editor**.
 
 The scratch note is gitignored, so whatever you write in it stays out of your repository.
 
