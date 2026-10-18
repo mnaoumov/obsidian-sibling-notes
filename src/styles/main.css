@@ -7,10 +7,3 @@
 .sibling-notes.obsidian-dev-utils {
   /* Override library styles */
 }
-
-/* The word-count widget the sample editor extension renders. Styled here rather than through
-   `element.style`, so a theme can restyle it. */
-.cm-sample-word-count {
-  font-size: 0.85em;
-  opacity: 0.5;
-}

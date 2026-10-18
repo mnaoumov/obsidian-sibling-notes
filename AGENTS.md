@@ -14,7 +14,9 @@ What core 1.14.4 and other plugins already do, so the plugin does not rebuild it
 
 ## Current state
 
-**Scaffolded, nothing built yet.** The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-in-one`, CSS, desktop and mobile, the unofficial API subset, no editor extensions). Its answers are in `.create-obsidian-plugin.json`, so re-running the generator in this folder updates every file not edited by hand. Everything under `src/` is still the generator's sample code, and the demo vault is still its sample vault. The coverage thresholds stay at 0 until real code replaces the samples.
+The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-in-one`, CSS, desktop and mobile, the unofficial API subset, no editor extensions). Its answers are in `.create-obsidian-plugin.json`, so re-running the generator in this folder updates every file not edited by hand.
+
+**Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting) and Up. Until the virtual folder note view exists, landing on a subfolder reveals it in the File explorer, and the navigator remembers it as the current item while the active file stays the same, so the next step continues from it. The demo vault covers these commands. The navigator bar, the virtual folder note and the map are not built yet. The coverage thresholds are still 0.
 
 **No GitHub remote exists yet.** `mnaoumov/obsidian-sibling-notes` has not been created, so nothing is pushed and nothing is released. The plugin id `sibling-notes` was free in the community directory on 2026-10-17. An id can never change once it is published, so check it again right before the first submission.
 
@@ -47,7 +49,7 @@ This is the model the owner approved. Refine it as the build goes.
 
 Checked against the `obsidian-typings` branch `release/obsidian-public/1.14.4`. Verify every member against a live build before relying on it.
 
-- **Order:** `FileExplorerView.getSortedFolderItems(folder)`, with `sortOrder` and `requestSort` beside it. The custom-sort plugins (`Custom File Explorer sorting`, `Flexplorer`) patch this exact method, so it returns what the user sees. Recompute it on every use. Fall back to name order when the File explorer is disabled or its view is not loaded. `AppVaultConfig.fileSortOrder` is too loosely typed to rely on.
+- **Order:** `FileExplorerView.getSortedFolderItems(folder)`, with `sortOrder` and `requestSort` beside it. Checked live on 1.14.4: it returns the subfolders too, folders first in every sort order, although the typings declare file items only. Name order compares case-insensitively and numerically, so `b 9` comes before `b 10`. Disabling the File explorer removes its leaves at once. The custom-sort plugins (`Custom File Explorer sorting`, `Flexplorer`) patch this exact method, so it returns what the user sees. Recompute it on every use. Fall back to name order when the File explorer is disabled or its view is not loaded. `AppVaultConfig.fileSortOrder` is too loosely typed to rely on.
 - **Where the bars go:**
   - In a `MarkdownView`, `inlineTitleEl` for the top and `backlinksEl` for the bottom.
   - In Live Preview, `MarkdownScrollableEditView.sizerEl`. A bottom bar must trigger the re-measure in `updateBottomPadding`.
