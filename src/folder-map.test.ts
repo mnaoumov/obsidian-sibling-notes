@@ -130,6 +130,22 @@ describe('FolderMap', () => {
     expect(onEnter.mock.calls.map((call) => castTo<TAbstractFile>(call[0]).path)).toStrictEqual(['a/b/sub']);
   });
 
+  it('scrolls the current item into view, and nothing when no item is current', () => {
+    const { map, state } = createFixture();
+    map.update(state);
+    const activeEl = getByPath(map, '.sibling-notes-folder-map-item', 'a/b/y.md');
+    // Jsdom does not lay anything out, so it has no `scrollIntoView` to scroll with.
+    const scrollIntoView = vi.fn();
+    activeEl.scrollIntoView = scrollIntoView;
+    map.scrollToCurrent();
+    expect(scrollIntoView).toHaveBeenCalledWith({ block: 'nearest' });
+
+    map.update(null);
+    expect(() => {
+      map.scrollToCurrent();
+    }).not.toThrow();
+  });
+
   it('says so when there is nothing to show, or the folder is empty', () => {
     const { map, state } = createFixture();
     map.update(null);

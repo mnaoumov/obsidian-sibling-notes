@@ -4,6 +4,7 @@ import type {
   WorkspaceLeaf
 } from 'obsidian';
 
+import { ensureNonNullable } from '@mnaoumov/typescript-lib/type-guards';
 import {
   FileView,
   TFile,
@@ -147,7 +148,7 @@ export class SiblingNavigator {
       length: sequence.length,
       pageSize: this.getPageSize()
     });
-    return targetIndex === undefined ? null : sequence[targetIndex] ?? null;
+    return targetIndex === undefined ? null : ensureNonNullable(sequence[targetIndex]);
   }
 
   /**
