@@ -148,8 +148,20 @@ export class FolderMapPopover {
 export function createFolderMapHeader(parentEl: HTMLElement, onPin: () => void): HTMLElement {
   const headerEl = parentEl.createDiv({ cls: FolderMapContainerCssClass.Header });
   headerEl.createDiv({ cls: FolderMapContainerCssClass.Title, text: FOLDER_MAP_TITLE });
+  createFolderMapPinButton(headerEl, onPin);
+  return headerEl;
+}
+
+/**
+ * Adds the map's pin button.
+ *
+ * @param parentEl - The element to add it to.
+ * @param onPin - Called when the pin button is clicked.
+ * @returns The button.
+ */
+export function createFolderMapPinButton(parentEl: HTMLElement, onPin: () => void): HTMLButtonElement {
   const pinLabel = 'Pin to the side panel';
-  const pinButton = headerEl.createEl('button', {
+  const pinButton = parentEl.createEl('button', {
     attr: { 'aria-label': pinLabel, 'type': 'button' },
     cls: ['clickable-icon', FolderMapContainerCssClass.PinButton]
   });
@@ -159,7 +171,7 @@ export function createFolderMapHeader(parentEl: HTMLElement, onPin: () => void):
     clickEvent.preventDefault();
     onPin();
   });
-  return headerEl;
+  return pinButton;
 }
 
 /**

@@ -239,11 +239,29 @@ a.sibling-notes-folder-map-breadcrumb:hover {
 
 .sibling-notes-folder-map-sheet .modal-content {
   overflow-y: auto;
+  padding-top: 0;
 }
 
-/* Leaves room for the modal's own close button. */
-.sibling-notes-folder-map-sheet .sibling-notes-folder-map-header {
-  padding-inline-end: var(--size-4-8);
+/*
+ * The title and the pin share the modal's own header row with its close button, which is absolutely placed
+ * `--size-4-3` from the top and `--size-4-4` from the end, so the row is as tall as the button and ends before it.
+ */
+.sibling-notes-folder-map-sheet .modal-header {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  box-sizing: content-box;
+  width: auto;
+  height: var(--touch-size-m);
+  margin-bottom: 0;
+  padding: var(--size-4-3) calc(var(--size-4-4) + var(--touch-size-m) + var(--size-4-2)) 0 var(--size-4-4);
+}
+
+.sibling-notes-folder-map-sheet .modal-title {
+  flex: 1;
+  max-width: none;
+  margin-inline: 0;
+  text-align: start;
 }
 
 /* Print and PDF export show the note alone. */

@@ -41,18 +41,23 @@ describe('FolderMapSheet', () => {
     expect(sheet.anchorEl).toBeNull();
   });
 
-  it('shows the map under the header once it opens', () => {
+  it('puts the title and the pin button into the header of the modal itself', () => {
+    const { sheet } = createFixture();
+    expect(sheet.titleEl.textContent).toBe(FOLDER_MAP_TITLE);
+    expect(sheet.headerEl.querySelector('.sibling-notes-folder-map-pin')).not.toBeNull();
+  });
+
+  it('shows the map alone in its content once it opens', () => {
     const { mapEl, sheet } = createFixture();
     expect(sheet.contentEl.childElementCount).toBe(0);
     sheet.open();
-    expect(sheet.contentEl.querySelector('.sibling-notes-folder-map-title')?.textContent).toBe(FOLDER_MAP_TITLE);
-    expect(sheet.contentEl.lastElementChild).toBe(mapEl);
+    expect([...sheet.contentEl.children]).toEqual([mapEl]);
   });
 
   it('pins on a click of the pin button', () => {
     const { onPin, sheet } = createFixture();
     sheet.open();
-    sheet.contentEl.querySelector('.sibling-notes-folder-map-pin')?.dispatchEvent(new MouseEvent('click', { cancelable: true }));
+    sheet.headerEl.querySelector('.sibling-notes-folder-map-pin')?.dispatchEvent(new MouseEvent('click', { cancelable: true }));
     expect(onPin).toHaveBeenCalledTimes(1);
   });
 

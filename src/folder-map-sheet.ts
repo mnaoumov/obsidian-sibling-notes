@@ -3,7 +3,8 @@ import type { App } from 'obsidian';
 import { Modal } from 'obsidian';
 
 import {
-  createFolderMapHeader,
+  createFolderMapPinButton,
+  FOLDER_MAP_TITLE,
   FolderMapContainerCssClass
 } from './folder-map-popover.ts';
 
@@ -29,6 +30,9 @@ interface FolderMapSheetConstructorParams {
 /**
  * The folder map as a bottom sheet, on mobile: a modal restyled to rise from the bottom edge. Being a
  * modal, it closes on the back gesture, on a tap outside it and on its close button, as any other does.
+ *
+ * The map's title and pin button go into the modal's own header, beside its close button, so the sheet spends one
+ * row on its header rather than two.
  */
 export class FolderMapSheet extends Modal {
   /**
@@ -42,6 +46,8 @@ export class FolderMapSheet extends Modal {
     super(params.app);
     this.params = params;
     this.modalEl.addClass(FolderMapContainerCssClass.Sheet);
+    this.setTitle(FOLDER_MAP_TITLE);
+    createFolderMapPinButton(this.headerEl, params.onPin);
   }
 
   public override onClose(): void {
@@ -51,7 +57,6 @@ export class FolderMapSheet extends Modal {
 
   public override onOpen(): void {
     super.onOpen();
-    createFolderMapHeader(this.contentEl, this.params.onPin);
     this.contentEl.append(this.params.mapEl);
   }
 }
