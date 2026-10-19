@@ -1,8 +1,4 @@
 import type {
-  ReadViewRenderer,
-  RendererSection
-} from '@obsidian-typings/obsidian-public-latest';
-import type {
   App,
   MarkdownEditView
 } from 'obsidian';
@@ -43,16 +39,6 @@ interface NavigatorBarComponentConstructorParams {
   readonly folderMapComponent: FolderMapComponent;
   readonly getVisibility: () => NavigatorBarVisibility;
   readonly siblingNavigator: SiblingNavigator;
-}
-
-// TODO: Read these straight off `ReadViewRenderer` once `obsidian-typings` declares them. Checked live on
-// Obsidian 1.14.4: `header` and `footer` are the `.mod-header` and `.mod-footer` sections, and each update
-// method resets its section's measured height and queues a render.
-interface ReadViewRendererWithHeaderAndFooter extends ReadViewRenderer {
-  footer: null | RendererSection;
-  header: null | RendererSection;
-  updateFooter: () => void;
-  updateHeader: () => void;
 }
 
 interface ViewBars {
@@ -263,7 +249,7 @@ export class NavigatorBarComponent extends Component {
     const { showBottomBar, showTopBar } = this.getVisibility();
 
     if (view.getMode() === 'preview') {
-      const renderer = view.previewMode.renderer as ReadViewRendererWithHeaderAndFooter;
+      const { renderer } = view.previewMode;
       const headerEl = renderer.header?.el;
       const footerEl = renderer.footer?.el;
       bottom.el.setCssProps({ [SCROLL_PAST_END_CSS_PROPERTY]: '' });
@@ -334,7 +320,7 @@ export class NavigatorBarComponent extends Component {
     if (wasInEditor) {
       view.editMode.onResize();
     } else {
-      const renderer = view.previewMode.renderer as ReadViewRendererWithHeaderAndFooter;
+      const { renderer } = view.previewMode;
       renderer.updateHeader();
       renderer.updateFooter();
     }
