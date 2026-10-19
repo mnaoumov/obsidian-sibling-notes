@@ -22,7 +22,7 @@ From left to right:
 - The double chevrons move a page up or down: as many items as the **Page size** setting, stopping at the ends.
 - The single chevrons step to the previous or next item.
 - Between them, the position: `3 / 4` on `Chapter 2`, because the File explorer shows the subfolder `Appendix` first.
-- The map button is a placeholder for the folder map, which is coming.
+- The map button shows the [folder map](<./05 Folder map.md>).
 
 A button with nowhere to go is greyed out. On `Chapter 3`, the last item, Next, Page down and the last-item button are all greyed out, because the sequence does not wrap around. Every button is also a command, described in [01 Folder navigation](<./01 Folder navigation.md>), so you can bind a hotkey to it.
 

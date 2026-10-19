@@ -8,6 +8,7 @@ import type {
 
 import { noopAsync } from '@mnaoumov/typescript-lib/function';
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
+import { FileView } from 'obsidian';
 import { App } from 'obsidian-test-mocks/obsidian';
 import {
   beforeEach,
@@ -132,6 +133,32 @@ describe('SiblingNavigator', () => {
     await fixture.navigator.navigate(NavigationAction.Previous, { item, leaf });
     expect(leafSetViewState).toHaveBeenCalledTimes(1);
     expect(fixture.openFile).not.toHaveBeenCalled();
+  });
+
+  it('enters a folder at its first item, and an empty one at its virtual folder note', async () => {
+    const sub = fixture.app.vault.getFolderByPath('d/sub');
+    const empty = fixture.app.vault.getFolderByPath('empty');
+    if (!sub || !empty) {
+      throw new Error('No folders.');
+    }
+    const leaf = fixture.app.workspace.getLeaf(false);
+    await fixture.navigator.enter(sub, leaf);
+    expect(castTo<TAbstractFile>(fixture.openFile.mock.calls[0]?.[0]).path).toBe('d/sub/x.md');
+    await fixture.navigator.enter(empty, leaf);
+    expect(fixture.setViewState).toHaveBeenCalledWith({
+      active: true,
+      state: { folderPath: 'empty' },
+      type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE
+    });
+  });
+
+  it('reads the item a leaf shows: a file view\'s file, and nothing for another view or no leaf', () => {
+    const file = fixture.app.vault.getFileByPath('d/a.md');
+    const fileView = castTo<FileView>(Object.create(FileView.prototype));
+    fileView.file = file;
+    expect(fixture.navigator.getLeafItem(castTo<WorkspaceLeaf>({ view: fileView }))).toBe(file);
+    expect(fixture.navigator.getLeafItem(castTo<WorkspaceLeaf>({ view: {} }))).toBeNull();
+    expect(fixture.navigator.getLeafItem(null)).toBeNull();
   });
 });
 

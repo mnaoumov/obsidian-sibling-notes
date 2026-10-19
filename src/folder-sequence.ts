@@ -5,8 +5,12 @@ import type {
   View
 } from 'obsidian';
 
+import { MARKDOWN_FILE_EXTENSION } from '@mnaoumov/obsidian-lib/file-system';
 import { ViewType } from '@obsidian-typings/obsidian-public-latest/implementations';
-import { TFolder } from 'obsidian';
+import {
+  TFile,
+  TFolder
+} from 'obsidian';
 
 /**
  * Compares names the way the File explorer's `File name (A to Z)` order does: case-insensitive, with runs
@@ -39,6 +43,17 @@ export function getFileExplorerView(app: App): FileExplorerView | null {
 export function getFolderSequence(app: App, folder: TFolder): TAbstractFile[] {
   const fileExplorerView = getFileExplorerView(app);
   return fileExplorerView ? fileExplorerView.getSortedFolderItems(folder).map((item): TAbstractFile => item.file) : sortByName(folder.children);
+}
+
+/**
+ * Names an item the way the File explorer does: a Markdown note without its extension, anything else
+ * with it.
+ *
+ * @param item - The item.
+ * @returns The name.
+ */
+export function getItemDisplayName(item: TAbstractFile): string {
+  return item instanceof TFile && item.extension === MARKDOWN_FILE_EXTENSION ? item.basename : item.name;
 }
 
 /**

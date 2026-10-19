@@ -11,6 +11,20 @@ import {
   NavigatorBarPlacement
 } from './navigator-bar.ts';
 
+interface BarFixture {
+  readonly bar: NavigatorBar;
+  readonly onAction: ReturnType<typeof vi.fn>;
+  readonly onHover: ReturnType<typeof vi.fn>;
+  readonly onMap: ReturnType<typeof vi.fn>;
+}
+
+function createBar(placement: NavigatorBarPlacement): BarFixture {
+  const onAction = vi.fn();
+  const onHover = vi.fn();
+  const onMap = vi.fn();
+  return { bar: new NavigatorBar({ onAction, onHover, onMap, placement }), onAction, onHover, onMap };
+}
+
 function getButton(bar: NavigatorBar, action: string): HTMLButtonElement {
   const button = bar.el.querySelector<HTMLButtonElement>(`button[data-action="${CSS.escape(action)}"]`);
   if (!button) {
@@ -25,7 +39,7 @@ function getButtons(bar: NavigatorBar): HTMLButtonElement[] {
 
 describe('NavigatorBar', () => {
   it('lays out its buttons around the position, and marks its placement', () => {
-    const bar = new NavigatorBar({ onAction: vi.fn(), placement: NavigatorBarPlacement.Bottom });
+    const { bar } = createBar(NavigatorBarPlacement.Bottom);
     expect(bar.el.dataset['placement']).toBe('bottom');
     expect(getButtons(bar).map((button) => button.dataset['action'])).toStrictEqual([
       'up',
@@ -38,16 +52,16 @@ describe('NavigatorBar', () => {
       'map'
     ]);
     expect(getButton(bar, 'up').textContent).toBe('..');
-    expect(getButton(bar, 'map').disabled).toBe(true);
+    expect(getButton(bar, 'map').disabled).toBe(false);
   });
 
   it('disables the unavailable actions and shows the position', () => {
-    const bar = new NavigatorBar({ onAction: vi.fn(), placement: NavigatorBarPlacement.Top });
+    const { bar } = createBar(NavigatorBarPlacement.Top);
     bar.update({
       isAvailable: (action) => action !== NavigationAction.Next,
       position: { index: 2, length: 12 }
     });
-    expect(getButtons(bar).filter((button) => button.disabled).map((button) => button.dataset['action'])).toStrictEqual(['next', 'map']);
+    expect(getButtons(bar).filter((button) => button.disabled).map((button) => button.dataset['action'])).toStrictEqual(['next']);
     expect(bar.el.querySelector('.sibling-notes-navigator-bar-position')?.textContent).toBe('3 / 12');
 
     bar.update({ isAvailable: () => false, position: null });
@@ -55,11 +69,27 @@ describe('NavigatorBar', () => {
   });
 
   it('reports a click on an enabled button, and ignores a disabled one', () => {
-    const onAction = vi.fn();
-    const bar = new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Top });
+    const { bar, onAction } = createBar(NavigatorBarPlacement.Top);
     bar.update({ isAvailable: (action) => action === NavigationAction.Next, position: null });
     getButton(bar, 'previous').dispatchEvent(new MouseEvent('click'));
     getButton(bar, 'next').dispatchEvent(new MouseEvent('click'));
     expect(onAction.mock.calls).toStrictEqual([[NavigationAction.Next]]);
+  });
+
+  it('reports the Map button with the button itself', () => {
+    const { bar, onMap } = createBar(NavigatorBarPlacement.Top);
+    const mapButton = getButton(bar, 'map');
+    mapButton.dispatchEvent(new MouseEvent('click'));
+    expect(onMap).toHaveBeenCalledWith(mapButton);
+  });
+
+  it('reports a hovered or focused button, and leaving it', () => {
+    const { bar, onHover } = createBar(NavigatorBarPlacement.Top);
+    const nextButton = getButton(bar, 'next');
+    nextButton.dispatchEvent(new MouseEvent('mouseenter'));
+    nextButton.dispatchEvent(new MouseEvent('mouseleave'));
+    nextButton.dispatchEvent(new FocusEvent('focus'));
+    nextButton.dispatchEvent(new FocusEvent('blur'));
+    expect(onHover.mock.calls).toStrictEqual([[NavigationAction.Next], [null], [NavigationAction.Next], [null]]);
   });
 });

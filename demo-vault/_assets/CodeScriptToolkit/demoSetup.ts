@@ -14,6 +14,9 @@ const MATERIALS_FOLDER_PATH = 'Materials/01 Folder navigation';
 // The view type of the plugin's virtual folder note.
 const VIRTUAL_FOLDER_NOTE_VIEW_TYPE = 'sibling-notes-virtual-folder-note';
 
+// The view type of the folder map pinned to the side panel.
+const FOLDER_MAP_VIEW_TYPE = 'sibling-notes-folder-map';
+
 const LANDING_POLL_IN_MILLISECONDS = 50;
 const LANDING_TIMEOUT_IN_MILLISECONDS = 2000;
 
@@ -51,6 +54,35 @@ export async function openMaterialFolder(app: App, relativePath: string): Promis
     return;
   }
   await app.workspace.getLeaf(false).setViewState({ active: true, state: { folderPath: path }, type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE });
+}
+
+/**
+ * Shows the folder map of the open note: a popover on desktop, a bottom sheet on mobile, or the side panel
+ * once the map is pinned.
+ *
+ * Manual equivalent: click the map button at the end of the navigator bar.
+ */
+export function showFolderMap(app: App): void {
+  app.commands.executeCommandById(`${PLUGIN_ID}:show-folder-map`);
+}
+
+/**
+ * Pins the folder map to the right side panel.
+ *
+ * Manual equivalent: click the pin at the top of the folder map.
+ */
+export function pinFolderMap(app: App): void {
+  app.commands.executeCommandById(`${PLUGIN_ID}:pin-folder-map`);
+}
+
+/**
+ * Closes the pinned folder map, so the map button opens a popover again.
+ *
+ * Manual equivalent: close the folder map's tab in the side panel.
+ */
+export function unpinFolderMap(app: App): void {
+  app.workspace.detachLeavesOfType(FOLDER_MAP_VIEW_TYPE);
+  new Notice('The folder map is unpinned.');
 }
 
 /**

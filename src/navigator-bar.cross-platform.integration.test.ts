@@ -116,7 +116,7 @@ describe('navigator bar', () => {
       // The scroll-past-end space moved from below the last line to below the bottom bar.
       expect(atFirst.editorContentPadding).toBe('0px');
       expect(atFirst.bottomBarGap).toBeLessThan(50);
-      expect(atFirst.top).toStrictEqual({ disabled: ['home', 'pageUp', 'previous', 'map'], position: '1 / 3' });
+      expect(atFirst.top).toStrictEqual({ disabled: ['home', 'pageUp', 'previous'], position: '1 / 3' });
 
       await clickBarButton('top', 'next');
       await waitForState('Next from the top bar', (state) => state.activePath === `${FOLDER}/b.md` && state.top?.position === '2 / 3');
@@ -137,7 +137,7 @@ describe('navigator bar', () => {
 
       await clickBarButton('bottom', 'next');
       const atLast = await waitForState('Next from the bottom bar', (state) => state.activePath === `${FOLDER}/c.md` && state.bottom?.position === '3 / 3');
-      expect(atLast.bottom).toStrictEqual({ disabled: ['next', 'pageDown', 'end', 'map'], position: '3 / 3' });
+      expect(atLast.bottom).toStrictEqual({ disabled: ['next', 'pageDown', 'end'], position: '3 / 3' });
 
       await setSortOrder('alphabeticalReverse');
       await waitForState('the position after a reverse sort', (state) => state.top?.position === '1 / 3');

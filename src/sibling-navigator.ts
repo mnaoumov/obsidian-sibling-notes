@@ -5,6 +5,7 @@ import type {
 } from 'obsidian';
 
 import {
+  FileView,
   TFile,
   TFolder
 } from 'obsidian';
@@ -63,6 +64,16 @@ export class SiblingNavigator {
   }
 
   /**
+   * Goes into a folder, in a leaf: to its first item, or to its virtual folder note when it is empty.
+   *
+   * @param folder - The folder.
+   * @param leaf - The leaf.
+   */
+  public async enter(folder: TFolder, leaf: WorkspaceLeaf): Promise<void> {
+    await this.open(this.getTarget(NavigationAction.Enter, folder) ?? folder, leaf);
+  }
+
+  /**
    * Returns the item the active view shows.
    *
    * @returns The folder of an active virtual folder note, else the active file, or `null` when there is none.
@@ -70,6 +81,20 @@ export class SiblingNavigator {
   public getCurrentItem(): null | TAbstractFile {
     const virtualFolderNoteView = this.app.workspace.getActiveViewOfType(VirtualFolderNoteView);
     return virtualFolderNoteView ? virtualFolderNoteView.folder : this.app.workspace.getActiveFile();
+  }
+
+  /**
+   * Returns the item a leaf shows.
+   *
+   * @param leaf - The leaf.
+   * @returns The folder of a virtual folder note, else the file of a file view, or `null` for any other view.
+   */
+  public getLeafItem(leaf: null | WorkspaceLeaf): null | TAbstractFile {
+    const view = leaf?.view;
+    if (view instanceof VirtualFolderNoteView) {
+      return view.folder;
+    }
+    return view instanceof FileView ? view.file : null;
   }
 
   /**
