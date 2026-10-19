@@ -21,6 +21,42 @@ const DEMO_VAULT_TEST_FILES = 'src/**/*.demo-vault.integration.test.ts';
 const DEMO_VAULT_TIMEOUT_IN_MILLISECONDS = 600_000;
 
 /**
+ * The demo vault's global setup, which the button suite and the capture suites share.
+ */
+const DEMO_VAULT_GLOBAL_SETUP_FILE = './scripts/demo-vault-global-setup.ts';
+
+/**
+ * The screenshot-capture suites that write `images/screenshots/screenshot-*.png`.
+ *
+ * Named `*.desktop-capture.` / `*.android-capture.` rather than `*.desktop.` / `*.android.` so they match NONE of
+ * the standard project globs. That keeps them out of `npm run test:integration` entirely: capturing is an
+ * explicit operation (`npm run capture:screenshots`), and folding it into the standard projects would rewrite
+ * the PNGs on every run.
+ */
+const DESKTOP_CAPTURE_TEST_FILES = 'src/**/*.desktop-capture.integration.test.ts';
+const ANDROID_CAPTURE_TEST_FILES = 'src/**/*.android-capture.integration.test.ts';
+
+/**
+ * The closures both capture suites stage their frames with.
+ */
+const SCREENSHOT_STAGES_FILE = 'src/test-helpers/screenshot-stages.test.helper.ts';
+
+/**
+ * The AVD the mobile shots are taken on: 900x1600 at density 320, exactly the size the community directory asks
+ * for, so the capture needs no crop, no rescale and no letterbox. The shared `obsidian_test` AVD cannot produce
+ * it, and resizing that one at runtime recreates the activity and with it the WebView the Appium session is
+ * attached to.
+ */
+const SCREENSHOT_AVD_NAME = 'obsidian_screenshots';
+
+const APPIUM_URL = 'http://localhost:4723';
+
+/**
+ * This AVD is cold-booted and rarely used, so Obsidian's first layout on it is far slower than on the shared one,
+ * and the 90s default expires while it is still starting up.
+ */
+const LAYOUT_READY_TIMEOUT_IN_MILLISECONDS = 240_000;
+/**
  * Where every `.svelte` / `.vue` import in a unit test's module graph is sent. Compiling a single-file
  * component is the bundler's job, and the plugin that does it is a dependency only of the bundler that
  * was chosen — so a unit test that imports the plugin's own code would otherwise fail on a file vitest
@@ -50,10 +86,36 @@ export const config = defineObsidianPluginVitestConfig({
       {
         test: {
           ...context.desktop,
-          globalSetup: ['./scripts/demo-vault-global-setup.ts'],
+          globalSetup: [DEMO_VAULT_GLOBAL_SETUP_FILE],
           include: [DEMO_VAULT_TEST_FILES],
           name: 'integration-tests:demo-vault',
           testTimeout: DEMO_VAULT_TIMEOUT_IN_MILLISECONDS
+        }
+      },
+      // The capture projects photograph the demo vault's own walkthrough folder, so a re-capture shows what a reader
+      // Who opens `demo-vault/` sees.
+      {
+        test: {
+          ...context.desktop,
+          globalSetup: [DEMO_VAULT_GLOBAL_SETUP_FILE],
+          include: [DESKTOP_CAPTURE_TEST_FILES],
+          name: 'capture-screenshots:desktop'
+        }
+      },
+      {
+        test: {
+          ...context.android,
+          environmentOptions: {
+            obsidianTransport: {
+              appiumUrl: APPIUM_URL,
+              avdName: SCREENSHOT_AVD_NAME,
+              layoutReadyTimeoutInMilliseconds: LAYOUT_READY_TIMEOUT_IN_MILLISECONDS,
+              type: 'obsidian-android-appium'
+            }
+          },
+          globalSetup: [DEMO_VAULT_GLOBAL_SETUP_FILE],
+          include: [ANDROID_CAPTURE_TEST_FILES],
+          name: 'capture-screenshots:android'
         }
       }
     ];
@@ -62,6 +124,8 @@ export const config = defineObsidianPluginVitestConfig({
   // Pattern MATCHED, so `/\.svelte$/` rewrites the extension and leaves the rest of the specifier glued
   // To the front of the stub path. The pattern has to cover the whole id.
   editContext(context: ObsidianPluginVitestConfigContext): void {
+    // The capture suites' staging closures run inside Obsidian, so no unit test reaches them.
+    context.coverageExclude.push(SCREENSHOT_STAGES_FILE);
     context.unitTests.alias = [
       { find: /^.+\.(?:svelte|vue)$/u, replacement: FRAMEWORK_COMPONENT_STUB_PATH },
       { find: /^.+\.(?:css|scss)$/u, replacement: STYLESHEET_STUB_PATH },

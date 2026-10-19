@@ -6,6 +6,29 @@ A folder of notes is often meant to be read in order: the chapters of a book, th
 
 `Sibling Notes` adds that step. A navigator bar above the note and another below it go to the previous or next item, jump to either end, move a page at a time, or go up to the parent folder. A folder map lists the whole folder at a glance. The order is the one the File explorer shows, including a custom-sort plugin's order, and a subfolder is an item like any note: landing on it opens a view of what it holds, with its folder note.
 
+<!-- markdownlint-disable MD033 -->
+
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-desktop-1.png"><img src="images/screenshots/screenshot-desktop-1.png" alt="Step through the folder in File explorer order" width="600"></a>
+
+<details>
+<summary>More screenshots</summary>
+
+<div>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-desktop-2.png"><img src="images/screenshots/screenshot-desktop-2.png" alt="The folder map shows where each button goes" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-desktop-3.png"><img src="images/screenshots/screenshot-desktop-3.png" alt="A subfolder opens as a view of what it holds" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-desktop-4.png"><img src="images/screenshots/screenshot-desktop-4.png" alt="Pin the map to the side panel, and a bar below the note" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-desktop-5.png"><img src="images/screenshots/screenshot-desktop-5.png" alt="Choose the bars, the page size and the folder notes" width="600"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-mobile-1.png"><img src="images/screenshots/screenshot-mobile-1.png" alt="Step through the folder in File explorer order" width="270"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-mobile-2.png"><img src="images/screenshots/screenshot-mobile-2.png" alt="The folder map shows where each button goes" width="270"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-mobile-3.png"><img src="images/screenshots/screenshot-mobile-3.png" alt="A second bar waits at the end of the note" width="270"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-mobile-4.png"><img src="images/screenshots/screenshot-mobile-4.png" alt="A subfolder opens as a view of what it holds" width="270"></a>
+<a href="https://github.com/mnaoumov/obsidian-sibling-notes/blob/HEAD/images/screenshots/screenshot-mobile-5.png"><img src="images/screenshots/screenshot-mobile-5.png" alt="Choose the bars, the page size and the folder notes" width="270"></a>
+</div>
+
+</details>
+
+<!-- markdownlint-enable MD033 -->
+
 ## Demo vault
 
 **The documentation is an interactive demo vault.** Every feature has a note that explains what it does and why you would want it, with buttons that open the walkthrough notes, run the plugin's commands and flip its settings, so you can watch it happen.
