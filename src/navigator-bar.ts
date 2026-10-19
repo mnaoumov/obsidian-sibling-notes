@@ -33,6 +33,16 @@ export interface NavigatorBarState {
 
 interface NavigatorBarConstructorParams {
   readonly onAction: (action: NavigationAction) => void;
+
+  /**
+   * Called when a button is hovered or focused, with its action, and with `null` when it is left.
+   */
+  readonly onHover: (action: NavigationAction | null) => void;
+
+  /**
+   * Called when the Map button is clicked, with the button.
+   */
+  readonly onMap: (mapButton: HTMLElement) => void;
   readonly placement: NavigatorBarPlacement;
 }
 
@@ -54,6 +64,16 @@ const TRAILING_ACTIONS: readonly NavigationAction[] = [
   NavigationAction.PageDown,
   NavigationAction.End
 ];
+
+/**
+ * The bar's action buttons, in bar order.
+ */
+export const NAVIGATOR_BAR_ACTIONS: readonly NavigationAction[] = [...LEADING_ACTIONS, ...TRAILING_ACTIONS];
+
+/**
+ * The `data-action` of the Map button.
+ */
+export const MAP_BUTTON_ACTION = 'map';
 
 /**
  * The CSS classes of the bar. They are the plugin's public styling surface, so a theme or a snippet can
@@ -88,18 +108,20 @@ export class NavigatorBar {
     });
 
     for (const action of LEADING_ACTIONS) {
-      this.createActionButton(action, params.onAction);
+      this.createActionButton(action, params.onAction, params.onHover);
     }
     this.positionEl = this.el.createSpan({ cls: NavigatorBarCssClass.Position });
     for (const action of TRAILING_ACTIONS) {
-      this.createActionButton(action, params.onAction);
+      this.createActionButton(action, params.onAction, params.onHover);
     }
 
-    // TODO: Open the folder map from here, once it exists. Until then the button only marks its place.
-    const mapButton = this.createButton('Folder map (coming soon)');
-    mapButton.dataset['action'] = 'map';
+    const mapButton = this.createButton('Folder map');
+    mapButton.dataset['action'] = MAP_BUTTON_ACTION;
     setIcon(mapButton, 'map');
-    mapButton.disabled = true;
+    mapButton.addEventListener('click', (clickEvent) => {
+      clickEvent.preventDefault();
+      params.onMap(mapButton);
+    });
   }
 
   /**
@@ -114,7 +136,7 @@ export class NavigatorBar {
     this.positionEl.setText(state.position ? `${String(state.position.index + 1)} / ${String(state.position.length)}` : '');
   }
 
-  private createActionButton(action: NavigationAction, onAction: (action: NavigationAction) => void): void {
+  private createActionButton(action: NavigationAction, onAction: (action: NavigationAction) => void, onHover: (action: NavigationAction | null) => void): void {
     const definition = NAVIGATION_ACTION_DEFINITIONS[action];
     const button = this.createButton(definition.label);
     button.dataset['action'] = action;
@@ -129,6 +151,16 @@ export class NavigatorBar {
         onAction(action);
       }
     });
+    for (const eventName of ['mouseenter', 'focus'] as const) {
+      button.addEventListener(eventName, () => {
+        onHover(action);
+      });
+    }
+    for (const eventName of ['mouseleave', 'blur'] as const) {
+      button.addEventListener(eventName, () => {
+        onHover(null);
+      });
+    }
     this.buttons.set(action, button);
   }
 

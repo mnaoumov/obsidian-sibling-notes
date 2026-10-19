@@ -100,6 +100,152 @@
   font-size: var(--font-ui-small);
 }
 
+/* The folder map, in its popover, its bottom sheet and its side panel. */
+.sibling-notes-folder-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-4-2);
+}
+
+.sibling-notes-folder-map-title {
+  font-weight: var(--font-semibold);
+}
+
+.sibling-notes-folder-map-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--size-2-1);
+  padding: var(--size-2-2) var(--size-4-1);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
+.sibling-notes-folder-map-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--size-2-1);
+  padding: var(--size-2-1) var(--size-2-2);
+  border-radius: var(--radius-s);
+  color: inherit;
+  text-decoration: none;
+}
+
+a.sibling-notes-folder-map-breadcrumb:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.sibling-notes-folder-map-breadcrumb-separator {
+  color: var(--text-faint);
+}
+
+.sibling-notes-folder-map-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.sibling-notes-folder-map-item {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-2-2) var(--size-4-2);
+  border-radius: var(--radius-s);
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.sibling-notes-folder-map-item:hover {
+  background-color: var(--background-modifier-hover);
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.sibling-notes-folder-map-item.is-active {
+  background-color: var(--background-modifier-active-hover);
+  font-weight: var(--font-semibold);
+}
+
+.sibling-notes-folder-map-item.is-targeted,
+.sibling-notes-folder-map-breadcrumb.is-targeted {
+  outline: 2px solid var(--interactive-accent);
+  outline-offset: -2px;
+}
+
+.sibling-notes-folder-map-item-icon {
+  display: flex;
+  color: var(--icon-color);
+}
+
+.sibling-notes-folder-map-item-name {
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sibling-notes-folder-map-targets {
+  display: inline-flex;
+  gap: var(--size-2-1);
+  color: var(--text-accent);
+  font-family: var(--font-monospace);
+  font-size: var(--font-ui-smaller);
+}
+
+.sibling-notes-folder-map-target {
+  display: inline-flex;
+  align-items: center;
+}
+
+.sibling-notes-folder-map-target .svg-icon {
+  width: var(--icon-xs);
+  height: var(--icon-xs);
+}
+
+.sibling-notes-folder-map-empty {
+  padding: var(--size-4-2);
+  color: var(--text-muted);
+}
+
+.sibling-notes-folder-map-popover {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 16px));
+  max-height: min(480px, calc(100vh - 16px));
+}
+
+.sibling-notes-folder-map-popover > .sibling-notes-folder-map {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sibling-notes-folder-map-popover > .sibling-notes-folder-map-header {
+  padding-inline-start: var(--size-4-2);
+}
+
+/* On mobile the map rises from the bottom edge, as a sheet. */
+.modal.sibling-notes-folder-map-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: none;
+  max-height: 70vh;
+  border-radius: var(--radius-l) var(--radius-l) 0 0;
+}
+
+.sibling-notes-folder-map-sheet .modal-content {
+  overflow-y: auto;
+}
+
+/* Leaves room for the modal's own close button. */
+.sibling-notes-folder-map-sheet .sibling-notes-folder-map-header {
+  padding-inline-end: var(--size-4-8);
+}
+
 /* Print and PDF export show the note alone. */
 @media print {
   .sibling-notes-navigator-bar {

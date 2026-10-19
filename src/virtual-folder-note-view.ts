@@ -17,12 +17,16 @@ import {
   TFolder
 } from 'obsidian';
 
+import type { FolderMapComponent } from './folder-map-component.ts';
 import type { FolderNoteConventions } from './folder-note-finder.ts';
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
 import type { SiblingNavigator } from './sibling-navigator.ts';
 
 import { findFolderNote } from './folder-note-finder.ts';
-import { getFolderSequence } from './folder-sequence.ts';
+import {
+  getFolderSequence,
+  getItemDisplayName
+} from './folder-sequence.ts';
 import { NavigationAction } from './navigation-action.ts';
 import {
   NavigatorBar,
@@ -35,6 +39,7 @@ import {
 export interface VirtualFolderNoteViewSettings extends FolderNoteConventions, NavigatorBarVisibility {}
 
 interface VirtualFolderNoteViewConstructorParams {
+  readonly folderMapComponent: FolderMapComponent;
   readonly getSettings: () => VirtualFolderNoteViewSettings;
   readonly leaf: WorkspaceLeaf;
   readonly siblingNavigator: SiblingNavigator;
@@ -101,6 +106,7 @@ export class VirtualFolderNoteView extends ItemView {
   private _folder: null | TFolder = null;
   private bottomBar: NavigatorBar | null = null;
   private enterButton: HTMLButtonElement | null = null;
+  private readonly folderMapComponent: FolderMapComponent;
   private folderNoteEl: HTMLElement | null = null;
   private readonly getSettings: () => VirtualFolderNoteViewSettings;
   private inlineTitleEl: HTMLElement | null = null;
@@ -115,6 +121,7 @@ export class VirtualFolderNoteView extends ItemView {
 
   public constructor(params: VirtualFolderNoteViewConstructorParams) {
     super(params.leaf);
+    this.folderMapComponent = params.folderMapComponent;
     this.getSettings = params.getSettings;
     this.siblingNavigator = params.siblingNavigator;
   }
@@ -181,8 +188,17 @@ export class VirtualFolderNoteView extends ItemView {
     this.contentEl.empty();
 
     const onAction = this.navigate.bind(this);
-    this.topBar = new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Top });
-    this.bottomBar = new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Bottom });
+    const barParams = {
+      onAction,
+      onHover: (action: NavigationAction | null): void => {
+        this.folderMapComponent.highlightTarget(action, this._folder);
+      },
+      onMap: (mapButton: HTMLElement): void => {
+        invokeAsyncSafely(() => this.folderMapComponent.show(this.leaf, mapButton));
+      }
+    };
+    this.topBar = new NavigatorBar({ ...barParams, placement: NavigatorBarPlacement.Top });
+    this.bottomBar = new NavigatorBar({ ...barParams, placement: NavigatorBarPlacement.Bottom });
 
     this.pageEl = this.contentEl.createDiv({ cls: VirtualFolderNoteViewCssClass.Content });
     this.inlineTitleEl = this.pageEl.createDiv({ cls: ['inline-title', VirtualFolderNoteViewCssClass.Title] });
@@ -348,17 +364,6 @@ export class VirtualFolderNoteView extends ItemView {
     this.renderedFolderNote = null;
     this.renderedFolderNotePath = null;
   }
-}
-
-/**
- * Names an item the way the File explorer does: a Markdown note without its extension, anything else
- * with it.
- *
- * @param item - The item.
- * @returns The name.
- */
-function getItemDisplayName(item: TAbstractFile): string {
-  return item instanceof TFile && item.extension === MARKDOWN_FILE_EXTENSION ? item.basename : item.name;
 }
 
 function isVirtualFolderNoteViewState(state: unknown): state is VirtualFolderNoteViewState {

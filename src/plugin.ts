@@ -7,6 +7,15 @@ import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-even
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
 import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
 
+import {
+  FolderMapCommand,
+  FolderMapCommandHandler
+} from './folder-map-command-handler.ts';
+import { FolderMapComponent } from './folder-map-component.ts';
+import {
+  FOLDER_MAP_VIEW_TYPE,
+  FolderMapView
+} from './folder-map-view.ts';
 import { NavigationAction } from './navigation-action.ts';
 import { NavigationCommandHandler } from './navigation-command-handler.ts';
 import { NavigatorBarComponent } from './navigator-bar-component.ts';
@@ -58,8 +67,12 @@ export class Plugin extends PluginBase {
       getPageSize: (): number => pluginSettingsComponent.settings.pageSize
     });
 
+    const folderMapComponent = this.addChild(new FolderMapComponent({ app: this.app, siblingNavigator }));
+    this.registerView(FOLDER_MAP_VIEW_TYPE, (leaf) => new FolderMapView({ folderMapComponent, leaf }));
+
     this.registerView(VIRTUAL_FOLDER_NOTE_VIEW_TYPE, (leaf) =>
       new VirtualFolderNoteView({
+        folderMapComponent,
         getSettings: (): VirtualFolderNoteViewSettings => pluginSettingsComponent.settings,
         leaf,
         siblingNavigator
@@ -68,6 +81,7 @@ export class Plugin extends PluginBase {
     const navigatorBarComponent = this.addChild(
       new NavigatorBarComponent({
         app: this.app,
+        folderMapComponent,
         getVisibility: (): NavigatorBarVisibility => pluginSettingsComponent.settings,
         siblingNavigator
       })
@@ -89,6 +103,8 @@ export class Plugin extends PluginBase {
     // Reached by downloading the asset by hand. It hides itself on mobile, so no platform guard is needed.
     await this.commandHandlerComponent.registerCommandHandlers(() => [
       ...NAVIGATION_ACTIONS.map((action) => new NavigationCommandHandler({ action, siblingNavigator })),
+      new FolderMapCommandHandler({ app: this.app, command: FolderMapCommand.Show, folderMapComponent }),
+      new FolderMapCommandHandler({ app: this.app, command: FolderMapCommand.Pin, folderMapComponent }),
       new OpenDemoVaultCommandHandler({
         app: this.app,
         pluginId: this.manifest.id,

@@ -28,6 +28,7 @@ Every button in this vault also states its **manual equivalent**, so you learn t
 | [02 Settings](<./02 Settings.md>) | Every setting, by the key it is stored under in `data.json`. |
 | [03 Navigator bar](<./03 Navigator bar.md>) | The bar above and below every note: its buttons, the position, and hiding it. |
 | [04 Virtual folder note](<./04 Virtual folder note.md>) | What a subfolder is in the sequence: its items, Enter, and its folder note. |
+| [05 Folder map](<./05 Folder map.md>) | The whole folder at a glance: where each button goes, and pinning it to the side panel. |
 
 ## Materials
 

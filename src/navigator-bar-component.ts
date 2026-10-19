@@ -16,6 +16,7 @@ import {
   MarkdownView
 } from 'obsidian';
 
+import type { FolderMapComponent } from './folder-map-component.ts';
 import type { NavigationAction } from './navigation-action.ts';
 import type { SiblingNavigator } from './sibling-navigator.ts';
 
@@ -39,6 +40,7 @@ export interface NavigatorBarVisibility {
 
 interface NavigatorBarComponentConstructorParams {
   readonly app: App;
+  readonly folderMapComponent: FolderMapComponent;
   readonly getVisibility: () => NavigatorBarVisibility;
   readonly siblingNavigator: SiblingNavigator;
 }
@@ -81,6 +83,7 @@ const SCROLL_PAST_END_CSS_PROPERTY = '--sibling-notes-scroll-past-end';
 export class NavigatorBarComponent extends Component {
   private readonly app: App;
   private readonly bars = new Map<MarkdownView, ViewBars>();
+  private readonly folderMapComponent: FolderMapComponent;
   private readonly getVisibility: () => NavigatorBarVisibility;
   private isEditViewPatched = false;
   private isFileExplorerViewPatched = false;
@@ -94,6 +97,7 @@ export class NavigatorBarComponent extends Component {
   public constructor(params: NavigatorBarComponentConstructorParams) {
     super();
     this.app = params.app;
+    this.folderMapComponent = params.folderMapComponent;
     this.getVisibility = params.getVisibility;
     this.siblingNavigator = params.siblingNavigator;
   }
@@ -134,7 +138,7 @@ export class NavigatorBarComponent extends Component {
 
   /**
    * Adds, places and updates the bars of every open note, drops the bars of notes that are gone, and
-   * refreshes every open virtual folder note.
+   * refreshes every open virtual folder note and folder map.
    */
   public refresh(): void {
     const views = new Set<MarkdownView>();
@@ -164,18 +168,28 @@ export class NavigatorBarComponent extends Component {
         leaf.view.refresh();
       }
     }
+
+    this.folderMapComponent.refresh();
   }
 
   private getOrCreateBars(view: MarkdownView): ViewBars {
     let viewBars = this.bars.get(view);
     if (!viewBars) {
-      const siblingNavigator = this.siblingNavigator;
-      function onAction(action: NavigationAction): void {
-        invokeAsyncSafely(() => siblingNavigator.navigate(action, { item: view.file, leaf: view.leaf }));
-      }
+      const { folderMapComponent, siblingNavigator } = this;
+      const params = {
+        onAction(action: NavigationAction): void {
+          invokeAsyncSafely(() => siblingNavigator.navigate(action, { item: view.file, leaf: view.leaf }));
+        },
+        onHover(action: NavigationAction | null): void {
+          folderMapComponent.highlightTarget(action, view.file);
+        },
+        onMap(mapButton: HTMLElement): void {
+          invokeAsyncSafely(() => folderMapComponent.show(view.leaf, mapButton));
+        }
+      };
       viewBars = {
-        bottom: new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Bottom }),
-        top: new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Top })
+        bottom: new NavigatorBar({ ...params, placement: NavigatorBarPlacement.Bottom }),
+        top: new NavigatorBar({ ...params, placement: NavigatorBarPlacement.Top })
       };
       this.bars.set(view, viewBars);
     }
