@@ -1,8 +1,10 @@
 /**
- * A step through a folder's sequence. Every one is a command, and later a button on the navigator bar.
+ * A step through a folder's sequence. Every one is a command, and every one but Enter is a button on the
+ * navigator bar.
  */
 export enum NavigationAction {
   End = 'end',
+  Enter = 'enter',
   Home = 'home',
   Next = 'next',
   PageDown = 'pageDown',
@@ -13,9 +15,9 @@ export enum NavigationAction {
 
 /**
  * The actions that move within one folder's sequence, as opposed to {@link NavigationAction.Up}, which
- * leaves it.
+ * leaves it, and {@link NavigationAction.Enter}, which goes into a subfolder's.
  */
-export type InFolderNavigationAction = Exclude<NavigationAction, NavigationAction.Up>;
+export type InFolderNavigationAction = Exclude<NavigationAction, NavigationAction.Enter | NavigationAction.Up>;
 
 interface GetNavigationTargetIndexParams {
   readonly action: InFolderNavigationAction;

@@ -11,6 +11,19 @@ const PLUGIN_ID = 'sibling-notes';
 
 const MATERIALS_FOLDER_PATH = 'Materials/01 Folder navigation';
 
+// The view type of the plugin's virtual folder note.
+const VIRTUAL_FOLDER_NOTE_VIEW_TYPE = 'sibling-notes-virtual-folder-note';
+
+const LANDING_POLL_IN_MILLISECONDS = 50;
+const LANDING_TIMEOUT_IN_MILLISECONDS = 2000;
+
+/**
+ * Describes what the active leaf shows, so a change of file or of folder can be told.
+ */
+function getActiveViewState(app: App): string {
+  return JSON.stringify(app.workspace.getMostRecentLeaf()?.getViewState().state ?? null);
+}
+
 /**
  * Opens a note of the folder the walkthrough steps through.
  *
@@ -27,7 +40,22 @@ export async function openMaterial(app: App, relativePath: string): Promise<void
 }
 
 /**
- * Runs one of the plugin's navigation commands, such as `go-to-next`.
+ * Opens the virtual folder note of a folder the walkthrough uses, such as `Appendix`.
+ *
+ * Manual equivalent: go to the folder with the plugin's commands, or click it on another virtual folder note.
+ */
+export async function openMaterialFolder(app: App, relativePath: string): Promise<void> {
+  const path = relativePath ? `${MATERIALS_FOLDER_PATH}/${relativePath}` : MATERIALS_FOLDER_PATH;
+  if (!app.vault.getFolderByPath(path)) {
+    new Notice(`The demo folder ${path} is missing.`);
+    return;
+  }
+  await app.workspace.getLeaf(false).setViewState({ active: true, state: { folderPath: path }, type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE });
+}
+
+/**
+ * Runs one of the plugin's navigation commands, such as `go-to-next`, and waits until it has landed, so the
+ * next command in the same button starts from where this one went.
  *
  * A command whose step has nowhere to go is unavailable, and so is not run: say so rather than do nothing.
  *
@@ -39,8 +67,12 @@ export async function runNavigationCommand(app: App, commandId: string): Promise
     new Notice(`There is nowhere to go with ${command?.name ?? commandId} from here.`);
     return;
   }
+  const stateBefore = getActiveViewState(app);
   app.commands.executeCommandById(`${PLUGIN_ID}:${commandId}`);
-  await Promise.resolve();
+  const deadline = performance.now() + LANDING_TIMEOUT_IN_MILLISECONDS;
+  while (getActiveViewState(app) === stateBefore && performance.now() < deadline) {
+    await sleep(LANDING_POLL_IN_MILLISECONDS);
+  }
 }
 
 /**
@@ -53,6 +85,21 @@ export async function runNavigationCommand(app: App, commandId: string): Promise
 export async function setBarVisibility(app: App, key: 'showBottomBar' | 'showTopBar', isShown: boolean): Promise<void> {
   await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { [key]: isShown } });
   new Notice(`${key} is now ${String(isShown)}. It is live -- no reload needed.`);
+}
+
+/**
+ * Switches one folder-note convention on or off, through its setting. The change applies live, like
+ * {@link setPageSize}: an open virtual folder note shows or drops its folder note at once.
+ *
+ * Manual equivalent: the toggles under **Folder notes** in **Settings -> Community plugins -> Sibling Notes**.
+ */
+export async function setFolderNoteConvention(
+  app: App,
+  key: 'shouldReadFolderNotePlugins' | 'shouldUseFolderNoteBeside' | 'shouldUseFolderNoteInside',
+  isUsed: boolean
+): Promise<void> {
+  await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { [key]: isUsed } });
+  new Notice(`${key} is now ${String(isUsed)}. It is live -- no reload needed.`);
 }
 
 /**

@@ -16,9 +16,13 @@ What core 1.14.4 and other plugins already do, so the plugin does not rebuild it
 
 The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-in-one`, CSS, desktop and mobile, the unofficial API subset, no editor extensions). Its answers are in `.create-obsidian-plugin.json`, so re-running the generator in this folder updates every file not edited by hand.
 
-**Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting) and Up. Until the virtual folder note view exists, landing on a subfolder reveals it in the File explorer, and the navigator remembers it as the current item while the active file stays the same, so the next step continues from it. The demo vault covers these commands.
+**Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting), Up and Enter (command only, not on the bar). The current item is the active virtual folder note's folder, else the active file. The demo vault covers these commands.
 
-**Built: the navigator bar.** `src/navigator-bar.ts` is one bar's DOM, and `src/navigator-bar-component.ts` puts a top and a bottom bar into every open `MarkdownView` and keeps them current. Each bar reads its own view's file, not the active file. The Map button is a disabled placeholder until the map exists. The settings `showTopBar` and `showBottomBar` hide either bar. The virtual folder note and the map are not built yet. The coverage thresholds are still 0.
+**Built: the navigator bar.** `src/navigator-bar.ts` is one bar's DOM, and `src/navigator-bar-component.ts` puts a top and a bottom bar into every open `MarkdownView` and keeps them current. Each bar reads its own view's file, not the active file. The Map button is a disabled placeholder until the map exists. The settings `showTopBar` and `showBottomBar` hide either bar.
+
+**Built: the virtual folder note.** `src/virtual-folder-note-view.ts` is an `ItemView` (type `sibling-notes-virtual-folder-note`, state `{ folderPath }`) that a landing on a subfolder opens in the same leaf. It shows the bars, the folder's name, Enter, the items in explorer order (click opens here, mod-click or middle click in a new tab) and the folder note, rendered through `fullRender` (Markdown without its frontmatter, any other type as an embed). `NavigatorBarComponent.refresh` refreshes it with the bars; the folder note re-renders only when it is another note, was renamed, or was modified. `src/folder-note-finder.ts` picks the folder note: the enabled folder-notes plugins' setups first (`shouldReadFolderNotePlugins`), then `d/d.md` (`shouldUseFolderNoteInside`), then `d.md` beside (`shouldUseFolderNoteBeside`).
+
+The map is not built yet. The coverage thresholds are still 0.
 
 **The public repo `mnaoumov/obsidian-sibling-notes` exists (created 2026-10-18), and `main` is pushed to it. Nothing is released yet.** The plugin id `sibling-notes` was free in the community directory on 2026-10-17. An id can never change once it is published, so check it again right before the first submission.
 
@@ -57,6 +61,12 @@ Checked against the `obsidian-typings` branch `release/obsidian-public/1.14.4`. 
   - In the editor the bars go right before and after `.cm-contentContainer` (`cm.contentDOM.parentElement`). `updateBottomPadding` puts the scroll-past-end space on `cm.contentDOM`'s bottom padding, above anything after the content, so the component patches it on the edit view's prototype and moves that space below the bottom bar through `--sibling-notes-scroll-past-end`.
   - In Reading view the top bar is appended to the header and the bottom bar prepended to the footer, then `renderer.updateHeader()` / `updateFooter()` re-measure the section. Those four renderer members are not in `obsidian-typings` yet, so a local interface marked `// TODO` narrows the renderer until they are.
   - `FileExplorerView.sort()` runs after every sort-order change and every `requestSort`, so the component patches it to refresh the bars.
+- **The virtual folder note's header:** `WorkspaceLeaf.updateHeader()` updates the tab title but not the view header's `ItemView.titleEl`, which is written once when the view opens, before it has a state. So the view sets `titleEl` itself on every refresh.
+- **Folder-note conventions**, read from each enabled plugin's `app.plugins.getPlugin(id).settings` on every lookup:
+  - `folder-notes`: through `resolveFolderNoteConfig` in `@mnaoumov/obsidian-lib/folder-note` (`folderNoteName` with `{{folder_name}}`, `storageLocation`, `folderNoteType`, `supportedFileTypes`).
+  - `folder-note-plugin` (`Folder Note`): `folderNoteType` `inside` / `outside` / `index`, the index note named `folderNoteName`.
+  - `waypoint`: `folderNoteType` `INSIDE_FOLDER` / `OUTSIDE_FOLDER` / `CUSTOM_FILENAME`, the custom note named `folderNoteFilename`.
+  - `obsidian-folder-index` (`Folder Index`): `indexFilename` inside the folder when `indexFileUserSpecified`, else a note named after the folder.
 - Anything missing from `obsidian-typings` is added there, never declared locally.
 
 ## Conventions

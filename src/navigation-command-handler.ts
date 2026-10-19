@@ -41,6 +41,7 @@ interface NavigationCommandHandlerConstructorParams {
  */
 export const NAVIGATION_ACTION_DEFINITIONS: Readonly<Record<NavigationAction, NavigationActionDefinition>> = {
   [NavigationAction.End]: { icon: 'chevron-last', id: 'go-to-last', label: 'Last item', name: 'Go to the last item in the folder' },
+  [NavigationAction.Enter]: { icon: 'corner-right-down', id: 'enter-folder', label: 'Enter', name: 'Go into the folder, to its first item' },
   [NavigationAction.Home]: { icon: 'chevron-first', id: 'go-to-first', label: 'First item', name: 'Go to the first item in the folder' },
   [NavigationAction.Next]: { icon: 'chevron-right', id: 'go-to-next', label: 'Next item', name: 'Go to the next item in the folder' },
   [NavigationAction.PageDown]: { icon: 'chevrons-right', id: 'go-page-down', label: 'A page down', name: 'Go a page down in the folder' },

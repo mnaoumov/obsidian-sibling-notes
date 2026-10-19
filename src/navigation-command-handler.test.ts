@@ -32,7 +32,7 @@ describe('NavigationCommandHandler', () => {
 
   it('names each action\'s command', () => {
     const ids = Object.values(NavigationAction).map((action) => createHandler(action, null).handler.buildCommand().id);
-    expect(ids).toStrictEqual(['go-to-last', 'go-to-first', 'go-to-next', 'go-page-down', 'go-page-up', 'go-to-previous', 'go-up']);
+    expect(ids).toStrictEqual(['go-to-last', 'enter-folder', 'go-to-first', 'go-to-next', 'go-page-down', 'go-page-up', 'go-to-previous', 'go-up']);
     expect(createHandler(NavigationAction.Next, null).handler.buildCommand().name).toBe('Go to the next item in the folder');
   });
 

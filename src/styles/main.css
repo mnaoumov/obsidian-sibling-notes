@@ -48,6 +48,58 @@
   text-align: center;
 }
 
+/* The virtual folder note, laid out like a note in Reading view. */
+.sibling-notes-virtual-folder-note-content {
+  max-width: var(--file-line-width);
+  margin-inline: auto;
+  padding: var(--file-margins);
+}
+
+.sibling-notes-virtual-folder-note-enter {
+  margin-block: var(--size-4-2);
+}
+
+.sibling-notes-virtual-folder-note-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-2-1);
+  margin-block: var(--size-4-2);
+}
+
+.sibling-notes-virtual-folder-note-item {
+  display: flex;
+  align-items: center;
+  gap: var(--size-4-2);
+  padding: var(--size-2-2) var(--size-4-2);
+  border-radius: var(--radius-s);
+  color: var(--text-normal);
+  text-decoration: none;
+}
+
+.sibling-notes-virtual-folder-note-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.sibling-notes-virtual-folder-note-item-icon {
+  display: flex;
+  color: var(--icon-color);
+}
+
+.sibling-notes-virtual-folder-note-empty {
+  color: var(--text-muted);
+}
+
+.sibling-notes-virtual-folder-note-folder-note:not(:empty) {
+  margin-block-start: var(--size-4-6);
+  padding-block-start: var(--size-4-4);
+  border-block-start: var(--border-width) solid var(--background-modifier-border);
+}
+
+.sibling-notes-virtual-folder-note-folder-note-title {
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+}
+
 /* Print and PDF export show the note alone. */
 @media print {
   .sibling-notes-navigator-bar {
