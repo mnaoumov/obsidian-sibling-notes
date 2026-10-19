@@ -1,11 +1,9 @@
-import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App,
   TAbstractFile,
   WorkspaceLeaf
 } from 'obsidian';
 
-import { InternalPluginName } from '@obsidian-typings/obsidian-public-latest/implementations';
 import {
   TFile,
   TFolder
@@ -16,12 +14,16 @@ import {
   getNavigationTargetIndex,
   NavigationAction
 } from './navigation-action.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from './virtual-folder-note-view.ts';
 
 /**
- * Where a move starts: the file shown, and the leaf a landed file opens in.
+ * Where a move starts: the item shown, and the leaf the landed item opens in.
  */
 export interface NavigationOrigin {
-  readonly file: null | TFile;
+  readonly item: null | TAbstractFile;
   readonly leaf: WorkspaceLeaf;
 }
 
@@ -43,55 +45,47 @@ export interface SequencePosition {
 interface SiblingNavigatorConstructorParams {
   readonly app: App;
   readonly getPageSize: () => number;
-  readonly pluginNoticeComponent: PluginNoticeComponent;
 }
 
 /**
  * Moves through the sequence of the current item's folder.
  *
- * The current item is the file shown, unless the last move from that file landed on a subfolder: then it
- * is that subfolder, so the next move continues from it. Without an explicit file, the file shown is the
- * active file, which is what the commands use.
+ * The current item is what the view shows: a file, or the folder a virtual folder note stands for. Without
+ * an explicit item it is the active view's, which is what the commands use.
  */
 export class SiblingNavigator {
   private readonly app: App;
-  private readonly currentItemChangeListeners = new Set<() => void>();
   private readonly getPageSize: () => number;
-  private landedFolder: null | TFolder = null;
-  private landedFromFile: null | TFile = null;
-  private readonly pluginNoticeComponent: PluginNoticeComponent;
 
   public constructor(params: SiblingNavigatorConstructorParams) {
     this.app = params.app;
     this.getPageSize = params.getPageSize;
-    this.pluginNoticeComponent = params.pluginNoticeComponent;
   }
 
   /**
-   * Returns the item the next move starts from.
+   * Returns the item the active view shows.
    *
-   * @param file - The file shown. Defaults to the active file.
-   * @returns The current item, or `null` when there is none.
+   * @returns The folder of an active virtual folder note, else the active file, or `null` when there is none.
    */
-  public getCurrentItem(file: null | TFile = this.app.workspace.getActiveFile()): null | TAbstractFile {
-    return this.landedFolder && file && file === this.landedFromFile && this.isInVault(this.landedFolder) ? this.landedFolder : file;
+  public getCurrentItem(): null | TAbstractFile {
+    const virtualFolderNoteView = this.app.workspace.getActiveViewOfType(VirtualFolderNoteView);
+    return virtualFolderNoteView ? virtualFolderNoteView.folder : this.app.workspace.getActiveFile();
   }
 
   /**
-   * Returns the current item's place in its folder's sequence, read fresh from the File explorer.
+   * Returns an item's place in its folder's sequence, read fresh from the File explorer.
    *
-   * @param file - The file shown. Defaults to the active file.
-   * @returns The position, or `null` when there is no current item or it is the root folder.
+   * @param item - The item. Defaults to the current item.
+   * @returns The position, or `null` when there is no item or it is the root folder.
    */
-  public getPosition(file: null | TFile = this.app.workspace.getActiveFile()): null | SequencePosition {
-    const currentItem = this.getCurrentItem(file);
-    const folder = currentItem?.parent;
-    if (!currentItem || !folder) {
+  public getPosition(item: null | TAbstractFile = this.getCurrentItem()): null | SequencePosition {
+    const folder = item?.parent;
+    if (!item || !folder) {
       return null;
     }
 
     const sequence = getFolderSequence(this.app, folder);
-    const index = sequence.indexOf(currentItem);
+    const index = sequence.indexOf(item);
     return index === -1 ? null : { index, length: sequence.length };
   }
 
@@ -99,13 +93,20 @@ export class SiblingNavigator {
    * Returns where an action would land, read fresh from the File explorer.
    *
    * @param action - The action.
-   * @param file - The file shown. Defaults to the active file.
+   * @param item - The item the move starts from. Defaults to the current item.
    * @returns The target, or `null` when the action is unavailable.
    */
-  public getTarget(action: NavigationAction, file: null | TFile = this.app.workspace.getActiveFile()): null | TAbstractFile {
-    const currentItem = this.getCurrentItem(file);
-    const folder = currentItem?.parent;
-    if (!currentItem || !folder) {
+  public getTarget(action: NavigationAction, item: null | TAbstractFile = this.getCurrentItem()): null | TAbstractFile {
+    if (!item) {
+      return null;
+    }
+
+    if (action === NavigationAction.Enter) {
+      return item instanceof TFolder ? getFolderSequence(this.app, item)[0] ?? null : null;
+    }
+
+    const folder = item.parent;
+    if (!folder) {
       return null;
     }
 
@@ -117,7 +118,7 @@ export class SiblingNavigator {
     const sequence = getFolderSequence(this.app, folder);
     const targetIndex = getNavigationTargetIndex({
       action,
-      currentIndex: sequence.indexOf(currentItem),
+      currentIndex: sequence.indexOf(item),
       length: sequence.length,
       pageSize: this.getPageSize()
     });
@@ -125,61 +126,34 @@ export class SiblingNavigator {
   }
 
   /**
-   * Performs an action: opens the file it lands on, or lands on the subfolder.
+   * Performs an action: opens the item it lands on.
    *
    * @param action - The action.
-   * @param origin - The file the move starts from and the leaf it opens in. Defaults to the active file
-   * and the active leaf.
+   * @param origin - The item the move starts from and the leaf it opens in. Defaults to the current item
+   * and the leaf a link would open in.
    */
   public async navigate(action: NavigationAction, origin?: NavigationOrigin): Promise<void> {
-    const file = origin ? origin.file : this.app.workspace.getActiveFile();
-    const target = this.getTarget(action, file);
-    if (target instanceof TFile) {
-      this.setLandedFolder(null, null);
-      await (origin?.leaf ?? this.app.workspace.getLeaf(false)).openFile(target);
-    } else if (target instanceof TFolder) {
-      this.setLandedFolder(target, file);
-      this.revealFolder(target);
+    const target = this.getTarget(action, origin ? origin.item : this.getCurrentItem());
+    if (target) {
+      await this.open(target, origin?.leaf ?? this.app.workspace.getLeaf(false));
     }
   }
 
   /**
-   * Calls a listener whenever a move changes the current item without opening a file, which is when the
-   * active file alone no longer tells where the navigator is.
+   * Opens an item in a leaf: a file as itself, a folder as its virtual folder note.
    *
-   * @param listener - The listener.
-   * @returns A function that removes the listener.
+   * @param item - The item.
+   * @param leaf - The leaf.
    */
-  public onCurrentItemChange(listener: () => void): () => void {
-    this.currentItemChangeListeners.add(listener);
-    return (): void => {
-      this.currentItemChangeListeners.delete(listener);
-    };
-  }
-
-  private isInVault(item: TAbstractFile): boolean {
-    return this.app.vault.getAbstractFileByPath(item.path) === item;
-  }
-
-  // TODO: Open the folder's virtual folder note here instead, once that view exists. Until then a landed
-  // Subfolder is only shown in the File explorer.
-  private revealFolder(folder: TFolder): void {
-    const fileExplorer = this.app.internalPlugins.getEnabledPluginById(InternalPluginName.FileExplorer);
-    if (!fileExplorer) {
-      this.pluginNoticeComponent.showNotice(`Moved to the folder ${folder.path}. Enable the File explorer to see it.`);
-      return;
-    }
-    fileExplorer.revealInFolder(folder);
-  }
-
-  private setLandedFolder(folder: null | TFolder, fromFile: null | TFile): void {
-    if (this.landedFolder === folder && this.landedFromFile === fromFile) {
-      return;
-    }
-    this.landedFolder = folder;
-    this.landedFromFile = fromFile;
-    for (const listener of this.currentItemChangeListeners) {
-      listener();
+  public async open(item: TAbstractFile, leaf: WorkspaceLeaf): Promise<void> {
+    if (item instanceof TFile) {
+      await leaf.openFile(item);
+    } else if (item instanceof TFolder) {
+      await leaf.setViewState({
+        active: true,
+        state: VirtualFolderNoteView.createState(item),
+        type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE
+      });
     }
   }
 }

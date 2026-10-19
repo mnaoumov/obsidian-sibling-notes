@@ -24,6 +24,10 @@ import {
   NavigatorBar,
   NavigatorBarPlacement
 } from './navigator-bar.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from './virtual-folder-note-view.ts';
 
 /**
  * Which bars show.
@@ -113,7 +117,6 @@ export class NavigatorBarComponent extends Component {
     this.registerEvent(vault.on('create', this.requestRefresh));
     this.registerEvent(vault.on('delete', this.requestRefresh));
     this.registerEvent(vault.on('rename', this.requestRefresh));
-    this.register(this.siblingNavigator.onCurrentItemChange(this.requestRefresh));
     this.register(() => {
       this.requestRefresh.cancel();
     });
@@ -130,7 +133,8 @@ export class NavigatorBarComponent extends Component {
   }
 
   /**
-   * Adds, places and updates the bars of every open note, and drops the bars of notes that are gone.
+   * Adds, places and updates the bars of every open note, drops the bars of notes that are gone, and
+   * refreshes every open virtual folder note.
    */
   public refresh(): void {
     const views = new Set<MarkdownView>();
@@ -154,6 +158,12 @@ export class NavigatorBarComponent extends Component {
       this.placeBars(view);
       this.updateBars(view);
     }
+
+    for (const leaf of this.app.workspace.getLeavesOfType(VIRTUAL_FOLDER_NOTE_VIEW_TYPE)) {
+      if (leaf.view instanceof VirtualFolderNoteView) {
+        leaf.view.refresh();
+      }
+    }
   }
 
   private getOrCreateBars(view: MarkdownView): ViewBars {
@@ -161,7 +171,7 @@ export class NavigatorBarComponent extends Component {
     if (!viewBars) {
       const siblingNavigator = this.siblingNavigator;
       function onAction(action: NavigationAction): void {
-        invokeAsyncSafely(() => siblingNavigator.navigate(action, { file: view.file, leaf: view.leaf }));
+        invokeAsyncSafely(() => siblingNavigator.navigate(action, { item: view.file, leaf: view.leaf }));
       }
       viewBars = {
         bottom: new NavigatorBar({ onAction, placement: NavigatorBarPlacement.Bottom }),

@@ -1,14 +1,13 @@
-import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App as AppOriginal,
   TAbstractFile,
   TFile as TFileOriginal,
+  TFolder as TFolderOriginal,
   WorkspaceLeaf
 } from 'obsidian';
 
 import { noopAsync } from '@mnaoumov/typescript-lib/function';
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
-import { strictProxy } from '@mnaoumov/typescript-test-toolkit/strict-proxy';
 import { App } from 'obsidian-test-mocks/obsidian';
 import {
   beforeEach,
@@ -18,16 +17,19 @@ import {
   vi
 } from 'vitest';
 
+import type { VirtualFolderNoteView } from './virtual-folder-note-view.ts';
+
 import { NavigationAction } from './navigation-action.ts';
 import { SiblingNavigator } from './sibling-navigator.ts';
+import { VIRTUAL_FOLDER_NOTE_VIEW_TYPE } from './virtual-folder-note-view.ts';
 
 interface Fixture {
   readonly app: AppOriginal;
   readonly navigator: SiblingNavigator;
   readonly openFile: ReturnType<typeof vi.fn>;
-  readonly revealInFolder: ReturnType<typeof vi.fn>;
   setActiveFile: (path: null | string) => void;
-  readonly showNotice: ReturnType<typeof vi.fn>;
+  setActiveFolderView: (path: null | string) => void;
+  readonly setViewState: ReturnType<typeof vi.fn>;
 }
 
 const PAGE_SIZE = 2;
@@ -36,7 +38,7 @@ describe('SiblingNavigator', () => {
   let fixture: Fixture;
 
   beforeEach(() => {
-    fixture = createFixture(true);
+    fixture = createFixture();
   });
 
   function getTargetPath(action: NavigationAction): null | string {
@@ -48,6 +50,7 @@ describe('SiblingNavigator', () => {
     expect(fixture.navigator.getCurrentItem()).toBeNull();
     expect(getTargetPath(NavigationAction.Next)).toBeNull();
     expect(getTargetPath(NavigationAction.Up)).toBeNull();
+    expect(getTargetPath(NavigationAction.Enter)).toBeNull();
   });
 
   it('answers every in-folder action from the sequence of the active file\'s folder', () => {
@@ -58,6 +61,7 @@ describe('SiblingNavigator', () => {
     expect(getTargetPath(NavigationAction.End)).toBe('d/e.md');
     expect(getTargetPath(NavigationAction.PageUp)).toBe('d/sub');
     expect(getTargetPath(NavigationAction.PageDown)).toBe('d/e.md');
+    expect(getTargetPath(NavigationAction.Enter)).toBeNull();
   });
 
   it('goes up to the folder just left, and not above a root-level item', () => {
@@ -77,77 +81,61 @@ describe('SiblingNavigator', () => {
     fixture.setActiveFile('d/e.md');
     await fixture.navigator.navigate(NavigationAction.Next);
     expect(fixture.openFile).not.toHaveBeenCalled();
-    expect(fixture.revealInFolder).not.toHaveBeenCalled();
+    expect(fixture.setViewState).not.toHaveBeenCalled();
   });
 
-  it('lands on a subfolder by revealing it, and the next move continues from there', async () => {
+  it('lands on a subfolder by opening its virtual folder note', async () => {
     fixture.setActiveFile('d/a.md');
     await fixture.navigator.navigate(NavigationAction.Previous);
-    expect(castTo<TAbstractFile>(fixture.revealInFolder.mock.calls[0]?.[0]).path).toBe('d/sub');
+    expect(fixture.setViewState).toHaveBeenCalledWith({
+      active: true,
+      state: { folderPath: 'd/sub' },
+      type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE
+    });
+  });
+
+  it('moves from an active virtual folder note as from its folder, and enters it', () => {
+    fixture.setActiveFile('top.md');
+    fixture.setActiveFolderView('d/sub');
     expect(fixture.navigator.getCurrentItem()?.path).toBe('d/sub');
     expect(getTargetPath(NavigationAction.Next)).toBe('d/a.md');
     expect(getTargetPath(NavigationAction.Previous)).toBeNull();
-
-    await fixture.navigator.navigate(NavigationAction.Next);
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('d/a.md');
+    expect(getTargetPath(NavigationAction.Up)).toBe('d');
+    expect(getTargetPath(NavigationAction.Enter)).toBe('d/sub/x.md');
+    expect(fixture.navigator.getPosition()).toStrictEqual({ index: 0, length: 5 });
   });
 
-  it('forgets the landed subfolder once another file becomes active, or the subfolder is gone', async () => {
-    fixture.setActiveFile('d/sub/x.md');
-    await fixture.navigator.navigate(NavigationAction.Up);
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('d/sub');
-    fixture.setActiveFile('d/c.md');
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('d/c.md');
-
-    fixture.setActiveFile('d/sub/x.md');
-    await fixture.navigator.navigate(NavigationAction.Up);
-    vi.spyOn(fixture.app.vault, 'getAbstractFileByPath').mockReturnValue(null);
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('d/sub/x.md');
+  it('has nothing to enter in an empty folder, and no current item for a deleted one', () => {
+    fixture.setActiveFolderView('empty');
+    expect(getTargetPath(NavigationAction.Enter)).toBeNull();
+    fixture.setActiveFolderView(null);
+    expect(fixture.navigator.getCurrentItem()).toBeNull();
   });
 
-  it('answers the position of the current item, and none without one', async () => {
+  it('answers the position of the current item, and none without one', () => {
     fixture.setActiveFile('d/b.md');
     expect(fixture.navigator.getPosition()).toStrictEqual({ index: 2, length: 5 });
-    await fixture.navigator.navigate(NavigationAction.Home);
-    expect(fixture.navigator.getPosition()).toStrictEqual({ index: 0, length: 5 });
     fixture.setActiveFile(null);
     expect(fixture.navigator.getPosition()).toBeNull();
   });
 
-  it('starts from a given file and opens in a given leaf, and tells listeners about a landed subfolder', async () => {
+  it('starts from a given item and opens in a given leaf', async () => {
     fixture.setActiveFile('top.md');
-    const listener = vi.fn();
-    const removeListener = fixture.navigator.onCurrentItemChange(listener);
-    const file = fixture.app.vault.getFileByPath('d/a.md');
+    const item = fixture.app.vault.getFileByPath('d/a.md');
     const leafOpenFile: ReturnType<typeof vi.fn> = vi.fn(() => noopAsync());
-    const leaf = castTo<WorkspaceLeaf>({ openFile: leafOpenFile });
+    const leafSetViewState: ReturnType<typeof vi.fn> = vi.fn(() => noopAsync());
+    const leaf = castTo<WorkspaceLeaf>({ openFile: leafOpenFile, setViewState: leafSetViewState });
 
-    expect(fixture.navigator.getTarget(NavigationAction.Next, file)?.path).toBe('d/b.md');
-    await fixture.navigator.navigate(NavigationAction.Next, { file, leaf });
+    expect(fixture.navigator.getTarget(NavigationAction.Next, item)?.path).toBe('d/b.md');
+    await fixture.navigator.navigate(NavigationAction.Next, { item, leaf });
     expect(castTo<TAbstractFile>(leafOpenFile.mock.calls[0]?.[0]).path).toBe('d/b.md');
+    await fixture.navigator.navigate(NavigationAction.Previous, { item, leaf });
+    expect(leafSetViewState).toHaveBeenCalledTimes(1);
     expect(fixture.openFile).not.toHaveBeenCalled();
-    expect(listener).not.toHaveBeenCalled();
-
-    await fixture.navigator.navigate(NavigationAction.Previous, { file, leaf });
-    expect(listener).toHaveBeenCalledTimes(1);
-    expect(fixture.navigator.getCurrentItem(file)?.path).toBe('d/sub');
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('top.md');
-
-    removeListener();
-    await fixture.navigator.navigate(NavigationAction.Next, { file, leaf });
-    expect(listener).toHaveBeenCalledTimes(1);
-  });
-
-  it('tells the user where it went when the File explorer is disabled', async () => {
-    fixture = createFixture(false);
-    fixture.setActiveFile('d/sub/x.md');
-    await fixture.navigator.navigate(NavigationAction.Up);
-    expect(fixture.showNotice).toHaveBeenCalledWith('Moved to the folder d/sub. Enable the File explorer to see it.');
-    expect(fixture.navigator.getCurrentItem()?.path).toBe('d/sub');
   });
 });
 
-function createFixture(isFileExplorerEnabled: boolean): Fixture {
+function createFixture(): Fixture {
   const mockApp = App.createConfigured__();
   mockApp.vault.createFolderSync__('d');
   mockApp.vault.createFolderSync__('d/sub');
@@ -156,32 +144,32 @@ function createFixture(isFileExplorerEnabled: boolean): Fixture {
     mockApp.vault.createSync__(`d/${name}.md`, '');
   }
   mockApp.vault.createSync__('top.md', '');
+  mockApp.vault.createFolderSync__('empty');
   const app = mockApp.asOriginalType__();
 
   let activeFile: null | TFileOriginal = null;
+  let activeFolderView: null | VirtualFolderNoteView = null;
   vi.spyOn(app.workspace, 'getActiveFile').mockImplementation(() => activeFile);
+  vi.spyOn(app.workspace, 'getActiveViewOfType').mockImplementation(() => activeFolderView);
   vi.spyOn(app.workspace, 'getLeavesOfType').mockReturnValue([]);
   const openFile = vi.fn(() => noopAsync());
-  vi.spyOn(app.workspace, 'getLeaf').mockReturnValue(castTo<WorkspaceLeaf>({ openFile }));
-  const revealInFolder = vi.fn();
-  // The test mocks leave the internal plugins to the test, which needs only the File explorer's lookup.
-  app.internalPlugins = strictProxy<AppOriginal['internalPlugins']>({
-    getEnabledPluginById: castTo<AppOriginal['internalPlugins']['getEnabledPluginById']>(vi.fn(() => isFileExplorerEnabled ? { revealInFolder } : null))
-  });
-  const showNotice = vi.fn();
+  const setViewState = vi.fn(() => noopAsync());
+  vi.spyOn(app.workspace, 'getLeaf').mockReturnValue(castTo<WorkspaceLeaf>({ openFile, setViewState }));
 
   return {
     app,
     navigator: new SiblingNavigator({
       app,
-      getPageSize: () => PAGE_SIZE,
-      pluginNoticeComponent: strictProxy<PluginNoticeComponent>({ showNotice })
+      getPageSize: () => PAGE_SIZE
     }),
     openFile,
-    revealInFolder,
     setActiveFile(path: null | string): void {
       activeFile = path === null ? null : app.vault.getFileByPath(path);
     },
-    showNotice
+    setActiveFolderView(path: null | string): void {
+      const folder: null | TFolderOriginal = path === null ? null : app.vault.getFolderByPath(path);
+      activeFolderView = castTo<VirtualFolderNoteView>({ folder });
+    },
+    setViewState
   };
 }

@@ -21,11 +21,12 @@ interface NavigationResult {
 const FOLDER = 'sn-navigation';
 
 describe('folder navigation commands', () => {
-  it('follow the File explorer\'s sort order, land on subfolders, go up, and fall back to name order', async () => {
+  it('follow the File explorer\'s sort order, open subfolders as virtual folder notes, enter and leave them, and fall back to name order', async () => {
     const result = await evalInObsidian({
       async callback({ app, folder, lib: { waitUntil } }): Promise<NavigationResult> {
         const WAIT_TIMEOUT_IN_MILLISECONDS = 2000;
         const PLUGIN_ID = 'sibling-notes';
+        const VIRTUAL_FOLDER_NOTE_VIEW_TYPE = 'sibling-notes-virtual-folder-note';
         const visited: string[] = [];
 
         await app.vault.createFolder(folder);
@@ -40,45 +41,23 @@ describe('folder navigation commands', () => {
           throw new Error('No File explorer leaf.');
         }
         await leaf.loadIfDeferred();
-        const view = leaf.view as FileExplorerView;
+        const fileExplorerView = leaf.view as FileExplorerView;
         // Reversed, the explorer shows `sub`, `c.md`, `b.md`, `a.md`: folders stay on top.
-        view.setSortOrder('alphabeticalReverse');
+        fileExplorerView.setSortOrder('alphabeticalReverse');
 
         try {
           await openFile(`${folder}/a.md`);
-          const availableAtLast = ['go-to-next', 'go-to-last', 'go-page-down', 'go-to-previous', 'go-to-first', 'go-page-up', 'go-up']
+          const availableAtLast = ['go-to-next', 'go-to-last', 'go-page-down', 'go-to-previous', 'go-to-first', 'go-page-up', 'go-up', 'enter-folder']
             .filter((id) => isAvailable(id));
 
-          run('go-to-previous');
-          await waitFor('the previous note', () => getActivePath() === `${folder}/b.md`);
-          visited.push(getActivePath());
-
-          run('go-to-first');
-          await waitFor('the subfolder', () => getFocusedFolderPath() === `${folder}/sub`);
-          visited.push(getFocusedFolderPath());
-
-          run('go-to-next');
-          await waitFor('the note after the subfolder', () => getActivePath() === `${folder}/c.md`);
-          visited.push(getActivePath());
-
-          run('go-to-last');
-          await waitFor('the last note', () => getActivePath() === `${folder}/a.md`);
-          visited.push(getActivePath());
-
-          await openFile(`${folder}/sub/x.md`);
-          // Move the focus off the subfolder the earlier landing left it on, so this landing is seen afresh.
-          const xItem = view.fileItems[`${folder}/sub/x.md`];
-          if (!xItem) {
-            throw new Error('No row for x.md.');
-          }
-          view.tree.setFocusedItem(xItem, false);
-          run('go-up');
-          await waitFor('the folder just left', () => getFocusedFolderPath() === `${folder}/sub`);
-          visited.push(getFocusedFolderPath());
-
-          run('go-page-down');
-          await waitFor('a page down', () => getActivePath() === `${folder}/a.md`);
-          visited.push(getActivePath());
+          await step('go-to-previous', `${folder}/b.md`);
+          await step('go-to-first', `${folder}/sub`);
+          await step('enter-folder', `${folder}/sub/x.md`);
+          await step('go-up', `${folder}/sub`);
+          await step('go-to-next', `${folder}/c.md`);
+          await step('go-to-last', `${folder}/a.md`);
+          await step('go-page-up', `${folder}/sub`);
+          await step('go-up', folder);
 
           app.internalPlugins.getPluginById('file-explorer')?.disable(true);
           await openFile(`${folder}/a.md`);
@@ -95,14 +74,14 @@ describe('folder navigation commands', () => {
           }
         }
 
-        // A landed file is the active one. A landed subfolder is the File explorer's focused row.
+        // A landed file is the active one. A landed subfolder is the folder of the active virtual folder note.
         function getActivePath(): string {
+          const view = app.workspace.getMostRecentLeaf()?.view;
+          if (view?.getViewType() === VIRTUAL_FOLDER_NOTE_VIEW_TYPE) {
+            const { folderPath } = view.getState();
+            return typeof folderPath === 'string' ? folderPath : '';
+          }
           return app.workspace.getActiveFile()?.path ?? '';
-        }
-
-        function getFocusedFolderPath(): string {
-          const explorerView = app.workspace.getLeavesOfType('file-explorer')[0]?.view as FileExplorerView | undefined;
-          return explorerView?.tree.focusedItem?.file.path ?? '';
         }
 
         function getTarget(id: string): null | string {
@@ -122,17 +101,19 @@ describe('folder navigation commands', () => {
           await waitFor(`${path} to open`, () => app.workspace.getActiveFile() === file);
         }
 
-        function run(id: string): void {
+        async function step(id: string, expectedPath: string): Promise<void> {
           if (!app.commands.executeCommandById(`${PLUGIN_ID}:${id}`)) {
             throw new Error(`The command ${id} is unavailable.`);
           }
+          await waitFor(`${id} to land on ${expectedPath}`, () => getActivePath() === expectedPath);
+          visited.push(getActivePath());
         }
 
-        async function waitFor(step: string, isReady: () => boolean): Promise<void> {
+        async function waitFor(description: string, isReady: () => boolean): Promise<void> {
           try {
             await waitUntil({ predicate: isReady, timeoutInMilliseconds: WAIT_TIMEOUT_IN_MILLISECONDS });
           } catch (error) {
-            throw new Error(`Timed out waiting for ${step}; at ${getActivePath()}.`, { cause: error });
+            throw new Error(`Timed out waiting for ${description}; at ${getActivePath()}.`, { cause: error });
           }
         }
       },
@@ -144,10 +125,12 @@ describe('folder navigation commands', () => {
     expect(result.visited).toStrictEqual([
       `${FOLDER}/b.md`,
       `${FOLDER}/sub`,
+      `${FOLDER}/sub/x.md`,
+      `${FOLDER}/sub`,
       `${FOLDER}/c.md`,
       `${FOLDER}/a.md`,
       `${FOLDER}/sub`,
-      `${FOLDER}/a.md`
+      FOLDER
     ]);
     // In name order `a.md` is no longer last, so Next is offered again.
     expect(result.fallbackNext).toBe('go-to-next');

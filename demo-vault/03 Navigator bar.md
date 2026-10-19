@@ -1,6 +1,6 @@
 # Navigator bar
 
-`Sibling Notes` puts a navigator bar above every note, after the inline title and the properties, and another below it, before the embedded backlinks. Both scroll with the note. They show in Live Preview, Source mode and Reading view, on desktop and on mobile.
+`Sibling Notes` puts a navigator bar above every note, after the inline title and the properties, and another below it, before the embedded backlinks. Both scroll with the note. They show in Live Preview, Source mode and Reading view, and on a subfolder's [virtual folder note](<./04 Virtual folder note.md>), on desktop and on mobile.
 
 Open `Chapter 2` to see them.
 

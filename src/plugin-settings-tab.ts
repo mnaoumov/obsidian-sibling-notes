@@ -1,5 +1,9 @@
 import type { SettingDefinitionItem } from 'obsidian';
 
+import {
+  asCodeBlock,
+  createFragmentWithCodeBlocks
+} from '@mnaoumov/obsidian-lib/html-element';
 import { PluginSettingsTabBase } from '@mnaoumov/obsidian-lib/plugin/plugin-settings-tab';
 
 import type { PluginSettings } from './plugin-settings.ts';
@@ -39,6 +43,40 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
             this.bind({ propertyName: 'pageSize', valueComponent: number });
           });
         }
+      }),
+      this.settingGroupEx({
+        heading: 'Folder notes',
+        items: [
+          this.settingEx({
+            desc: createFragmentWithCodeBlocks(
+              `A folder's view shows its folder note. Use the folder notes the enabled folder-notes plugins are set up for: ${asCodeBlock('Folder notes')}, ${asCodeBlock('Folder Note')}, ${asCodeBlock('Waypoint')} and ${asCodeBlock('Folder Index')}.`
+            ),
+            name: 'Follow folder-notes plugins',
+            render: (setting) => {
+              setting.addToggle((toggle) => {
+                this.bind({ propertyName: 'shouldReadFolderNotePlugins', valueComponent: toggle });
+              });
+            }
+          }),
+          this.settingEx({
+            desc: createFragmentWithCodeBlocks(`Use a note inside the folder, named after it: ${asCodeBlock('d/d.md')} for the folder ${asCodeBlock('d')}.`),
+            name: 'Note inside the folder',
+            render: (setting) => {
+              setting.addToggle((toggle) => {
+                this.bind({ propertyName: 'shouldUseFolderNoteInside', valueComponent: toggle });
+              });
+            }
+          }),
+          this.settingEx({
+            desc: createFragmentWithCodeBlocks(`Use a note beside the folder, named after it: ${asCodeBlock('d.md')} for the folder ${asCodeBlock('d')}.`),
+            name: 'Note beside the folder',
+            render: (setting) => {
+              setting.addToggle((toggle) => {
+                this.bind({ propertyName: 'shouldUseFolderNoteBeside', valueComponent: toggle });
+              });
+            }
+          })
+        ]
       })
     ];
   }

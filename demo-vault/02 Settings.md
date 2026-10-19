@@ -13,6 +13,17 @@ Find them in Obsidian under **Settings → Community plugins → `Sibling Notes`
 - `pageSize`
   - a whole number, 10 by default, shown in the settings tab as **Page size**. How many items **Go a page up in the folder** and **Go a page down in the folder** move. They stop at the first and the last item.
 
+## Folder notes
+
+Which note a virtual folder note shows as the folder's note. See [04 Virtual folder note](<./04 Virtual folder note.md>).
+
+- `shouldReadFolderNotePlugins`
+  - `true` or `false`, `true` by default, shown in the settings tab as **Follow folder-notes plugins**. Whether the setup of the enabled folder-notes plugins counts: `Folder notes`, `Folder Note`, `Waypoint` and `Folder Index`.
+- `shouldUseFolderNoteInside`
+  - `true` or `false`, `true` by default, shown in the settings tab as **Note inside the folder**. Whether a note inside the folder and named after it counts: `d/d.md` for the folder `d`.
+- `shouldUseFolderNoteBeside`
+  - `true` or `false`, `true` by default, shown in the settings tab as **Note beside the folder**. Whether a note beside the folder and named after it counts: `d.md` for the folder `d`.
+
 ## Try it
 
 Change the setting without leaving this note. The change applies live, so there is no reload.

@@ -5,6 +5,8 @@ import {
   it
 } from 'vitest';
 
+import type { InFolderNavigationAction } from './navigation-action.ts';
+
 import {
   getNavigationTargetIndex,
   NavigationAction
@@ -14,7 +16,7 @@ describe('getNavigationTargetIndex', () => {
   const LENGTH = 25;
   const PAGE_SIZE = 10;
 
-  function getTarget(action: Exclude<NavigationAction, NavigationAction.Up>, currentIndex: number, pageSize = PAGE_SIZE): number | undefined {
+  function getTarget(action: InFolderNavigationAction, currentIndex: number, pageSize = PAGE_SIZE): number | undefined {
     return getNavigationTargetIndex({ action, currentIndex, length: LENGTH, pageSize });
   }
 

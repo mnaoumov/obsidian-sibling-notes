@@ -5,6 +5,7 @@ import { PluginBase } from '@mnaoumov/obsidian-lib/plugin/plugin';
 import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
 
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
+import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
 
 import { NavigationAction } from './navigation-action.ts';
 import { NavigationCommandHandler } from './navigation-command-handler.ts';
@@ -12,10 +13,14 @@ import { NavigatorBarComponent } from './navigator-bar-component.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { SiblingNavigator } from './sibling-navigator.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from './virtual-folder-note-view.ts';
 
 /**
- * The navigation commands in the order the command palette lists them, which is the order of the
- * navigator bar.
+ * The navigation commands in the order the command palette lists them: the order of the navigator bar,
+ * then Enter, which the virtual folder note offers as a button of its own.
  */
 const NAVIGATION_ACTIONS: readonly NavigationAction[] = [
   NavigationAction.Up,
@@ -24,7 +29,8 @@ const NAVIGATION_ACTIONS: readonly NavigationAction[] = [
   NavigationAction.Previous,
   NavigationAction.Next,
   NavigationAction.PageDown,
-  NavigationAction.End
+  NavigationAction.End,
+  NavigationAction.Enter
 ];
 
 export class Plugin extends PluginBase {
@@ -49,9 +55,15 @@ export class Plugin extends PluginBase {
 
     const siblingNavigator = new SiblingNavigator({
       app: this.app,
-      getPageSize: (): number => pluginSettingsComponent.settings.pageSize,
-      pluginNoticeComponent: this.pluginNoticeComponent
+      getPageSize: (): number => pluginSettingsComponent.settings.pageSize
     });
+
+    this.registerView(VIRTUAL_FOLDER_NOTE_VIEW_TYPE, (leaf) =>
+      new VirtualFolderNoteView({
+        getSettings: (): VirtualFolderNoteViewSettings => pluginSettingsComponent.settings,
+        leaf,
+        siblingNavigator
+      }));
 
     const navigatorBarComponent = this.addChild(
       new NavigatorBarComponent({
@@ -60,7 +72,8 @@ export class Plugin extends PluginBase {
         siblingNavigator
       })
     );
-    // A changed setting shows or hides a bar, or moves Page up and Page down, so the bars follow at once.
+    // A changed setting shows or hides a bar, moves Page up and Page down, or changes which note is a folder's,
+    // So the bars and the virtual folder notes follow at once.
     for (const eventName of ['loadSettings', 'saveSettings'] as const) {
       const eventRef = pluginSettingsComponent.on(eventName, () => {
         navigatorBarComponent.refresh();

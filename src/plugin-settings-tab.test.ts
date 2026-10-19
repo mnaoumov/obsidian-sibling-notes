@@ -48,13 +48,16 @@ async function createTab(): Promise<PluginSettingsTab> {
 }
 
 describe('PluginSettingsTab', () => {
-  it('declares the bar toggles and the page size row, rendered as toggles and a number input', async () => {
+  it('declares the bar toggles, the page size and the folder-note conventions, rendered as toggles and a number input', async () => {
     const tab = await createTab();
-    const definitions = tab.getSettingDefinitions();
+    const definitions = tab.getSettingDefinitions().flatMap((definition) => 'items' in definition ? definition.items ?? [] : [definition]);
     expect(definitions.map((definition) => 'name' in definition ? definition.name : '')).toStrictEqual([
       'Show the top bar',
       'Show the bottom bar',
-      'Page size'
+      'Page size',
+      'Follow folder-notes plugins',
+      'Note inside the folder',
+      'Note beside the folder'
     ]);
 
     const bindSpy = vi.spyOn(tab, 'bind');
@@ -63,7 +66,17 @@ describe('PluginSettingsTab', () => {
         definition.render(new SettingEx(tab.containerEl), castTo<SettingGroup>(null));
       }
     }
-    expect(bindSpy.mock.calls.map(([params]) => params.propertyName)).toStrictEqual(['showTopBar', 'showBottomBar', 'pageSize']);
+    expect(bindSpy.mock.calls.map(([params]) => params.propertyName)).toStrictEqual([
+      'showTopBar',
+      'showBottomBar',
+      'pageSize',
+      'shouldReadFolderNotePlugins',
+      'shouldUseFolderNoteInside',
+      'shouldUseFolderNoteBeside'
+    ]);
+    // The plugin names and the file names in the folder-note descriptions are marked as code.
+    const codeCount = definitions.reduce((count, definition) => count + ('desc' in definition && definition.desc instanceof DocumentFragment ? definition.desc.querySelectorAll('code').length : 0), 0);
+    expect(codeCount).toBe(8);
     expect(tab.containerEl.querySelector('input[type="number"]')).not.toBeNull();
   });
 });

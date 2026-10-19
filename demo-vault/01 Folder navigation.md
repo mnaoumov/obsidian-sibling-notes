@@ -43,11 +43,28 @@ await require('/demoSetup.ts').runNavigationCommand(app, 'go-to-first');
 
 Manual equivalent: run **`Sibling Notes`: Go to the first item in the folder**.
 
-The first item is the subfolder `Appendix`. A subfolder is an item like any other: landing on it shows it in the File explorer, and the next step goes on from it to `Chapter 1`.
+The first item is the subfolder `Appendix`. A subfolder is an item like any other: landing on it opens its **virtual folder note**, a view that lists what the folder holds, and the next step goes on from it to `Chapter 1`. [04 Virtual folder note](<./04 Virtual folder note.md>) describes that view.
+
+## Go into a subfolder
+
+On a subfolder's virtual folder note, **Go into the folder, to its first item** opens the first item inside it.
+
+```code-button
+---
+caption: Go to the first item, then go into it
+---
+await require('/demoSetup.ts').openMaterial(app, 'Chapter 1.md');
+await require('/demoSetup.ts').runNavigationCommand(app, 'go-to-first');
+await require('/demoSetup.ts').runNavigationCommand(app, 'enter-folder');
+```
+
+Manual equivalent: run **`Sibling Notes`: Go to the first item in the folder**, then **`Sibling Notes`: Go into the folder, to its first item**, or press **Enter** on the virtual folder note.
+
+`Appendix/Appendix` should now be open. It is the first item of `Appendix`, and it is also that folder's folder note.
 
 ## Go up
 
-From a note inside a subfolder, **Go up to the parent folder** goes to the parent folder's sequence and lands on the subfolder you just left.
+From a note inside a subfolder, **Go up to the parent folder** goes to the parent folder's sequence and lands on the subfolder you just left, which opens its virtual folder note.
 
 ```code-button
 ---
