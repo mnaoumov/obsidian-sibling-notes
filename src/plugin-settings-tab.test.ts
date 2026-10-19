@@ -48,10 +48,14 @@ async function createTab(): Promise<PluginSettingsTab> {
 }
 
 describe('PluginSettingsTab', () => {
-  it('declares the page size row, rendered as a number input', async () => {
+  it('declares the bar toggles and the page size row, rendered as toggles and a number input', async () => {
     const tab = await createTab();
     const definitions = tab.getSettingDefinitions();
-    expect(definitions.map((definition) => 'name' in definition ? definition.name : '')).toStrictEqual(['Page size']);
+    expect(definitions.map((definition) => 'name' in definition ? definition.name : '')).toStrictEqual([
+      'Show the top bar',
+      'Show the bottom bar',
+      'Page size'
+    ]);
 
     const bindSpy = vi.spyOn(tab, 'bind');
     for (const definition of definitions) {
@@ -59,7 +63,7 @@ describe('PluginSettingsTab', () => {
         definition.render(new SettingEx(tab.containerEl), castTo<SettingGroup>(null));
       }
     }
-    expect(bindSpy.mock.calls.map(([params]) => params.propertyName)).toStrictEqual(['pageSize']);
+    expect(bindSpy.mock.calls.map(([params]) => params.propertyName)).toStrictEqual(['showTopBar', 'showBottomBar', 'pageSize']);
     expect(tab.containerEl.querySelector('input[type="number"]')).not.toBeNull();
   });
 });

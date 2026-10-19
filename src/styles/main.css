@@ -7,3 +7,50 @@
 .sibling-notes.obsidian-dev-utils {
   /* Override library styles */
 }
+
+/* The navigator bar, above and below the note. */
+.sibling-notes-navigator-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--size-2-1);
+  margin-block: var(--size-4-2);
+  padding-block: var(--size-2-1);
+  border-block: var(--border-width) solid var(--background-modifier-border);
+  user-select: none;
+}
+
+/*
+ * In the editor the plugin moves the scroll-past-end space from below the last line to below the bottom
+ * bar, through this property.
+ */
+.sibling-notes-navigator-bar[data-placement="bottom"] {
+  margin-bottom: var(--sibling-notes-scroll-past-end, var(--size-4-2));
+}
+
+.sibling-notes-navigator-bar-button {
+  font-family: var(--font-monospace);
+}
+
+.sibling-notes-navigator-bar-button:disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.sibling-notes-navigator-bar-position {
+  min-width: 4em;
+  padding-inline: var(--size-4-2);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+/* Print and PDF export show the note alone. */
+@media print {
+  .sibling-notes-navigator-bar {
+    display: none;
+  }
+}

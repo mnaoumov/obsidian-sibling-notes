@@ -105,6 +105,39 @@ describe('SiblingNavigator', () => {
     expect(fixture.navigator.getCurrentItem()?.path).toBe('d/sub/x.md');
   });
 
+  it('answers the position of the current item, and none without one', async () => {
+    fixture.setActiveFile('d/b.md');
+    expect(fixture.navigator.getPosition()).toStrictEqual({ index: 2, length: 5 });
+    await fixture.navigator.navigate(NavigationAction.Home);
+    expect(fixture.navigator.getPosition()).toStrictEqual({ index: 0, length: 5 });
+    fixture.setActiveFile(null);
+    expect(fixture.navigator.getPosition()).toBeNull();
+  });
+
+  it('starts from a given file and opens in a given leaf, and tells listeners about a landed subfolder', async () => {
+    fixture.setActiveFile('top.md');
+    const listener = vi.fn();
+    const removeListener = fixture.navigator.onCurrentItemChange(listener);
+    const file = fixture.app.vault.getFileByPath('d/a.md');
+    const leafOpenFile: ReturnType<typeof vi.fn> = vi.fn(() => noopAsync());
+    const leaf = castTo<WorkspaceLeaf>({ openFile: leafOpenFile });
+
+    expect(fixture.navigator.getTarget(NavigationAction.Next, file)?.path).toBe('d/b.md');
+    await fixture.navigator.navigate(NavigationAction.Next, { file, leaf });
+    expect(castTo<TAbstractFile>(leafOpenFile.mock.calls[0]?.[0]).path).toBe('d/b.md');
+    expect(fixture.openFile).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
+
+    await fixture.navigator.navigate(NavigationAction.Previous, { file, leaf });
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(fixture.navigator.getCurrentItem(file)?.path).toBe('d/sub');
+    expect(fixture.navigator.getCurrentItem()?.path).toBe('top.md');
+
+    removeListener();
+    await fixture.navigator.navigate(NavigationAction.Next, { file, leaf });
+    expect(listener).toHaveBeenCalledTimes(1);
+  });
+
   it('tells the user where it went when the File explorer is disabled', async () => {
     fixture = createFixture(false);
     fixture.setActiveFile('d/sub/x.md');

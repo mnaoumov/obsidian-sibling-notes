@@ -1,7 +1,8 @@
 import type { PluginNoticeComponent } from '@mnaoumov/obsidian-lib/components/plugin-notice-component';
 import type {
   App,
-  TAbstractFile
+  TAbstractFile,
+  WorkspaceLeaf
 } from 'obsidian';
 
 import { InternalPluginName } from '@obsidian-typings/obsidian-public-latest/implementations';
@@ -16,6 +17,29 @@ import {
   NavigationAction
 } from './navigation-action.ts';
 
+/**
+ * Where a move starts: the file shown, and the leaf a landed file opens in.
+ */
+export interface NavigationOrigin {
+  readonly file: null | TFile;
+  readonly leaf: WorkspaceLeaf;
+}
+
+/**
+ * The current item's place in its folder's sequence.
+ */
+export interface SequencePosition {
+  /**
+   * The zero-based index of the current item.
+   */
+  readonly index: number;
+
+  /**
+   * How many items the sequence has.
+   */
+  readonly length: number;
+}
+
 interface SiblingNavigatorConstructorParams {
   readonly app: App;
   readonly getPageSize: () => number;
@@ -25,14 +49,16 @@ interface SiblingNavigatorConstructorParams {
 /**
  * Moves through the sequence of the current item's folder.
  *
- * The current item is the active file, unless the last move landed on a subfolder and the active file has
- * not changed since: then it is that subfolder, so the next move continues from it.
+ * The current item is the file shown, unless the last move from that file landed on a subfolder: then it
+ * is that subfolder, so the next move continues from it. Without an explicit file, the file shown is the
+ * active file, which is what the commands use.
  */
 export class SiblingNavigator {
   private readonly app: App;
+  private readonly currentItemChangeListeners = new Set<() => void>();
   private readonly getPageSize: () => number;
   private landedFolder: null | TFolder = null;
-  private landedFolderActiveFile: null | TFile = null;
+  private landedFromFile: null | TFile = null;
   private readonly pluginNoticeComponent: PluginNoticeComponent;
 
   public constructor(params: SiblingNavigatorConstructorParams) {
@@ -44,21 +70,40 @@ export class SiblingNavigator {
   /**
    * Returns the item the next move starts from.
    *
+   * @param file - The file shown. Defaults to the active file.
    * @returns The current item, or `null` when there is none.
    */
-  public getCurrentItem(): null | TAbstractFile {
-    const activeFile = this.app.workspace.getActiveFile();
-    return this.landedFolder && activeFile === this.landedFolderActiveFile && this.isInVault(this.landedFolder) ? this.landedFolder : activeFile;
+  public getCurrentItem(file: null | TFile = this.app.workspace.getActiveFile()): null | TAbstractFile {
+    return this.landedFolder && file && file === this.landedFromFile && this.isInVault(this.landedFolder) ? this.landedFolder : file;
+  }
+
+  /**
+   * Returns the current item's place in its folder's sequence, read fresh from the File explorer.
+   *
+   * @param file - The file shown. Defaults to the active file.
+   * @returns The position, or `null` when there is no current item or it is the root folder.
+   */
+  public getPosition(file: null | TFile = this.app.workspace.getActiveFile()): null | SequencePosition {
+    const currentItem = this.getCurrentItem(file);
+    const folder = currentItem?.parent;
+    if (!currentItem || !folder) {
+      return null;
+    }
+
+    const sequence = getFolderSequence(this.app, folder);
+    const index = sequence.indexOf(currentItem);
+    return index === -1 ? null : { index, length: sequence.length };
   }
 
   /**
    * Returns where an action would land, read fresh from the File explorer.
    *
    * @param action - The action.
+   * @param file - The file shown. Defaults to the active file.
    * @returns The target, or `null` when the action is unavailable.
    */
-  public getTarget(action: NavigationAction): null | TAbstractFile {
-    const currentItem = this.getCurrentItem();
+  public getTarget(action: NavigationAction, file: null | TFile = this.app.workspace.getActiveFile()): null | TAbstractFile {
+    const currentItem = this.getCurrentItem(file);
     const folder = currentItem?.parent;
     if (!currentItem || !folder) {
       return null;
@@ -83,18 +128,33 @@ export class SiblingNavigator {
    * Performs an action: opens the file it lands on, or lands on the subfolder.
    *
    * @param action - The action.
+   * @param origin - The file the move starts from and the leaf it opens in. Defaults to the active file
+   * and the active leaf.
    */
-  public async navigate(action: NavigationAction): Promise<void> {
-    const target = this.getTarget(action);
+  public async navigate(action: NavigationAction, origin?: NavigationOrigin): Promise<void> {
+    const file = origin ? origin.file : this.app.workspace.getActiveFile();
+    const target = this.getTarget(action, file);
     if (target instanceof TFile) {
-      this.landedFolder = null;
-      this.landedFolderActiveFile = null;
-      await this.app.workspace.getLeaf(false).openFile(target);
+      this.setLandedFolder(null, null);
+      await (origin?.leaf ?? this.app.workspace.getLeaf(false)).openFile(target);
     } else if (target instanceof TFolder) {
-      this.landedFolderActiveFile = this.app.workspace.getActiveFile();
-      this.landedFolder = target;
+      this.setLandedFolder(target, file);
       this.revealFolder(target);
     }
+  }
+
+  /**
+   * Calls a listener whenever a move changes the current item without opening a file, which is when the
+   * active file alone no longer tells where the navigator is.
+   *
+   * @param listener - The listener.
+   * @returns A function that removes the listener.
+   */
+  public onCurrentItemChange(listener: () => void): () => void {
+    this.currentItemChangeListeners.add(listener);
+    return (): void => {
+      this.currentItemChangeListeners.delete(listener);
+    };
   }
 
   private isInVault(item: TAbstractFile): boolean {
@@ -110,5 +170,16 @@ export class SiblingNavigator {
       return;
     }
     fileExplorer.revealInFolder(folder);
+  }
+
+  private setLandedFolder(folder: null | TFolder, fromFile: null | TFile): void {
+    if (this.landedFolder === folder && this.landedFromFile === fromFile) {
+      return;
+    }
+    this.landedFolder = folder;
+    this.landedFromFile = fromFile;
+    for (const listener of this.currentItemChangeListeners) {
+      listener();
+    }
   }
 }

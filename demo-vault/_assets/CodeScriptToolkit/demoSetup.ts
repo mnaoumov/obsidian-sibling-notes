@@ -44,6 +44,18 @@ export async function runNavigationCommand(app: App, commandId: string): Promise
 }
 
 /**
+ * Shows or hides one of the navigator bars, through its `showTopBar` or `showBottomBar` setting. The change
+ * applies live, like {@link setPageSize}.
+ *
+ * Manual equivalent: the **Show the top bar** or **Show the bottom bar** toggle in
+ * **Settings -> Community plugins -> Sibling Notes**.
+ */
+export async function setBarVisibility(app: App, key: 'showBottomBar' | 'showTopBar', isShown: boolean): Promise<void> {
+  await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { [key]: isShown } });
+  new Notice(`${key} is now ${String(isShown)}. It is live -- no reload needed.`);
+}
+
+/**
  * Sets the plugin's `pageSize`.
  *
  * `configureCommunityPlugin` routes through the plugin's own settings component while it is loaded, so the

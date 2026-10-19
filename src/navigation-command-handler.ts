@@ -6,9 +6,28 @@ import type { SiblingNavigator } from './sibling-navigator.ts';
 
 import { NavigationAction } from './navigation-action.ts';
 
-interface NavigationCommandDefinition {
+/**
+ * How an action is presented: as a command, and as a navigator bar button.
+ */
+export interface NavigationActionDefinition {
+  /**
+   * The icon of the command and the button.
+   */
   readonly icon: IconName;
+
+  /**
+   * The command id, without the plugin id.
+   */
   readonly id: string;
+
+  /**
+   * The button's tooltip.
+   */
+  readonly label: string;
+
+  /**
+   * The command name.
+   */
   readonly name: string;
 }
 
@@ -17,14 +36,17 @@ interface NavigationCommandHandlerConstructorParams {
   readonly siblingNavigator: SiblingNavigator;
 }
 
-const NAVIGATION_COMMAND_DEFINITIONS: Record<NavigationAction, NavigationCommandDefinition> = {
-  [NavigationAction.End]: { icon: 'chevron-last', id: 'go-to-last', name: 'Go to the last item in the folder' },
-  [NavigationAction.Home]: { icon: 'chevron-first', id: 'go-to-first', name: 'Go to the first item in the folder' },
-  [NavigationAction.Next]: { icon: 'chevron-right', id: 'go-to-next', name: 'Go to the next item in the folder' },
-  [NavigationAction.PageDown]: { icon: 'chevrons-right', id: 'go-page-down', name: 'Go a page down in the folder' },
-  [NavigationAction.PageUp]: { icon: 'chevrons-left', id: 'go-page-up', name: 'Go a page up in the folder' },
-  [NavigationAction.Previous]: { icon: 'chevron-left', id: 'go-to-previous', name: 'Go to the previous item in the folder' },
-  [NavigationAction.Up]: { icon: 'corner-left-up', id: 'go-up', name: 'Go up to the parent folder' }
+/**
+ * How each action is presented.
+ */
+export const NAVIGATION_ACTION_DEFINITIONS: Readonly<Record<NavigationAction, NavigationActionDefinition>> = {
+  [NavigationAction.End]: { icon: 'chevron-last', id: 'go-to-last', label: 'Last item', name: 'Go to the last item in the folder' },
+  [NavigationAction.Home]: { icon: 'chevron-first', id: 'go-to-first', label: 'First item', name: 'Go to the first item in the folder' },
+  [NavigationAction.Next]: { icon: 'chevron-right', id: 'go-to-next', label: 'Next item', name: 'Go to the next item in the folder' },
+  [NavigationAction.PageDown]: { icon: 'chevrons-right', id: 'go-page-down', label: 'A page down', name: 'Go a page down in the folder' },
+  [NavigationAction.PageUp]: { icon: 'chevrons-left', id: 'go-page-up', label: 'A page up', name: 'Go a page up in the folder' },
+  [NavigationAction.Previous]: { icon: 'chevron-left', id: 'go-to-previous', label: 'Previous item', name: 'Go to the previous item in the folder' },
+  [NavigationAction.Up]: { icon: 'corner-left-up', id: 'go-up', label: 'Up to the parent folder', name: 'Go up to the parent folder' }
 };
 
 /**
@@ -36,7 +58,8 @@ export class NavigationCommandHandler extends GlobalCommandHandler {
   private readonly siblingNavigator: SiblingNavigator;
 
   public constructor(params: NavigationCommandHandlerConstructorParams) {
-    super(NAVIGATION_COMMAND_DEFINITIONS[params.action]);
+    const { icon, id, name } = NAVIGATION_ACTION_DEFINITIONS[params.action];
+    super({ icon, id, name });
     this.action = params.action;
     this.siblingNavigator = params.siblingNavigator;
   }
