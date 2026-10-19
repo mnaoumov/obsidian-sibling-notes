@@ -51,6 +51,11 @@ describe('getNavigationTargetIndex', () => {
     expect(getTarget(NavigationAction.PageDown, 5, 2.7)).toBe(7);
   });
 
+  it('treats a page size that is not a number as one', () => {
+    expect(getTarget(NavigationAction.PageDown, 5, NaN)).toBe(6);
+    expect(getTarget(NavigationAction.PageUp, 5, NaN)).toBe(4);
+  });
+
   it('has no target when the current item is not in the sequence', () => {
     expect(getTarget(NavigationAction.Next, -1)).toBeUndefined();
     expect(getNavigationTargetIndex({ action: NavigationAction.Home, currentIndex: 0, length: 0, pageSize: PAGE_SIZE })).toBeUndefined();
