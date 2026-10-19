@@ -49,7 +49,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.3",
-    "@mnaoumov/obsidian-dev-toolkit": "^3.4.1",
+    "@mnaoumov/obsidian-dev-toolkit": "^3.7.0",
     "@mnaoumov/obsidian-lib": "^4.3.0",
     "@mnaoumov/typescript-dev-toolkit": "^3.7.2",
     "@mnaoumov/typescript-lib": "^1.5.0",
