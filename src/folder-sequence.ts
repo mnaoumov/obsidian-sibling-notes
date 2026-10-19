@@ -15,6 +15,17 @@ import { TFolder } from 'obsidian';
 const NAME_COLLATOR = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
 /**
+ * Returns the File explorer's view, when it is enabled and loaded.
+ *
+ * @param app - The Obsidian app.
+ * @returns The view, or `null` when the File explorer is disabled or its view is still deferred.
+ */
+export function getFileExplorerView(app: App): FileExplorerView | null {
+  const view = app.workspace.getLeavesOfType(ViewType.FileExplorer)[0]?.view;
+  return view && isFileExplorerView(view) ? view : null;
+}
+
+/**
  * Returns a folder's own items, subfolders included, in the order the File explorer shows them.
  *
  * The order is read from the explorer on every call rather than cached, so a change of sort order and a
@@ -46,11 +57,6 @@ export function sortByName(items: readonly TAbstractFile[]): TAbstractFile[] {
     }
     return NAME_COLLATOR.compare(a.name, b.name);
   });
-}
-
-function getFileExplorerView(app: App): FileExplorerView | null {
-  const view = app.workspace.getLeavesOfType(ViewType.FileExplorer)[0]?.view;
-  return view && isFileExplorerView(view) ? view : null;
 }
 
 /**

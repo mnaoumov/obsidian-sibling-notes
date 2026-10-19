@@ -6,6 +6,10 @@ Find them in Obsidian under **Settings → Community plugins → `Sibling Notes`
 
 ## General
 
+- `showTopBar`
+  - `true` or `false`, `true` by default, shown in the settings tab as **Show the top bar**. Whether the navigator bar shows above the note, after the inline title and the properties. See [03 Navigator bar](<./03 Navigator bar.md>).
+- `showBottomBar`
+  - `true` or `false`, `true` by default, shown in the settings tab as **Show the bottom bar**. Whether the navigator bar shows below the note, before the embedded backlinks.
 - `pageSize`
   - a whole number, 10 by default, shown in the settings tab as **Page size**. How many items **Go a page up in the folder** and **Go a page down in the folder** move. They stop at the first and the last item.
 

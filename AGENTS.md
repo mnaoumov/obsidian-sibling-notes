@@ -16,7 +16,9 @@ What core 1.14.4 and other plugins already do, so the plugin does not rebuild it
 
 The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-in-one`, CSS, desktop and mobile, the unofficial API subset, no editor extensions). Its answers are in `.create-obsidian-plugin.json`, so re-running the generator in this folder updates every file not edited by hand.
 
-**Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting) and Up. Until the virtual folder note view exists, landing on a subfolder reveals it in the File explorer, and the navigator remembers it as the current item while the active file stays the same, so the next step continues from it. The demo vault covers these commands. The navigator bar, the virtual folder note and the map are not built yet. The coverage thresholds are still 0.
+**Built: the folder sequence and its commands.** `src/folder-sequence.ts` reads the order, `src/navigation-action.ts` answers where each step lands, and `src/sibling-navigator.ts` performs it. Each command is a `NavigationCommandHandler`: Previous, Next, Home, End, Page up, Page down (the `pageSize` setting) and Up. Until the virtual folder note view exists, landing on a subfolder reveals it in the File explorer, and the navigator remembers it as the current item while the active file stays the same, so the next step continues from it. The demo vault covers these commands.
+
+**Built: the navigator bar.** `src/navigator-bar.ts` is one bar's DOM, and `src/navigator-bar-component.ts` puts a top and a bottom bar into every open `MarkdownView` and keeps them current. Each bar reads its own view's file, not the active file. The Map button is a disabled placeholder until the map exists. The settings `showTopBar` and `showBottomBar` hide either bar. The virtual folder note and the map are not built yet. The coverage thresholds are still 0.
 
 **The public repo `mnaoumov/obsidian-sibling-notes` exists (created 2026-10-18), and `main` is pushed to it. Nothing is released yet.** The plugin id `sibling-notes` was free in the community directory on 2026-10-17. An id can never change once it is published, so check it again right before the first submission.
 
@@ -50,11 +52,11 @@ This is the model the owner approved. Refine it as the build goes.
 Checked against the `obsidian-typings` branch `release/obsidian-public/1.14.4`. Verify every member against a live build before relying on it.
 
 - **Order:** `FileExplorerView.getSortedFolderItems(folder)`, with `sortOrder` and `requestSort` beside it. Checked live on 1.14.4: it returns the subfolders too, folders first in every sort order, although the typings declare file items only. Name order compares case-insensitively and numerically, so `b 9` comes before `b 10`. Disabling the File explorer removes its leaves at once. The custom-sort plugins (`Custom File Explorer sorting`, `Flexplorer`) patch this exact method, so it returns what the user sees. Recompute it on every use. Fall back to name order when the File explorer is disabled or its view is not loaded. `AppVaultConfig.fileSortOrder` is too loosely typed to rely on.
-- **Where the bars go:**
-  - In a `MarkdownView`, `inlineTitleEl` for the top and `backlinksEl` for the bottom.
-  - In Live Preview, `MarkdownScrollableEditView.sizerEl`. A bottom bar must trigger the re-measure in `updateBottomPadding`.
-  - In Reading view, the `MarkdownPreviewRenderer` header and footer, and its `onRendered`.
-  - Check the CSS class names against a live build.
+- **Where the bars go**, checked live on 1.14.4 desktop and Android:
+  - A `MarkdownView` owns one `inlineTitleEl`, one `metadataEditor.containerEl` and one `backlinksEl`, and moves them on every mode switch. `editMode.show()` prepends the title and properties to `editMode.sizerEl` (`.cm-sizer`) and appends the backlinks. `previewMode.show()` appends the title and properties to `renderer.header.el` (`.mod-header`) and the backlinks to `renderer.footer.el` (`.mod-footer`). So the bars are re-placed after `MarkdownView.setMode`, which the component patches.
+  - In the editor the bars go right before and after `.cm-contentContainer` (`cm.contentDOM.parentElement`). `updateBottomPadding` puts the scroll-past-end space on `cm.contentDOM`'s bottom padding, above anything after the content, so the component patches it on the edit view's prototype and moves that space below the bottom bar through `--sibling-notes-scroll-past-end`.
+  - In Reading view the top bar is appended to the header and the bottom bar prepended to the footer, then `renderer.updateHeader()` / `updateFooter()` re-measure the section. Those four renderer members are not in `obsidian-typings` yet, so a local interface marked `// TODO` narrows the renderer until they are.
+  - `FileExplorerView.sort()` runs after every sort-order change and every `requestSort`, so the component patches it to refresh the bars.
 - Anything missing from `obsidian-typings` is added there, never declared locally.
 
 ## Conventions
