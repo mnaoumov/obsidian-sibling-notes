@@ -78,4 +78,28 @@ Manual equivalent: open `Notes` in `Appendix`, then run **`Sibling Notes`: Go up
 
 ## Your own sort order
 
-The steps follow whatever order the File explorer shows, so change its sort order and they change with it. A plugin that sorts the File explorer its own way is followed too. When the File explorer is turned off, the steps fall back to name order.
+The steps follow whatever order the File explorer shows, so change its sort order and they change with it. Sort the File explorer from Z to A, then step from `Chapter 2`:
+
+```code-button
+---
+caption: Sort from Z to A, open Chapter 2, then go to the next item
+---
+await require('/demoSetup.ts').setFileExplorerSortOrder(app, 'alphabeticalReverse');
+await require('/demoSetup.ts').openMaterial(app, 'Chapter 2.md');
+await require('/demoSetup.ts').runNavigationCommand(app, 'go-to-next');
+```
+
+Manual equivalent: click the sort button at the top of the File explorer, pick **File name (Z to A)**, open `Chapter 2` and run **`Sibling Notes`: Go to the next item in the folder**.
+
+`Chapter 1` should now be open, because it comes after `Chapter 2` in Z to A order. The subfolder `Appendix` stays first: the File explorer keeps folders on top in every sort order, and so does the plugin. Put the order back:
+
+```code-button
+---
+caption: Sort from A to Z again
+---
+await require('/demoSetup.ts').setFileExplorerSortOrder(app, 'alphabetical');
+```
+
+Manual equivalent: pick **File name (A to Z)** from the same sort button.
+
+A plugin that sorts the File explorer its own way, such as `Custom File Explorer sorting`, is followed too, because the plugin asks the File explorer for its order rather than sorting by itself. When the File explorer is turned off, the steps fall back to name order.
