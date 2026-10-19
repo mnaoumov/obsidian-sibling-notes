@@ -52,7 +52,7 @@ Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 
 ## Installation
 
-The plugin is not yet listed in [the official Community Plugins repository](https://community.obsidian.md/plugins). Until it is, install it as a beta release.
+The plugin is available in [the official Community Plugins repository](https://community.obsidian.md/plugins/sibling-notes).
 
 ### Beta versions
 
@@ -73,6 +73,10 @@ window.DEBUG.enable('sibling-notes');
 ```
 
 For more details, refer to the [documentation](https://mnaoumov.dev/obsidian-lib/guides/debugging/).
+
+## Changelog
+
+All notable changes to this project will be documented in the [CHANGELOG](./CHANGELOG.md).
 
 ## Contributing
 
