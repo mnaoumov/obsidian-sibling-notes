@@ -1,3 +1,4 @@
+import type { FileExplorerView } from '@obsidian-typings/obsidian-public-latest';
 import type { App } from 'obsidian';
 
 import { configureCommunityPlugin } from '@mnaoumov/obsidian-lib/community-plugins';
@@ -48,12 +49,37 @@ export async function openMaterial(app: App, relativePath: string): Promise<void
  * Manual equivalent: go to the folder with the plugin's commands, or click it on another virtual folder note.
  */
 export async function openMaterialFolder(app: App, relativePath: string): Promise<void> {
-  const path = relativePath ? `${MATERIALS_FOLDER_PATH}/${relativePath}` : MATERIALS_FOLDER_PATH;
+  await openFolder(app, relativePath ? `${MATERIALS_FOLDER_PATH}/${relativePath}` : MATERIALS_FOLDER_PATH);
+}
+
+/**
+ * Opens the virtual folder note of any folder in this vault, by its path from the vault root.
+ *
+ * Manual equivalent: go to the folder with the plugin's commands, or click it on another virtual folder note.
+ */
+export async function openFolder(app: App, path: string): Promise<void> {
   if (!app.vault.getFolderByPath(path)) {
     new Notice(`The demo folder ${path} is missing.`);
     return;
   }
   await app.workspace.getLeaf(false).setViewState({ active: true, state: { folderPath: path }, type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE });
+}
+
+/**
+ * Changes the File explorer's sort order, such as `alphabeticalReverse`, the same as picking one from its
+ * sort button. The plugin's steps, bars and maps follow it at once.
+ *
+ * Manual equivalent: click the sort button at the top of the File explorer and pick an order.
+ */
+export async function setFileExplorerSortOrder(app: App, sortOrder: string): Promise<void> {
+  const leaf = app.workspace.getLeavesOfType('file-explorer')[0];
+  if (!leaf) {
+    new Notice('The File explorer is turned off, so there is no sort order to change.');
+    return;
+  }
+  await leaf.loadIfDeferred();
+  (leaf.view as FileExplorerView).setSortOrder(sortOrder);
+  new Notice(`The File explorer now sorts by ${sortOrder}.`);
 }
 
 /**

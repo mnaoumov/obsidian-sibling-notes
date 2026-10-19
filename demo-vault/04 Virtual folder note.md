@@ -48,7 +48,41 @@ Folder notes are a convention, not an Obsidian feature, so the plugin looks for 
 - **Note inside the folder** uses a note inside the folder and named after it: `Appendix/Appendix.md`.
 - **Note beside the folder** uses a note beside the folder and named after it: `Appendix.md` next to `Appendix/`.
 
-The first one that finds a note wins, in that order. Turn off the inside convention, and `Appendix` has no folder note anymore:
+The first one that finds a note wins, in that order. `Appendix` uses the inside convention. The folder [Projects](<./Materials/04 Virtual folder note/Projects.md>) in `Materials/04 Virtual folder note/` uses the beside one: its folder note `Projects.md` sits next to it.
+
+```code-button
+---
+caption: Open the virtual folder note of Projects
+---
+await require('/demoSetup.ts').openFolder(app, 'Materials/04 Virtual folder note/Projects');
+```
+
+Manual equivalent: open `Projects.md` in `Materials/04 Virtual folder note/` and run **`Sibling Notes`: Go to the first item in the folder**, which lands on the folder `Projects`.
+
+The view lists [Garden](<./Materials/04 Virtual folder note/Projects/Garden.md>) and [Kitchen](<./Materials/04 Virtual folder note/Projects/Kitchen.md>), and below them shows `Projects.md`. Turn off the beside convention, and `Projects` has no folder note anymore:
+
+```code-button
+---
+caption: Stop using a note beside the folder
+---
+await require('/demoSetup.ts').setFolderNoteConvention(app, 'shouldUseFolderNoteBeside', false);
+await require('/demoSetup.ts').openFolder(app, 'Materials/04 Virtual folder note/Projects');
+```
+
+Manual equivalent: turn off **Note beside the folder** under **Folder notes** in **Settings → Community plugins → `Sibling Notes`**.
+
+Put it back:
+
+```code-button
+---
+caption: Use a note beside the folder again
+---
+await require('/demoSetup.ts').setFolderNoteConvention(app, 'shouldUseFolderNoteBeside', true);
+```
+
+Manual equivalent: turn **Note beside the folder** back on.
+
+The inside convention works the same way. Turn it off, and `Appendix` has no folder note anymore:
 
 ```code-button
 ---

@@ -39,7 +39,7 @@ export function getNavigationTargetIndex(params: GetNavigationTargetIndexParams)
     return undefined;
   }
 
-  const pageSize = Math.max(1, Math.floor(params.pageSize));
+  const pageSize = Number.isNaN(params.pageSize) ? 1 : Math.max(1, Math.floor(params.pageSize));
   const lastIndex = length - 1;
   const targetIndex = getUnclampedTargetIndex(action, currentIndex, lastIndex, pageSize);
   const clampedTargetIndex = Math.min(lastIndex, Math.max(0, targetIndex));

@@ -18,11 +18,12 @@ import {
   vi
 } from 'vitest';
 
-import type { VirtualFolderNoteView } from './virtual-folder-note-view.ts';
-
 import { NavigationAction } from './navigation-action.ts';
 import { SiblingNavigator } from './sibling-navigator.ts';
-import { VIRTUAL_FOLDER_NOTE_VIEW_TYPE } from './virtual-folder-note-view.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from './virtual-folder-note-view.ts';
 
 interface Fixture {
   readonly app: AppOriginal;
@@ -159,6 +160,42 @@ describe('SiblingNavigator', () => {
     expect(fixture.navigator.getLeafItem(castTo<WorkspaceLeaf>({ view: fileView }))).toBe(file);
     expect(fixture.navigator.getLeafItem(castTo<WorkspaceLeaf>({ view: {} }))).toBeNull();
     expect(fixture.navigator.getLeafItem(null)).toBeNull();
+  });
+
+  it('reads the folder a virtual folder note in a leaf stands for', () => {
+    const folder = fixture.app.vault.getFolderByPath('d/sub');
+    const view = castTo<VirtualFolderNoteView>(Object.create(VirtualFolderNoteView.prototype));
+    Object.defineProperty(view, 'folder', { value: folder });
+    expect(fixture.navigator.getLeafItem(castTo<WorkspaceLeaf>({ view }))).toBe(folder);
+  });
+
+  it('has no target but Enter from the root folder, which is in no folder\'s sequence', () => {
+    const root = fixture.app.vault.getRoot();
+    for (const action of [NavigationAction.Previous, NavigationAction.Next, NavigationAction.Home, NavigationAction.End, NavigationAction.Up]) {
+      expect(fixture.navigator.getTarget(action, root)).toBeNull();
+    }
+    expect(fixture.navigator.getTarget(NavigationAction.Enter, root)?.path).toBe('d');
+    expect(fixture.navigator.getPosition(root)).toBeNull();
+  });
+
+  it('gives no position to an item the File explorer hides', () => {
+    const hiddenPath = 'd/b.md';
+    vi.mocked(fixture.app.workspace.getLeavesOfType).mockReturnValue([
+      castTo<WorkspaceLeaf>({
+        view: {
+          getSortedFolderItems: (folder: TFolderOriginal) => folder.children.filter((item) => item.path !== hiddenPath).map((file) => ({ file }))
+        }
+      })
+    ]);
+    expect(fixture.navigator.getPosition(fixture.app.vault.getFileByPath(hiddenPath))).toBeNull();
+    expect(fixture.navigator.getPosition(fixture.app.vault.getFileByPath('d/c.md'))).toStrictEqual({ index: 2, length: 4 });
+  });
+
+  it('opens nothing for an item that is neither a file nor a folder', async () => {
+    const leaf = fixture.app.workspace.getLeaf(false);
+    await fixture.navigator.open(castTo<TAbstractFile>({ path: 'other' }), leaf);
+    expect(fixture.openFile).not.toHaveBeenCalled();
+    expect(fixture.setViewState).not.toHaveBeenCalled();
   });
 });
 

@@ -13,6 +13,8 @@ await require('/demoSetup.ts').openMaterial(app, 'Chapter 2.md');
 
 Manual equivalent: click `Chapter 2` in the File explorer, inside `Materials/01 Folder navigation/`.
 
+The top bar sits right under the title. `Chapter 2` is long enough to scroll on most screens, so scroll to its end for the bottom bar: it carries the same buttons, so you can step on without scrolling back up.
+
 ## What the buttons do
 
 From left to right:

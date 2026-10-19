@@ -75,7 +75,7 @@ describe('findFolderNote', () => {
     expect(find(insideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
   });
 
-  it('follows Waypoint\'s custom file name and outside location', () => {
+  it('follows Waypoint\'s custom file name, outside and inside locations', () => {
     const app = createApp(['p/d/index.md']);
     registerPlugin(app, 'waypoint', { folderNoteFilename: 'index', folderNoteType: 'CUSTOM_FILENAME' });
     expect(find(app)).toBe('p/d/index.md');
@@ -83,6 +83,10 @@ describe('findFolderNote', () => {
     const outsideApp = createApp(['p/d.md']);
     registerPlugin(outsideApp, 'waypoint', { folderNoteType: 'OUTSIDE_FOLDER' });
     expect(find(outsideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteBeside: false })).toBe('p/d.md');
+
+    const insideApp = createApp(['p/d/d.md']);
+    registerPlugin(insideApp, 'waypoint', { folderNoteType: 'INSIDE_FOLDER' });
+    expect(find(insideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
   });
 
   it('follows Folder Index\'s user-specified index file name', () => {

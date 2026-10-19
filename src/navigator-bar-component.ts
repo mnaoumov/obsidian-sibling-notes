@@ -131,8 +131,8 @@ export class NavigatorBarComponent extends Component {
   }
 
   public override onunload(): void {
-    for (const view of this.bars.keys()) {
-      this.removeBars(view);
+    for (const [view, viewBars] of this.bars) {
+      this.removeBars(view, viewBars);
     }
   }
 
@@ -148,9 +148,9 @@ export class NavigatorBarComponent extends Component {
       }
     }
 
-    for (const view of this.bars.keys()) {
+    for (const [view, viewBars] of this.bars) {
       if (!views.has(view)) {
-        this.removeBars(view);
+        this.removeBars(view, viewBars);
       }
     }
 
@@ -158,9 +158,9 @@ export class NavigatorBarComponent extends Component {
 
     for (const view of views) {
       this.patchEditView(view.editMode);
-      this.getOrCreateBars(view);
+      const viewBars = this.getOrCreateBars(view);
       this.placeBars(view);
-      this.updateBars(view);
+      this.updateBars(view, viewBars);
     }
 
     for (const leaf of this.app.workspace.getLeavesOfType(VIRTUAL_FOLDER_NOTE_VIEW_TYPE)) {
@@ -326,11 +326,7 @@ export class NavigatorBarComponent extends Component {
     return true;
   }
 
-  private removeBars(view: MarkdownView): void {
-    const viewBars = this.bars.get(view);
-    if (!viewBars) {
-      return;
-    }
+  private removeBars(view: MarkdownView, viewBars: ViewBars): void {
     this.bars.delete(view);
     const wasInEditor = viewBars.top.el.parentElement === view.editMode.sizerEl || viewBars.bottom.el.parentElement === view.editMode.sizerEl;
     viewBars.top.el.detach();
@@ -344,11 +340,7 @@ export class NavigatorBarComponent extends Component {
     }
   }
 
-  private updateBars(view: MarkdownView): void {
-    const viewBars = this.bars.get(view);
-    if (!viewBars) {
-      return;
-    }
+  private updateBars(view: MarkdownView, viewBars: ViewBars): void {
     const { file } = view;
     const state = {
       isAvailable: (action: NavigationAction): boolean => this.siblingNavigator.getTarget(action, file) !== null,
