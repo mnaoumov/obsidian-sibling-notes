@@ -13,6 +13,15 @@ Find them in Obsidian under **Settings → Community plugins → `Sibling Notes`
 - `pageSize`
   - a whole number, 10 by default, shown in the settings tab as **Page size**. How many items **Go a page up in the folder** and **Go a page down in the folder** move. They stop at the first and the last item.
 
+## Scrolling past the edge
+
+Opening the next or previous item by scrolling past a note's edge. See [06 Scroll past the edge](<./06 Scroll past the edge.md>).
+
+- `overscrollEdges`
+  - `"none"`, `"bottom"` or `"both"`, `"none"` by default, shown in the settings tab as **Open by scrolling past the edge** with the choices **Off**, **Bottom edge only: next** and **Both edges: previous and next**. Which edges open an item when scrolled past.
+- `overscrollDistancePercent`
+  - a number from 1 to 100, 33 by default, shown in the settings tab as **Pull distance**. How far to keep scrolling past the edge before the item opens, as a percentage of the height of the note on screen.
+
 ## Folder notes
 
 Which note a virtual folder note shows as the folder's note. See [04 Virtual folder note](<./04 Virtual folder note.md>).

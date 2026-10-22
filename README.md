@@ -47,6 +47,7 @@ A copy of the vault ships with every release. You can access it via any of the f
 - **A navigator bar above and below every note**, in Live Preview, Source mode and Reading view, with the position such as `3 / 12` and each step a button. Either bar can be hidden. [03 Navigator bar](<./demo-vault/03 Navigator bar.md>)
 - **A virtual folder note for every subfolder**: a view, not a file, that lists what the folder holds and shows its folder note. The folder note is found the way your folder-notes plugin is set up, or as a note inside or beside the folder. [04 Virtual folder note](<./demo-vault/04 Virtual folder note.md>)
 - **A folder map** that lists the whole folder, marks the note you are on and where each button of the bar would take you, and can be pinned to the side panel. A popover on desktop and a sheet on mobile. [05 Folder map](<./demo-vault/05 Folder map.md>)
+- **Scroll past the edge** to open the next item, or past the top to open the previous one, if you turn it on. A labelled strip shows how far to go and what opens, a fling that reaches the end never carries you on, and pausing or scrolling back cancels. On a touch screen it is a pull, released to open. [06 Scroll past the edge](<./demo-vault/06 Scroll past the edge.md>)
 
 Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 

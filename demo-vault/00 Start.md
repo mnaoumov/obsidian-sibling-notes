@@ -29,6 +29,7 @@ Every button in this vault also states its **manual equivalent**, so you learn t
 | [03 Navigator bar](<./03 Navigator bar.md>) | The bar above and below every note: its buttons, the position, and hiding it. |
 | [04 Virtual folder note](<./04 Virtual folder note.md>) | What a subfolder is in the sequence: its items, Enter, and its folder note. |
 | [05 Folder map](<./05 Folder map.md>) | The whole folder at a glance: where each button goes, and pinning it to the side panel. |
+| [06 Scroll past the edge](<./06 Scroll past the edge.md>) | Keep scrolling past the end of a note to open the next one, guarded by a labelled pull. |
 
 ## Materials
 

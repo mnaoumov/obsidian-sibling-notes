@@ -50,6 +50,7 @@
     "offref",
     "onload",
     "onunload",
+    "overscroll",
     "postcss",
     "preact",
     "rescanning",
