@@ -20,7 +20,7 @@ On desktop the map opens as a popover under the button. On mobile it rises from 
 
 - **Breadcrumbs** at the top: the vault, then each folder down to this one, `Materials / 01 Folder navigation`. Click a folder to open its [virtual folder note](<./04 Virtual folder note.md>).
 - **The folder's items**, subfolders first, in the order the File explorer shows them. The note you are on is highlighted.
-- **Each button's target.** An item that a button of the bar would reach carries that button's icon: the previous-item chevron on `Chapter 1`, the next-item chevron on `Chapter 3`. `..` sits on the folder's own breadcrumb, because that is where going up lands.
+- **Each button's target.** An item that a button of the bar would reach carries that button's icon: the previous-item chevron on `Chapter 1`, the next-item chevron on `Chapter 3`. The up button's folder icon sits on the folder's own breadcrumb, because that is where going up lands.
 - **Hovering a button** of the bar outlines its target in the map, so you can see where a click would take you before you click.
 
 ## Go somewhere

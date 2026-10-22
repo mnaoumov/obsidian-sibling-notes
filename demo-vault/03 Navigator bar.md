@@ -19,7 +19,7 @@ The top bar sits right above the title. `Chapter 2` is long enough to scroll on 
 
 From left to right:
 
-- `..` goes up to the parent folder and lands on the folder you just left, like **Go up to the parent folder**.
+- The folder with an up arrow goes up to the parent folder and lands on the folder you just left, like **Go up to the parent folder**.
 - The first-item and last-item buttons jump to either end of the folder.
 - The double chevrons move a page up or down: as many items as the **Page size** setting, stopping at the ends.
 - The single chevrons step to the previous or next item.

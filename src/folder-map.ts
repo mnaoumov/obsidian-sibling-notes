@@ -81,7 +81,6 @@ const TARGETED_CLASS = 'is-targeted';
 
 const FOLDER_ICON = 'folder';
 const FILE_ICON = 'file';
-const UP_TARGET_TEXT = '..';
 const BREADCRUMB_SEPARATOR = '/';
 
 /**
@@ -91,8 +90,8 @@ const MIDDLE_BUTTON = 1;
 
 /**
  * The folder map: a folder's items in File explorer order under breadcrumbs, with the current item
- * highlighted and each navigator bar button's icon on the item it would reach. `..` sits on the folder's
- * own breadcrumb, which is where Up lands.
+ * highlighted and each navigator bar button's icon on the item it would reach. Up's icon sits on the
+ * folder's own breadcrumb, which is where Up lands.
  *
  * It owns only its element. Where the element goes, and when it is updated, is the caller's business.
  */
@@ -244,11 +243,7 @@ function renderTargets(el: HTMLElement, actions: readonly NavigationAction[] | u
   for (const action of actions) {
     const definition = NAVIGATION_ACTION_DEFINITIONS[action];
     const targetEl = targetsEl.createSpan({ attr: { 'data-action': action }, cls: FolderMapCssClass.Target });
-    if (action === NavigationAction.Up) {
-      targetEl.setText(UP_TARGET_TEXT);
-    } else {
-      setIcon(targetEl, definition.icon);
-    }
+    setIcon(targetEl, definition.icon);
     setTooltip(targetEl, definition.label);
   }
 }

@@ -4,6 +4,7 @@ import type {
 } from 'obsidian';
 
 import { castTo } from '@mnaoumov/typescript-lib/object-utils';
+import { addIcon } from 'obsidian';
 import { App } from 'obsidian-test-mocks/obsidian';
 import {
   describe,
@@ -95,7 +96,8 @@ describe('FolderMap', () => {
     expect(Array.from(map.el.querySelectorAll<HTMLElement>('.sibling-notes-folder-map-item.is-active'), (el) => el.dataset['path'])).toStrictEqual(['a/b/y.md']);
   });
 
-  it('puts each button\'s icon on the item it reaches, and `..` on the folder\'s own breadcrumb', () => {
+  it('puts each button\'s icon on the item it reaches, and Up\'s on the folder\'s own breadcrumb', () => {
+    addIcon('folder-up', '<path d="M0 0"/>');
     const { map, state } = createFixture();
     map.update(state);
     expect(getTargetActions(getByPath(map, '.sibling-notes-folder-map-item', 'a/b/sub'))).toStrictEqual(['home']);
@@ -104,7 +106,7 @@ describe('FolderMap', () => {
     expect(getTargetActions(getByPath(map, '.sibling-notes-folder-map-item', 'a/b/z.png'))).toStrictEqual(['next', 'end']);
     const upTarget = getByPath(map, '.sibling-notes-folder-map-breadcrumb', 'a/b');
     expect(getTargetActions(upTarget)).toStrictEqual(['up']);
-    expect(upTarget.querySelector('.sibling-notes-folder-map-target')?.textContent).toBe('..');
+    expect(upTarget.querySelector(':scope .sibling-notes-folder-map-target svg')?.classList.contains('folder-up')).toBe(true);
   });
 
   it('highlights a hovered button\'s target, across updates, and clears it', () => {

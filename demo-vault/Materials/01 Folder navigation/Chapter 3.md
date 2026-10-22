@@ -8,4 +8,4 @@ Below the weir the river widens into a pool. Children swim here in summer, and a
 
 The path follows the pool round to a gate, and beyond the gate is the lane that leads back into the village. The first houses have gardens that run down to the water, with boats pulled up on the grass and tables set out under the trees.
 
-That is the end of the walk. The bottom bar below this paragraph has nowhere further to go, but its `..` button goes up to the folder that holds the chapters, and its first-item button goes back to the start.
+That is the end of the walk. The bottom bar below this paragraph has nowhere further to go, but its up button goes up to the folder that holds the chapters, and its first-item button goes back to the start.
