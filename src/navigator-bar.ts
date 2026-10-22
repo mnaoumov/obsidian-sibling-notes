@@ -85,10 +85,8 @@ export enum NavigatorBarCssClass {
   Position = 'sibling-notes-navigator-bar-position'
 }
 
-const UP_BUTTON_TEXT = '..';
-
 /**
- * One navigator bar: `..`, Home, Page up, Previous, the position, Next, Page down, End and Map.
+ * One navigator bar: Up, Home, Page up, Previous, the position, Next, Page down, End and Map.
  *
  * It owns only its element. Where the element goes, and when it is updated, is the caller's business.
  */
@@ -140,11 +138,7 @@ export class NavigatorBar {
     const definition = NAVIGATION_ACTION_DEFINITIONS[action];
     const button = this.createButton(definition.label);
     button.dataset['action'] = action;
-    if (action === NavigationAction.Up) {
-      button.setText(UP_BUTTON_TEXT);
-    } else {
-      setIcon(button, definition.icon);
-    }
+    setIcon(button, definition.icon);
     button.addEventListener('click', (clickEvent) => {
       clickEvent.preventDefault();
       if (!button.disabled) {

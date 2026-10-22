@@ -1,3 +1,4 @@
+import { addIcon } from 'obsidian';
 import {
   describe,
   expect,
@@ -39,6 +40,7 @@ function getButtons(bar: NavigatorBar): HTMLButtonElement[] {
 
 describe('NavigatorBar', () => {
   it('lays out its buttons around the position, and marks its placement', () => {
+    addIcon('folder-up', '<path d="M0 0"/>');
     const { bar } = createBar(NavigatorBarPlacement.Bottom);
     expect(bar.el.dataset['placement']).toBe('bottom');
     expect(getButtons(bar).map((button) => button.dataset['action'])).toStrictEqual([
@@ -51,7 +53,7 @@ describe('NavigatorBar', () => {
       'end',
       'map'
     ]);
-    expect(getButton(bar, 'up').textContent).toBe('..');
+    expect(getButton(bar, 'up').querySelector('svg')?.classList.contains('folder-up')).toBe(true);
     expect(getButton(bar, 'map').disabled).toBe(false);
   });
 

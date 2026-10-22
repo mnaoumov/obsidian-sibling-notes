@@ -47,7 +47,7 @@ export const NAVIGATION_ACTION_DEFINITIONS: Readonly<Record<NavigationAction, Na
   [NavigationAction.PageDown]: { icon: 'chevrons-right', id: 'go-page-down', label: 'A page down', name: 'Go a page down in the folder' },
   [NavigationAction.PageUp]: { icon: 'chevrons-left', id: 'go-page-up', label: 'A page up', name: 'Go a page up in the folder' },
   [NavigationAction.Previous]: { icon: 'chevron-left', id: 'go-to-previous', label: 'Previous item', name: 'Go to the previous item in the folder' },
-  [NavigationAction.Up]: { icon: 'corner-left-up', id: 'go-up', label: 'Up to the parent folder', name: 'Go up to the parent folder' }
+  [NavigationAction.Up]: { icon: 'folder-up', id: 'go-up', label: 'Up to the parent folder', name: 'Go up to the parent folder' }
 };
 
 /**
