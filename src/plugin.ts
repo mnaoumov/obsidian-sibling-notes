@@ -5,6 +5,7 @@ import { PluginBase } from '@mnaoumov/obsidian-lib/plugin/plugin';
 import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
 
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
+import type { OverscrollSettings } from './overscroll-component.ts';
 import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
 
 import {
@@ -19,6 +20,7 @@ import {
 import { NavigationAction } from './navigation-action.ts';
 import { NavigationCommandHandler } from './navigation-command-handler.ts';
 import { NavigatorBarComponent } from './navigator-bar-component.ts';
+import { OverscrollComponent } from './overscroll-component.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 import { SiblingNavigator } from './sibling-navigator.ts';
@@ -86,6 +88,14 @@ export class Plugin extends PluginBase {
         siblingNavigator
       })
     );
+    this.addChild(
+      new OverscrollComponent({
+        app: this.app,
+        getSettings: (): OverscrollSettings => pluginSettingsComponent.settings,
+        siblingNavigator
+      })
+    );
+
     // A changed setting shows or hides a bar, moves Page up and Page down, or changes which note is a folder's,
     // So the bars and the virtual folder notes follow at once.
     for (const eventName of ['loadSettings', 'saveSettings'] as const) {

@@ -161,6 +161,18 @@ export async function setFolderNoteConvention(
 }
 
 /**
+ * Chooses which edges of a note open the next or previous item when scrolled past: `none`, `bottom` or
+ * `both`. The change applies live, like {@link setPageSize}.
+ *
+ * Manual equivalent: pick from **Open by scrolling past the edge** in
+ * **Settings -> Community plugins -> Sibling Notes**.
+ */
+export async function setOverscrollEdges(app: App, edges: 'both' | 'bottom' | 'none'): Promise<void> {
+  await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { overscrollEdges: edges } });
+  new Notice(`overscrollEdges is now ${edges}. It is live -- no reload needed.`);
+}
+
+/**
  * Sets the plugin's `pageSize`.
  *
  * `configureCommunityPlugin` routes through the plugin's own settings component while it is loaded, so the

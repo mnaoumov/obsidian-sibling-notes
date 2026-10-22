@@ -8,6 +8,10 @@ import { PluginSettingsTabBase } from '@mnaoumov/obsidian-lib/plugin/plugin-sett
 
 import type { PluginSettings } from './plugin-settings.ts';
 
+import { OverscrollEdges } from './plugin-settings.ts';
+
+const MAX_OVERSCROLL_DISTANCE_PERCENT = 100;
+
 /**
  * The settings tab is declarative: return one definition per row from `getSettingDefinitionItems()` and
  * Obsidian renders them. `bind` wires a component to a settings property in both directions, so there is
@@ -43,6 +47,38 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
             this.bind({ propertyName: 'pageSize', valueComponent: number });
           });
         }
+      }),
+      this.settingGroupEx({
+        heading: 'Scrolling past the edge',
+        items: [
+          this.settingEx({
+            desc: 'Keep scrolling past the bottom of a note to open the next item, or past the top to open the previous one. A strip at the edge shows how far to go and what opens. A fling that reaches the edge never carries on into the next item: the pull starts only with a new scroll, and pausing or scrolling back cancels it.',
+            name: 'Open by scrolling past the edge',
+            render: (setting) => {
+              setting.addDropdown((dropdown) => {
+                dropdown.addOptions({
+                  /* eslint-disable perfectionist/sort-objects -- Need to keep enum order. */
+                  [OverscrollEdges.None]: 'Off',
+                  [OverscrollEdges.Bottom]: 'Bottom edge only: next',
+                  [OverscrollEdges.Both]: 'Both edges: previous and next'
+                  /* eslint-enable perfectionist/sort-objects -- Need to keep enum order. */
+                });
+                this.bind({ propertyName: 'overscrollEdges', valueComponent: dropdown });
+              });
+            }
+          }),
+          this.settingEx({
+            desc: 'How far to keep scrolling past the edge before the item opens, as a percentage of the height of the note on screen.',
+            name: 'Pull distance',
+            render: (setting) => {
+              setting.addNumber((number) => {
+                number.setMin(1);
+                number.setMax(MAX_OVERSCROLL_DISTANCE_PERCENT);
+                this.bind({ propertyName: 'overscrollDistancePercent', valueComponent: number });
+              });
+            }
+          })
+        ]
       }),
       this.settingGroupEx({
         heading: 'Folder notes',

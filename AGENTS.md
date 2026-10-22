@@ -24,7 +24,9 @@ The repo was generated on 2026-10-17 with `create-obsidian-plugin` (preset `all-
 
 **Built: the folder map.** `src/folder-map.ts` is the map's DOM: breadcrumbs (a folder's segment opens its virtual folder note), the items in explorer order with the current one `is-active`, each bar button's icon on the item it reaches (`..` on the folder's own breadcrumb, where Up lands), and `is-targeted` on a hovered button's target. `src/folder-map-component.ts` opens it from the Map button or the `show-folder-map` command: a popover on desktop (`src/folder-map-popover.ts`, Obsidian's `.menu` styling, below the button or above it when there is more room), a bottom sheet on mobile (`src/folder-map-sheet.ts`, a restyled `Modal`), and, once pinned (`pin-folder-map`, or the pin in the map), the side-panel view `src/folder-map-view.ts` (type `sibling-notes-folder-map`), which follows the main area's most recent leaf. While a pinned map exists the Map button reveals it instead. Clicking a subfolder in the list enters it (its first item, or its virtual folder note when empty); clicking anything else opens it. `NavigatorBarComponent.refresh` refreshes every open map.
 
-**Built: the demo vault and the README.** The vault has a note per feature (`01` to `05`), with buttons that change the File explorer's sort order and back, and folder notes in both file conventions: `Appendix/Appendix.md` inside its folder, and `Materials/04 Virtual folder note/Projects.md` beside its folder. The README follows the same section order as the author's other plugins. `scripts/test-coverage.ts` enforces 100%.
+**Built: scrolling past the edge.** `src/overscroll-gesture.ts` is the pull as a state machine over wheel and touch input with explicit times, `src/overscroll-indicator.ts` the labelled strip at the edge, and `src/overscroll-component.ts` listens on every window's document, finds the Markdown view or virtual folder note under the pointer, reads the element that scrolls its content (`editMode.cm.scrollDOM`, `previewMode.renderer.previewEl`, or the virtual view's `contentEl`) and navigates through `SiblingNavigator`. A pull starts only with a new gesture at the edge: a wheel pause of 250 ms or a new touch, so a fling's momentum never carries on. Pausing 600 ms or scrolling back cancels. A wheel pull opens its target once it passes `overscrollDistancePercent` of the pane height and swallows the rest of its momentum; a touch pull says "Release to open" and opens on release. Previous lands at the end of the note. A wheel over anything inside it that scrolls vertically on its own never pulls. `overscrollEdges` (`none` by default, `bottom`, `both`) turns it on.
+
+**Built: the demo vault and the README.** The vault has a note per feature (`01` to `06`), with buttons that change the File explorer's sort order and back, and folder notes in both file conventions: `Appendix/Appendix.md` inside its folder, and `Materials/04 Virtual folder note/Projects.md` beside its folder. The README follows the same section order as the author's other plugins. `scripts/test-coverage.ts` enforces 100%.
 
 **Built: the screenshots.** `npm run capture:screenshots` rewrites `images/screenshots/`: five desktop and five mobile frames, the directory's cap per form factor, which the README's screenshot block shows. All of them are of `Materials/01 Folder navigation`: the top bar on `Chapter 2`, the map (a popover with Next hovered on desktop, the sheet on mobile), the virtual folder note of `Appendix`, the pinned map beside the bottom bar (the bottom bar alone on mobile), and the settings tab. Its two projects (`capture-screenshots:desktop`, and `capture-screenshots:android` on the 900x1600 `obsidian_screenshots` AVD) open the demo vault through `scripts/demo-vault-global-setup.ts`, and both suites stage their frames with the closures in `src/test-helpers/screenshot-stages.test.helper.ts`, through `pollInObsidian`. A re-run reproduces every frame byte for byte. Things the frames need:
 
@@ -53,9 +55,10 @@ This is the model the owner approved. Refine it as the build goes.
 
 **Commands.** Every bar action is also a command, with a bindable hotkey.
 
-**Later, not in version 1:**
+**Scrolling past the edge**, off by default: keep scrolling past the bottom to open the next item, or past the top to open the previous one at its end, guarded by a labelled pull rather than a count of scrolls, which momentum crosses by accident.
 
-- Scrolling past the end or above the top to move to the next or previous item.
+**Later:**
+
 - A joined, editable view of the whole folder. It would need one embedded editor per note through internal APIs.
 
 ## Internals
