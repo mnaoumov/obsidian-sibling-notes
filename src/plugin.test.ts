@@ -20,6 +20,7 @@ import {
 } from 'vitest';
 
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
+import type { OverscrollSettings } from './overscroll-component.ts';
 import type { SiblingNavigator } from './sibling-navigator.ts';
 import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
 
@@ -28,7 +29,9 @@ import {
   FolderMapView
 } from './folder-map-view.ts';
 import { NavigatorBarComponent } from './navigator-bar-component.ts';
+import { OverscrollComponent } from './overscroll-component.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
+import { OverscrollEdges } from './plugin-settings.ts';
 import { Plugin } from './plugin.ts';
 import {
   VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
@@ -41,6 +44,10 @@ interface AppGlobal {
 
 interface NavigatorBarComponentInternals {
   readonly getVisibility: () => NavigatorBarVisibility;
+}
+
+interface OverscrollComponentInternals {
+  readonly getSettings: () => OverscrollSettings;
 }
 
 interface PluginWithSettings {
@@ -146,6 +153,18 @@ describe('Plugin', () => {
       settings.showTopBar = false;
     });
     expect(castTo<NavigatorBarComponentInternals>(navigatorBarComponent).getVisibility()).toMatchObject({ showBottomBar: true, showTopBar: false });
+  });
+
+  it('pulls past the note\'s edges by the current settings', async () => {
+    const plugin = new Plugin(app, manifest);
+    const addChildSpy = vi.spyOn(plugin, 'addChild');
+    await plugin.onload();
+    const overscrollComponent = addChildSpy.mock.results.map((result) => result.value as unknown).find((child) => child instanceof OverscrollComponent);
+    const settingsComponent = getSettingsComponent(plugin);
+    await settingsComponent.editAndSave((settings) => {
+      settings.overscrollEdges = OverscrollEdges.Both;
+    });
+    expect(castTo<OverscrollComponentInternals>(overscrollComponent).getSettings()).toMatchObject({ overscrollDistancePercent: 33, overscrollEdges: OverscrollEdges.Both });
   });
 
   it('refreshes the navigator bars whenever the settings are loaded or saved, until it unloads', async () => {

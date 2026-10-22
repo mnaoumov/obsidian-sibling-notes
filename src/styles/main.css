@@ -264,6 +264,62 @@ a.sibling-notes-folder-map-breadcrumb:hover {
   text-align: start;
 }
 
+/* The strip at a note's edge while it is scrolled past, filling up as the pull grows. */
+.sibling-notes-overscroll-host {
+  position: relative;
+}
+
+.sibling-notes-overscroll-indicator {
+  position: absolute;
+  z-index: var(--layer-cover);
+  inset-inline: 0;
+  overflow: hidden;
+  padding: var(--size-4-2) var(--size-4-4);
+  border-block: var(--border-width) solid var(--background-modifier-border);
+  background-color: var(--background-secondary);
+  color: var(--text-muted);
+  font-size: var(--font-ui-small);
+  text-align: center;
+  pointer-events: none;
+}
+
+.sibling-notes-overscroll-indicator[data-edge="bottom"] {
+  bottom: 0;
+}
+
+.sibling-notes-overscroll-indicator[data-edge="top"] {
+  top: 0;
+}
+
+.sibling-notes-overscroll-indicator-fill {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: calc(var(--sibling-notes-overscroll-progress, 0) * 100%);
+  background-color: var(--interactive-accent);
+  opacity: 0.25;
+  transition: width 80ms linear;
+}
+
+.sibling-notes-overscroll-indicator-label {
+  position: relative;
+}
+
+.sibling-notes-overscroll-indicator.is-ready {
+  color: var(--text-normal);
+  font-weight: var(--font-semibold);
+}
+
+.sibling-notes-overscroll-indicator.is-ready .sibling-notes-overscroll-indicator-fill {
+  opacity: 0.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sibling-notes-overscroll-indicator-fill {
+    transition: none;
+  }
+}
+
 /* Print and PDF export show the note alone. */
 @media print {
   .sibling-notes-navigator-bar {

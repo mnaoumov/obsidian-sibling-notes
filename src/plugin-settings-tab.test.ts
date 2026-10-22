@@ -55,6 +55,8 @@ describe('PluginSettingsTab', () => {
       'Show the top bar',
       'Show the bottom bar',
       'Page size',
+      'Open by scrolling past the edge',
+      'Pull distance',
       'Follow folder-notes plugins',
       'Note inside the folder',
       'Note beside the folder'
@@ -70,6 +72,8 @@ describe('PluginSettingsTab', () => {
       'showTopBar',
       'showBottomBar',
       'pageSize',
+      'overscrollEdges',
+      'overscrollDistancePercent',
       'shouldReadFolderNotePlugins',
       'shouldUseFolderNoteInside',
       'shouldUseFolderNoteBeside'
@@ -77,6 +81,11 @@ describe('PluginSettingsTab', () => {
     // The plugin names and the file names in the folder-note descriptions are marked as code.
     const codeCount = definitions.reduce((count, definition) => count + ('desc' in definition && definition.desc instanceof DocumentFragment ? definition.desc.querySelectorAll('code').length : 0), 0);
     expect(codeCount).toBe(8);
-    expect(tab.containerEl.querySelector('input[type="number"]')).not.toBeNull();
+    expect(tab.containerEl.querySelectorAll('input[type="number"]')).toHaveLength(2);
+    expect([...tab.containerEl.querySelectorAll(':scope select option')].map((option) => option.textContent)).toStrictEqual([
+      'Off',
+      'Bottom edge only: next',
+      'Both edges: previous and next'
+    ]);
   });
 });

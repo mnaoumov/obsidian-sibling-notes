@@ -1,6 +1,39 @@
 const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_OVERSCROLL_DISTANCE_PERCENT = 33;
+
+/**
+ * Which edges of a note open the next or previous item when scrolled past.
+ */
+export enum OverscrollEdges {
+  /**
+   * The bottom edge opens the next item, and the top edge the previous one.
+   */
+  Both = 'both',
+
+  /**
+   * Only the bottom edge, which opens the next item.
+   */
+  Bottom = 'bottom',
+
+  /**
+   * Neither: scrolling past an edge does nothing.
+   */
+  None = 'none'
+}
 
 export class PluginSettings {
+  /**
+   * How far to keep scrolling past an edge before the next or previous item opens, as a percentage of the height
+   * of the note on screen.
+   */
+  public overscrollDistancePercent = DEFAULT_OVERSCROLL_DISTANCE_PERCENT;
+
+  /**
+   * Which edges of a note open the next or previous item when scrolled past. Off by default, because it changes
+   * how scrolling behaves.
+   */
+  public overscrollEdges = OverscrollEdges.None;
+
   /**
    * How many items Page up and Page down move. They stop at the first and the last item.
    */
