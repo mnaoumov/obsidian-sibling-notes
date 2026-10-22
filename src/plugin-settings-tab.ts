@@ -21,7 +21,7 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
   protected override getSettingDefinitionItems(): SettingDefinitionItem[] {
     return [
       this.settingEx({
-        desc: 'Show the navigator bar above the note, after the inline title and the properties.',
+        desc: 'Show the navigator bar above the note, before the inline title and the properties.',
         name: 'Show the top bar',
         render: (setting) => {
           setting.addToggle((toggle) => {

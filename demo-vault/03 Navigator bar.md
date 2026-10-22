@@ -1,6 +1,6 @@
 # Navigator bar
 
-`Sibling Notes` puts a navigator bar above every note, after the inline title and the properties, and another below it, before the embedded backlinks. Both scroll with the note. They show in Live Preview, Source mode and Reading view, and on a subfolder's [virtual folder note](<./04 Virtual folder note.md>), on desktop and on mobile.
+`Sibling Notes` puts a navigator bar above every note, before the inline title and the properties, and another below it, before the embedded backlinks. Both scroll with the note. They show in Live Preview, Source mode and Reading view, and on a subfolder's [virtual folder note](<./04 Virtual folder note.md>), on desktop and on mobile.
 
 Open `Chapter 2` to see them.
 
@@ -13,7 +13,7 @@ await require('/demoSetup.ts').openMaterial(app, 'Chapter 2.md');
 
 Manual equivalent: click `Chapter 2` in the File explorer, inside `Materials/01 Folder navigation/`.
 
-The top bar sits right under the title. `Chapter 2` is long enough to scroll on most screens, so scroll to its end for the bottom bar: it carries the same buttons, so you can step on without scrolling back up.
+The top bar sits right above the title. `Chapter 2` is long enough to scroll on most screens, so scroll to its end for the bottom bar: it carries the same buttons, so you can step on without scrolling back up.
 
 ## What the buttons do
 

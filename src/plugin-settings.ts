@@ -61,7 +61,7 @@ export class PluginSettings {
   public showBottomBar = true;
 
   /**
-   * Whether the navigator bar shows above the note, after the inline title and the properties.
+   * Whether the navigator bar shows above the note, before the inline title and the properties.
    */
   public showTopBar = true;
 }

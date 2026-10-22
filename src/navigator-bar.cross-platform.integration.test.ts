@@ -1,6 +1,10 @@
-import type { FileExplorerView } from '@obsidian-typings/obsidian-public-latest';
+import type {
+  ConfigItem,
+  FileExplorerView
+} from '@obsidian-typings/obsidian-public-latest';
 import type { CommonArguments } from 'obsidian-integration-testing';
 
+import { setTimeout } from 'node:timers/promises';
 import {
   evalInObsidian,
   pollInObsidian
@@ -29,12 +33,14 @@ interface BarState {
   readonly bottomBarGap: number;
   readonly editorContentPadding: string;
   readonly editorOrder: string[];
+  readonly isSourceMode: boolean;
   readonly mode: string;
   readonly readingFooterOrder: string[];
   readonly readingHeaderOrder: string[];
   readonly top: BarSnapshot | null;
 }
 
+const CONFIG_SETTLE_DELAY_IN_MILLISECONDS = 500;
 const FOLDER = 'sn-bar';
 const POLL_TIMEOUT_IN_MILLISECONDS = 20_000;
 
@@ -112,14 +118,44 @@ describe('navigator bar', () => {
     let isTopBarHidden = false;
     try {
       const atFirst = await waitForState('the bars in the editor', (state) => state.top?.position === '1 / 3' && state.bottom !== null);
-      expect(atFirst.editorOrder).toStrictEqual(['inline-title', 'metadata-container', 'bar:top', 'cm-contentContainer', 'bar:bottom', 'embedded-backlinks']);
+      expect(atFirst.editorOrder).toStrictEqual(['bar:top', 'inline-title', 'metadata-container', 'cm-contentContainer', 'bar:bottom', 'embedded-backlinks']);
       // The scroll-past-end space moved from below the last line to below the bottom bar.
       expect(atFirst.editorContentPadding).toBe('0px');
       expect(atFirst.bottomBarGap).toBeLessThan(50);
       expect(atFirst.top).toStrictEqual({ disabled: ['home', 'pageUp', 'previous'], position: '1 / 3' });
 
       await clickBarButton('top', 'next');
-      await waitForState('Next from the top bar', (state) => state.activePath === `${FOLDER}/b.md` && state.top?.position === '2 / 3');
+      const atSecond = await waitForState('Next from the top bar', (state) => state.activePath === `${FOLDER}/b.md` && state.top?.position === '2 / 3');
+      expect(atSecond.editorOrder[0]).toBe('bar:top');
+
+      // The top bar stays first whatever Obsidian re-renders above the note.
+      for (
+        const [name, value] of [
+          ['showInlineTitle', false],
+          ['propertiesInDocument', 'hidden'],
+          ['readableLineLength', false],
+          ['showInlineTitle', true],
+          ['propertiesInDocument', 'visible'],
+          ['readableLineLength', true]
+        ] as const
+      ) {
+        await setConfig(name, value);
+        const afterConfig = await waitForState(`the top bar after ${name} = ${String(value)}`, (state) => state.top !== null);
+        expect(afterConfig.editorOrder.slice(0, 3)).toStrictEqual(['bar:top', 'inline-title', 'metadata-container']);
+      }
+
+      await evalInObsidian({
+        async callback({ app }): Promise<void> {
+          const view = app.workspace.getMostRecentLeaf()?.view;
+          if (!view) {
+            throw new Error('No view.');
+          }
+          await view.setState({ ...view.getState(), mode: 'source', source: true }, { history: false });
+        },
+        vaultPath
+      });
+      const sourceMode = await waitForState('the bars in Source mode', (state) => state.isSourceMode && state.top !== null);
+      expect(sourceMode.editorOrder[0]).toBe('bar:top');
 
       await evalInObsidian({
         async callback({ app }): Promise<void> {
@@ -132,7 +168,7 @@ describe('navigator bar', () => {
         vaultPath
       });
       const reading = await waitForState('the bars in Reading view', (state) => state.mode === 'preview' && state.readingHeaderOrder.includes('bar:top') && state.readingFooterOrder.includes('bar:bottom'));
-      expect(reading.readingHeaderOrder).toStrictEqual(['inline-title', 'metadata-container', 'bar:top']);
+      expect(reading.readingHeaderOrder).toStrictEqual(['bar:top', 'inline-title', 'metadata-container']);
       expect(reading.readingFooterOrder).toStrictEqual(['bar:bottom', 'embedded-backlinks']);
 
       await clickBarButton('bottom', 'next');
@@ -161,6 +197,18 @@ describe('navigator bar', () => {
         input: { folder: FOLDER },
         vaultPath
       });
+    }
+
+    async function setConfig(name: ConfigItem, value: boolean | string): Promise<void> {
+      await evalInObsidian({
+        callback({ app, name: configName, value: configValue }): void {
+          app.vault.setConfig(configName, configValue);
+        },
+        input: { name, value },
+        vaultPath
+      });
+      // Lets Obsidian re-render the note before the bars are read.
+      await setTimeout(CONFIG_SETTLE_DELAY_IN_MILLISECONDS);
     }
 
     async function setSortOrder(sortOrder: string): Promise<void> {
@@ -219,6 +267,7 @@ function readState({ app, obsidianModule }: CommonArguments): BarState {
     bottomBarGap: bottomBar ? bottomBar.getBoundingClientRect().top - contentEl.getBoundingClientRect().bottom : NaN,
     editorContentPadding: contentEl.style.paddingBottom,
     editorOrder: getChildOrder(view.editMode.sizerEl),
+    isSourceMode: view.getState().source,
     mode: view.getMode(),
     readingFooterOrder: getChildOrder(view.containerEl.querySelector(':scope .markdown-reading-view .mod-footer')),
     readingHeaderOrder: getChildOrder(view.containerEl.querySelector(':scope .markdown-reading-view .mod-header')),
