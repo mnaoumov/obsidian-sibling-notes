@@ -57,12 +57,13 @@ const SCROLL_PAST_END_CSS_PROPERTY = '--sibling-notes-scroll-past-end';
  * Puts a navigator bar above and below every open note, and keeps them current.
  *
  * Placement follows Obsidian's own inline title, properties and embedded backlinks, which a Markdown view
- * moves between its editor and its Reading view on every mode switch:
+ * moves between its editor and its Reading view on every mode switch. The top bar comes before the inline
+ * title and the properties, as it does in the virtual folder note, and the bottom bar right after the last line:
  *
- * - In the editor, the bars are children of `.cm-sizer`, right before and right after `.cm-contentContainer`.
- *   The editor puts its scroll-past-end space on the content's bottom padding, so that space is moved below
- *   the bottom bar, keeping the bar right under the last line.
- * - In Reading view, the top bar ends the renderer's header section and the bottom bar starts its footer
+ * - In the editor, the bars are children of `.cm-sizer`: the top bar its first child, the bottom bar right after
+ *   `.cm-contentContainer`. The editor puts its scroll-past-end space on the content's bottom padding, so that
+ *   space is moved below the bottom bar, keeping the bar right under the last line.
+ * - In Reading view, the top bar starts the renderer's header section and the bottom bar starts its footer
  *   section. Either section is re-measured after a change, because the renderer lays sections out by their
  *   measured heights.
  */
@@ -254,8 +255,8 @@ export class NavigatorBarComponent extends Component {
       const footerEl = renderer.footer?.el;
       bottom.el.setCssProps({ [SCROLL_PAST_END_CSS_PROPERTY]: '' });
       if (
-        headerEl && this.placeOrRemove(top.el, showTopBar, headerEl.lastElementChild === top.el, () => {
-          headerEl.append(top.el);
+        headerEl && this.placeOrRemove(top.el, showTopBar, headerEl.firstElementChild === top.el, () => {
+          headerEl.prepend(top.el);
         })
       ) {
         renderer.updateHeader();
@@ -271,12 +272,13 @@ export class NavigatorBarComponent extends Component {
     }
 
     const editView = view.editMode;
+    const { sizerEl } = editView;
     const contentContainerEl = editView.cm.contentDOM.parentElement;
     if (!contentContainerEl) {
       return;
     }
-    const isTopChanged = this.placeOrRemove(top.el, showTopBar, contentContainerEl.previousElementSibling === top.el, () => {
-      contentContainerEl.before(top.el);
+    const isTopChanged = this.placeOrRemove(top.el, showTopBar, sizerEl.firstElementChild === top.el, () => {
+      sizerEl.prepend(top.el);
     });
     const isBottomChanged = this.placeOrRemove(bottom.el, showBottomBar, contentContainerEl.nextElementSibling === bottom.el, () => {
       contentContainerEl.after(bottom.el);

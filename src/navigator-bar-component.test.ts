@@ -205,18 +205,18 @@ describe('NavigatorBarComponent', () => {
     Object.assign(testView.view, { currentMode: testView.view.previewMode });
   }
 
-  it('puts the bars right before and right after the editor\'s content once the layout is ready', () => {
+  it('puts the top bar before the inline title and the bottom bar right after the editor\'s content once the layout is ready', () => {
     const { editor } = openView();
     fixture.component.load();
     expect(getBars(editor.sizerEl)).toHaveLength(0);
 
     fixture.app.workspace.setLayoutReady__();
 
-    const top = editor.contentContainerEl.previousElementSibling;
+    const top = editor.sizerEl.firstElementChild;
     const bottom = editor.contentContainerEl.nextElementSibling;
     expect(getPlacement(top)).toBe('top');
     expect(getPlacement(bottom)).toBe('bottom');
-    expect(editor.inlineTitleEl.nextElementSibling).toBe(top);
+    expect(top?.nextElementSibling).toBe(editor.inlineTitleEl);
     // The bars changed the editor's height, so it re-measures and re-runs its bottom padding.
     expect(editor.onResize).toHaveBeenCalledTimes(1);
   });
@@ -287,13 +287,13 @@ describe('NavigatorBarComponent', () => {
     expect(unseen.editor.contentEl.style.paddingBottom).toBe(SCROLL_PAST_END_PADDING);
   });
 
-  it('ends the header and starts the footer with the bars in Reading view, and re-measures both', () => {
+  it('starts the header and the footer with the bars in Reading view, and re-measures both', () => {
     const testView = openView();
     showPreview(testView);
     loadAndRefresh();
 
     const { footerEl, headerEl, renderer } = testView.preview;
-    expect(getPlacement(headerEl.lastElementChild)).toBe('top');
+    expect(getPlacement(headerEl.firstElementChild)).toBe('top');
     expect(getPlacement(footerEl.firstElementChild)).toBe('bottom');
     expect(renderer.updateHeader).toHaveBeenCalledTimes(1);
     expect(renderer.updateFooter).toHaveBeenCalledTimes(1);
@@ -313,16 +313,29 @@ describe('NavigatorBarComponent', () => {
     await view.setMode(view.previewMode);
     expect(getBars(editor.sizerEl)).toHaveLength(0);
     const bottom = castTo<HTMLElement>(preview.footerEl.firstElementChild);
-    expect(getPlacement(preview.headerEl.lastElementChild)).toBe('top');
+    expect(getPlacement(preview.headerEl.firstElementChild)).toBe('top');
     expect(bottom.dataset['placement']).toBe('bottom');
     // The editor's scroll-past-end space does not follow the bar into Reading view.
     expect(bottom.style.getPropertyValue(SCROLL_PAST_END_CSS_PROPERTY)).toBe('');
 
     await view.setMode(view.editMode);
-    expect(getPlacement(editor.contentContainerEl.previousElementSibling)).toBe('top');
+    expect(getPlacement(editor.sizerEl.firstElementChild)).toBe('top');
     expect(editor.contentContainerEl.nextElementSibling).toBe(bottom);
     expect(getBars(preview.headerEl)).toHaveLength(0);
     expect(getBars(preview.footerEl)).toHaveLength(0);
+  });
+
+  it('puts the top bar back before the inline title when Obsidian prepends the title again', async () => {
+    const { editor, view } = openView();
+    loadAndRefresh();
+    const top = editor.sizerEl.firstElementChild;
+
+    // Showing the editor prepends the inline title to .cm-sizer.
+    editor.sizerEl.prepend(editor.inlineTitleEl);
+    await view.setMode(view.editMode);
+
+    expect(editor.sizerEl.firstElementChild).toBe(top);
+    expect(top?.nextElementSibling).toBe(editor.inlineTitleEl);
   });
 
   it('does not place bars on a mode switch of a note it has not seen yet', async () => {
