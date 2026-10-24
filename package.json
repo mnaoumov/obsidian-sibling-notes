@@ -1,6 +1,6 @@
 {
   "name": "sibling-notes",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Step through the notes of a folder in File explorer order, with a navigator bar above and below the note and a folder map.",
   "type": "module",
   "main": "main.js",

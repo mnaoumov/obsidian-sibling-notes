@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.1.0
+
+- test(demo-vault): floor `CodeScript Toolkit` at 15.0.0
+- feat: show Up as a folder-up icon everywhere
+- feat: put the top navigator bar above the inline title and properties
+- feat: open the next or previous item by scrolling past a note's edge
+- build(deps): move to obsidian-lib 6 and obsidian-dev-toolkit 5
+- docs: shorten the debugging section
+- chore: replace leftover obsidian-dev-utils references with @mnaoumov/obsidian-lib
+- docs(readme): lead the Debugging section with `Advanced Debug Mode`
+- docs: link the changelog and point the installation at the community directory listing
+
 ## 1.0.0
 
 - fix(folder-map-sheet): give the bottom sheet a single header row
