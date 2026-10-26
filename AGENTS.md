@@ -10,7 +10,8 @@ What core 1.14.4 and other plugins already do, so the plugin does not rebuild it
 
 - **Core has no previous or next note in a folder,** as a command or as UI. Bases never shows note bodies.
 - **Commands exist in other plugins:** `Neighbouring Files`, `Note Navigator`, `Page Flow`, `Quick Explorer` and `Explorer Stepper`. None of them puts buttons above and below the note, and every one ignores custom-sort plugins: they re-sort by the built-in setting or by name. `Page Flow` reads the rendered tree, which is only partly rendered.
-- **Continuous scrolling over many notes exists:** `Continuous Mode`, `Folder Reader` and `Simple Journal`. It is out of scope here.
+- **Continuous scrolling over many notes exists:** `Continuous Mode`, `Folder Reader`, `Book Simulator` and `Simple Journal`. It is out of scope here.
+- The README's `## Similar plugins` is the full list from the last prior-art search, with the date it ran. `Neighbouring Files` now says it follows the File explorer's sort order, so recheck the custom-sort claim above before repeating it.
 
 ## Current state
 
