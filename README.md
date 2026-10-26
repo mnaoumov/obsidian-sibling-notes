@@ -51,6 +51,22 @@ A copy of the vault ships with every release. You can access it via any of the f
 
 Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 
+## Similar plugins
+
+- [`Neighbouring Files`](https://community.obsidian.md/plugins/neighbouring-files) — commands that open the next or previous file in File explorer order or by name, move up and down folders, and can loop or continue into adjacent folders, with swipe gestures; it has no bar on the note, folder map or virtual folder note.
+- [`Quick Explorer`](https://community.obsidian.md/plugins/quick-explorer) — puts the current file's path in the title bar, each segment a menu of that folder, and has commands to go to the next or previous file in the folder; this plugin adds buttons above and below the note and a map of the folder.
+- [`Note Navigator`](https://community.obsidian.md/plugins/note-navigator) — commands to go to the previous or next note in the folder or the whole vault, and to delete a note and open the next one, for reviewing and clearing out notes; it has no bar, map or folder view.
+- [`Explorer Stepper`](https://community.obsidian.md/plugins/explorer-stepper) — commands to go to the previous or next file in the folder, sorted by name and skipping subfolders; this plugin follows the File explorer's order and steps into subfolders too.
+- [`Page Flow`](https://community.obsidian.md/plugins/page-flow) — one hotkey scrolls a note page by page and opens the next file in File explorer order at the end, built for reading and triage from the keyboard; this plugin moves by buttons, commands, or a pull past the edge of the note.
+- [`Hierarchy Navigator`](https://community.obsidian.md/plugins/hierarchy-navigator) — a block at the top of every note listing its parent folder, the items beside it and the ones inside it; it shows everything around the note at once, where this plugin steps through the folder in order.
+- [`Note Chain`](https://community.obsidian.md/plugins/note-chain) — links notes into a chain of previous and next notes that you set, and sorts the File explorer by that chain; this plugin follows whatever order the File explorer already shows.
+- [`Playdown`](https://community.obsidian.md/plugins/playdown) — plays notes from playlists you build by hand, with progress and a reading mark; this plugin's sequence is a folder, with nothing to build.
+- [`Folder Reader`](https://community.obsidian.md/plugins/folder-reader) — reads every note in a folder as one continuous scrolling page in name order; this plugin opens one note at a time, editable as usual.
+- [`Continuous Mode`](https://community.obsidian.md/plugins/continuous-mode) — shows the notes of a tab group or a folder as one continuous scrollable page, like Scrivenings; this plugin steps through them one note at a time.
+- [`Book Simulator`](https://github.com/tu2-atmanand/obsidian-book-simulator) — not in the community directory; joins the notes of a folder and its subfolders into one continuous book view beside a folder browser, where this plugin steps through them one note at a time.
+
+Last searched for similar plugins on 2026-10-26.
+
 ## Installation
 
 The plugin is available in [the official Community Plugins repository](https://community.obsidian.md/plugins/sibling-notes).
