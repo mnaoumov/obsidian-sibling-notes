@@ -54,6 +54,7 @@ interface Fixture {
   readonly markdownLeaves: WorkspaceLeaf[];
   readonly navigate: Mock<SiblingNavigator['navigate']>;
   readonly virtualLeaves: WorkspaceLeaf[];
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests toggle which bars are visible between refreshes.
   visibility: NavigatorBarVisibility;
 }
 
@@ -74,7 +75,9 @@ interface RendererSectionStub {
 }
 
 interface RendererStub {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests remove and restore the renderer footer.
   footer: null | RendererSectionStub;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests remove and restore the renderer header.
   header: null | RendererSectionStub;
   readonly updateFooter: Mock<() => void>;
   readonly updateHeader: Mock<() => void>;
@@ -87,6 +90,7 @@ interface TestView {
 }
 
 interface WithCurrentMode {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- The view stub switches its current mode.
   currentMode: MarkdownSubView;
 }
 

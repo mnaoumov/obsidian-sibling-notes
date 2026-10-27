@@ -51,14 +51,16 @@ interface Fixture {
   readonly folder: TFolder;
   readonly markdownLeaves: WorkspaceLeaf[];
   readonly navigate: Mock<SiblingNavigator['navigate']>;
-  settings: Mutable<OverscrollSettings>;
-  targets: Partial<Record<NavigationAction, null | TAbstractFile>>;
+  readonly settings: Mutable<OverscrollSettings>;
+  readonly targets: Partial<Record<NavigationAction, null | TAbstractFile>>;
   readonly virtualLeaves: WorkspaceLeaf[];
 }
 
 interface Metrics {
-  clientHeight: number;
+  readonly clientHeight: number;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests resize the simulated scrollable content.
   scrollHeight: number;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- The scroller setter and tests update the simulated scroll position.
   scrollTop: number;
 }
 
@@ -67,6 +69,7 @@ type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 interface TestMarkdownView {
   readonly editorMetrics: Metrics;
   readonly editorScrollerEl: HTMLElement;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests switch the view between reading and editing.
   mode: 'preview' | 'source';
   readonly previewMetrics: Metrics;
   readonly previewScrollerEl: HTMLElement;

@@ -138,6 +138,7 @@ export const PULL_PAUSE_IN_MILLISECONDS = 600;
 
 interface PullState {
   readonly action: OverscrollAction;
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Each wheel event accumulates distance into the active pull.
   distance: number;
 }
 
