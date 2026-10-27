@@ -3,10 +3,10 @@ import {
   setTooltip
 } from 'obsidian';
 
-import type { SequencePosition } from './sibling-navigator.ts';
+import type { SequencePosition } from '../navigation/sibling-navigator.ts';
 
-import { NavigationAction } from './navigation-action.ts';
-import { NAVIGATION_ACTION_DEFINITIONS } from './navigation-command-handler.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
+import { NAVIGATION_ACTION_DEFINITIONS } from '../navigation/navigation-command-handler.ts';
 
 /**
  * Which edge of the note a bar sits on.

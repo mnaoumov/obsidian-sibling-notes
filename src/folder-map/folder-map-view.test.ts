@@ -20,12 +20,12 @@ import {
 import type { FolderMapComponent } from './folder-map-component.ts';
 import type { FolderMapState } from './folder-map.ts';
 
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import {
   FOLDER_MAP_VIEW_CSS_CLASS,
   FOLDER_MAP_VIEW_TYPE,
   FolderMapView
 } from './folder-map-view.ts';
-import { NavigationAction } from './navigation-action.ts';
 
 interface Fixture {
   readonly enterFromMap: ReturnType<typeof vi.fn>;

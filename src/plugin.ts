@@ -4,30 +4,30 @@ import { PluginDataHandler } from '@mnaoumov/obsidian-lib/data-handler';
 import { PluginBase } from '@mnaoumov/obsidian-lib/plugin/plugin';
 import { PluginEventSourceImpl } from '@mnaoumov/obsidian-lib/plugin/plugin-event-source';
 
-import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
-import type { OverscrollSettings } from './overscroll-component.ts';
-import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
+import type { NavigatorBarVisibility } from './navigator-bar/navigator-bar-component.ts';
+import type { OverscrollSettings } from './overscroll/overscroll-component.ts';
+import type { VirtualFolderNoteViewSettings } from './virtual-folder-note/virtual-folder-note-view.ts';
 
 import {
   FolderMapCommand,
   FolderMapCommandHandler
-} from './folder-map-command-handler.ts';
-import { FolderMapComponent } from './folder-map-component.ts';
+} from './folder-map/folder-map-command-handler.ts';
+import { FolderMapComponent } from './folder-map/folder-map-component.ts';
 import {
   FOLDER_MAP_VIEW_TYPE,
   FolderMapView
-} from './folder-map-view.ts';
-import { NavigationAction } from './navigation-action.ts';
-import { NavigationCommandHandler } from './navigation-command-handler.ts';
-import { NavigatorBarComponent } from './navigator-bar-component.ts';
-import { OverscrollComponent } from './overscroll-component.ts';
+} from './folder-map/folder-map-view.ts';
+import { NavigationAction } from './navigation/navigation-action.ts';
+import { NavigationCommandHandler } from './navigation/navigation-command-handler.ts';
+import { SiblingNavigator } from './navigation/sibling-navigator.ts';
+import { NavigatorBarComponent } from './navigator-bar/navigator-bar-component.ts';
+import { OverscrollComponent } from './overscroll/overscroll-component.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
-import { SiblingNavigator } from './sibling-navigator.ts';
 import {
   VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
   VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
+} from './virtual-folder-note/virtual-folder-note-view.ts';
 
 /**
  * The navigation commands in the order the command palette lists them: the order of the navigator bar,

@@ -6,10 +6,10 @@ import {
   TFolder
 } from 'obsidian';
 
-import { getItemDisplayName } from './folder-sequence.ts';
-import { NavigationAction } from './navigation-action.ts';
-import { NAVIGATION_ACTION_DEFINITIONS } from './navigation-command-handler.ts';
-import { NAVIGATOR_BAR_ACTIONS } from './navigator-bar.ts';
+import { getItemDisplayName } from '../navigation/folder-sequence.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
+import { NAVIGATION_ACTION_DEFINITIONS } from '../navigation/navigation-command-handler.ts';
+import { NAVIGATOR_BAR_ACTIONS } from '../navigator-bar/navigator-bar.ts';
 
 /**
  * The CSS classes of the map. They are the plugin's public styling surface, so a theme or a snippet can

@@ -1,4 +1,4 @@
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 
 /**
  * What the gesture asks of its caller after an input.

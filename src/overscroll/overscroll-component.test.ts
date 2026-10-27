@@ -26,10 +26,15 @@ import {
   vi
 } from 'vitest';
 
+import type { SiblingNavigator } from '../navigation/sibling-navigator.ts';
 import type { OverscrollSettings } from './overscroll-component.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
+import { OverscrollEdges } from '../plugin-settings.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from '../virtual-folder-note/virtual-folder-note-view.ts';
 import {
   getScrollerEl,
   OverscrollComponent
@@ -38,11 +43,6 @@ import {
   NEW_GESTURE_GAP_IN_MILLISECONDS,
   PULL_PAUSE_IN_MILLISECONDS
 } from './overscroll-gesture.ts';
-import { OverscrollEdges } from './plugin-settings.ts';
-import {
-  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
-  VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
 
 interface Fixture {
   readonly app: AppOriginal;

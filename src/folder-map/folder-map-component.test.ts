@@ -23,18 +23,18 @@ import {
 
 import type { FolderMapPopoverAnchor } from './folder-map-popover.ts';
 
+import { NavigationAction } from '../navigation/navigation-action.ts';
+import { SiblingNavigator } from '../navigation/sibling-navigator.ts';
+import {
+  NavigatorBar,
+  NavigatorBarPlacement
+} from '../navigator-bar/navigator-bar.ts';
+import { VirtualFolderNoteView } from '../virtual-folder-note/virtual-folder-note-view.ts';
 import { FolderMapComponent } from './folder-map-component.ts';
 import {
   FOLDER_MAP_VIEW_TYPE,
   FolderMapView
 } from './folder-map-view.ts';
-import { NavigationAction } from './navigation-action.ts';
-import {
-  NavigatorBar,
-  NavigatorBarPlacement
-} from './navigator-bar.ts';
-import { SiblingNavigator } from './sibling-navigator.ts';
-import { VirtualFolderNoteView } from './virtual-folder-note-view.ts';
 
 interface FakePopoverParams {
   readonly anchor: FolderMapPopoverAnchor;
