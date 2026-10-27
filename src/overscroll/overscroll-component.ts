@@ -13,24 +13,24 @@ import {
   TFile
 } from 'obsidian';
 
+import type { SiblingNavigator } from '../navigation/sibling-navigator.ts';
 import type {
   OverscrollAction,
   OverscrollUpdate
 } from './overscroll-gesture.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
+import { OverscrollEdges } from '../plugin-settings.ts';
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from '../virtual-folder-note/virtual-folder-note-view.ts';
 import {
   OverscrollGesture,
   OverscrollUpdateKind,
   PULL_PAUSE_IN_MILLISECONDS
 } from './overscroll-gesture.ts';
 import { OverscrollIndicator } from './overscroll-indicator.ts';
-import { OverscrollEdges } from './plugin-settings.ts';
-import {
-  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
-  VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
 
 /**
  * The settings the pull reads.

@@ -11,15 +11,15 @@ import {
   TFolder
 } from 'obsidian';
 
+import {
+  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
+  VirtualFolderNoteView
+} from '../virtual-folder-note/virtual-folder-note-view.ts';
 import { getFolderSequence } from './folder-sequence.ts';
 import {
   getNavigationTargetIndex,
   NavigationAction
 } from './navigation-action.ts';
-import {
-  VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
-  VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
 
 /**
  * Where a move starts: the item shown, and the leaf the landed item opens in.

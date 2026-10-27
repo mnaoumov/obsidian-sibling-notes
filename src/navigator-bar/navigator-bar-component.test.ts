@@ -25,17 +25,17 @@ import {
   vi
 } from 'vitest';
 
-import type { FolderMapComponent } from './folder-map-component.ts';
+import type { FolderMapComponent } from '../folder-map/folder-map-component.ts';
+import type { SiblingNavigator } from '../navigation/sibling-navigator.ts';
 import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
 
-import { NavigationAction } from './navigation-action.ts';
-import { NavigatorBarComponent } from './navigator-bar-component.ts';
-import { MAP_BUTTON_ACTION } from './navigator-bar.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import {
   VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
   VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
+} from '../virtual-folder-note/virtual-folder-note-view.ts';
+import { NavigatorBarComponent } from './navigator-bar-component.ts';
+import { MAP_BUTTON_ACTION } from './navigator-bar.ts';
 
 interface EditorDom {
   readonly contentContainerEl: HTMLElement;

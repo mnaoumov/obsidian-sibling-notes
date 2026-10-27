@@ -18,12 +18,12 @@ import {
   vi
 } from 'vitest';
 
-import { NavigationAction } from './navigation-action.ts';
-import { SiblingNavigator } from './sibling-navigator.ts';
 import {
   VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
   VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
+} from '../virtual-folder-note/virtual-folder-note-view.ts';
+import { NavigationAction } from './navigation-action.ts';
+import { SiblingNavigator } from './sibling-navigator.ts';
 
 interface Fixture {
   readonly app: AppOriginal;

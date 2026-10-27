@@ -7,7 +7,7 @@ import {
 
 import type { OverscrollPull } from './overscroll-gesture.ts';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import { OverscrollUpdateKind } from './overscroll-gesture.ts';
 import { OverscrollIndicator } from './overscroll-indicator.ts';
 

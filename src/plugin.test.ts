@@ -19,24 +19,24 @@ import {
   vi
 } from 'vitest';
 
-import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
-import type { OverscrollSettings } from './overscroll-component.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
-import type { VirtualFolderNoteViewSettings } from './virtual-folder-note-view.ts';
+import type { SiblingNavigator } from './navigation/sibling-navigator.ts';
+import type { NavigatorBarVisibility } from './navigator-bar/navigator-bar-component.ts';
+import type { OverscrollSettings } from './overscroll/overscroll-component.ts';
+import type { VirtualFolderNoteViewSettings } from './virtual-folder-note/virtual-folder-note-view.ts';
 
 import {
   FOLDER_MAP_VIEW_TYPE,
   FolderMapView
-} from './folder-map-view.ts';
-import { NavigatorBarComponent } from './navigator-bar-component.ts';
-import { OverscrollComponent } from './overscroll-component.ts';
+} from './folder-map/folder-map-view.ts';
+import { NavigatorBarComponent } from './navigator-bar/navigator-bar-component.ts';
+import { OverscrollComponent } from './overscroll/overscroll-component.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { OverscrollEdges } from './plugin-settings.ts';
 import { Plugin } from './plugin.ts';
 import {
   VIRTUAL_FOLDER_NOTE_VIEW_TYPE,
   VirtualFolderNoteView
-} from './virtual-folder-note-view.ts';
+} from './virtual-folder-note/virtual-folder-note-view.ts';
 
 interface AppGlobal {
   app: AppOriginal;

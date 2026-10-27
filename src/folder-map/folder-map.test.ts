@@ -15,8 +15,8 @@ import {
 
 import type { FolderMapState } from './folder-map.ts';
 
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import { FolderMap } from './folder-map.ts';
-import { NavigationAction } from './navigation-action.ts';
 
 interface Fixture {
   readonly map: FolderMap;

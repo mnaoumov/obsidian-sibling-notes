@@ -17,21 +17,21 @@ import {
   TFolder
 } from 'obsidian';
 
-import type { FolderMapComponent } from './folder-map-component.ts';
+import type { FolderMapComponent } from '../folder-map/folder-map-component.ts';
+import type { SiblingNavigator } from '../navigation/sibling-navigator.ts';
+import type { NavigatorBarVisibility } from '../navigator-bar/navigator-bar-component.ts';
 import type { FolderNoteConventions } from './folder-note-finder.ts';
-import type { NavigatorBarVisibility } from './navigator-bar-component.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
 
-import { findFolderNote } from './folder-note-finder.ts';
 import {
   getFolderSequence,
   getItemDisplayName
-} from './folder-sequence.ts';
-import { NavigationAction } from './navigation-action.ts';
+} from '../navigation/folder-sequence.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import {
   NavigatorBar,
   NavigatorBarPlacement
-} from './navigator-bar.ts';
+} from '../navigator-bar/navigator-bar.ts';
+import { findFolderNote } from './folder-note-finder.ts';
 
 /**
  * The settings the view follows.

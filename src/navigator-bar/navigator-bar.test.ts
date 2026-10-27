@@ -6,7 +6,7 @@ import {
   vi
 } from 'vitest';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import {
   NavigatorBar,
   NavigatorBarPlacement

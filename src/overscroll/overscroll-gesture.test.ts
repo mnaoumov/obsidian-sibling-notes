@@ -11,7 +11,7 @@ import type {
   OverscrollWheelInput
 } from './overscroll-gesture.ts';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 import {
   NEW_GESTURE_GAP_IN_MILLISECONDS,
   OverscrollGesture,

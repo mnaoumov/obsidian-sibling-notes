@@ -12,11 +12,17 @@ import {
   TFolder
 } from 'obsidian';
 
+import type { NavigationAction } from '../navigation/navigation-action.ts';
+import type { SiblingNavigator } from '../navigation/sibling-navigator.ts';
 import type { FolderMapPopoverAnchor } from './folder-map-popover.ts';
 import type { FolderMapState } from './folder-map.ts';
-import type { NavigationAction } from './navigation-action.ts';
-import type { SiblingNavigator } from './sibling-navigator.ts';
 
+import { getFolderSequence } from '../navigation/folder-sequence.ts';
+import {
+  MAP_BUTTON_ACTION,
+  NAVIGATOR_BAR_ACTIONS,
+  NavigatorBarCssClass
+} from '../navigator-bar/navigator-bar.ts';
 import { FolderMapPopover } from './folder-map-popover.ts';
 import { FolderMapSheet } from './folder-map-sheet.ts';
 import {
@@ -24,12 +30,6 @@ import {
   FolderMapView
 } from './folder-map-view.ts';
 import { FolderMap } from './folder-map.ts';
-import { getFolderSequence } from './folder-sequence.ts';
-import {
-  MAP_BUTTON_ACTION,
-  NAVIGATOR_BAR_ACTIONS,
-  NavigatorBarCssClass
-} from './navigator-bar.ts';
 
 /**
  * Where across a leaf the popover opens when no Map button of it is shown: its middle.

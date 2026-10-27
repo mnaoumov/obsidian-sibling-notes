@@ -1,6 +1,6 @@
 import type { OverscrollPull } from './overscroll-gesture.ts';
 
-import { NavigationAction } from './navigation-action.ts';
+import { NavigationAction } from '../navigation/navigation-action.ts';
 
 /**
  * The CSS classes of the strip. They are the plugin's public styling surface, so a theme or a snippet can restyle
