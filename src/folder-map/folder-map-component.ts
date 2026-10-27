@@ -47,7 +47,7 @@ interface FolderMapComponentConstructorParams {
  */
 interface TransientMap {
   readonly anchorEl: HTMLElement | null;
-  close: () => void;
+  readonly close: () => void;
   readonly folderMap: FolderMap;
   readonly leaf: WorkspaceLeaf;
 }

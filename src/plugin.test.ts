@@ -39,6 +39,7 @@ import {
 } from './virtual-folder-note/virtual-folder-note-view.ts';
 
 interface AppGlobal {
+  // eslint-disable-next-line typescript-dev-toolkit/readonly-interface-members -- Tests replace the global app before constructing the plugin.
   app: AppOriginal;
 }
 

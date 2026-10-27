@@ -33,7 +33,7 @@ interface Fixture {
   readonly mainLeaf: WorkspaceLeafOriginal;
   readonly openFromMap: ReturnType<typeof vi.fn>;
   readonly scrollIntoView: ReturnType<typeof vi.fn>;
-  setState: (state: FolderMapState | null) => void;
+  readonly setState: (state: FolderMapState | null) => void;
   readonly state: FolderMapState;
   readonly view: FolderMapView;
 }

@@ -29,8 +29,8 @@ interface Fixture {
   readonly app: AppOriginal;
   readonly navigator: SiblingNavigator;
   readonly openFile: ReturnType<typeof vi.fn>;
-  setActiveFile: (path: null | string) => void;
-  setActiveFolderView: (path: null | string) => void;
+  readonly setActiveFile: (path: null | string) => void;
+  readonly setActiveFolderView: (path: null | string) => void;
   readonly setViewState: ReturnType<typeof vi.fn>;
 }
 
