@@ -5,6 +5,7 @@
     "and they return 404 until the repository is created and pushed and its first release is cut, which would leave a",
     "fresh project failing its own `lint:md` for a reason nothing local can fix. Every other link is still checked."
   ],
+  "concurrency": 2,
   "skip": [
     "^https://github\\.com/mnaoumov/obsidian-sibling-notes(?:[/.?#]|$)"
   ]

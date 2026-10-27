@@ -42,9 +42,9 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
         desc: 'How many items Page up and Page down move through the folder. They stop at the first and the last item.',
         name: 'Page size',
         render: (setting) => {
-          setting.addNumber((number) => {
-            number.setMin(1);
-            this.bind({ propertyName: 'pageSize', valueComponent: number });
+          setting.addNumber(($number) => {
+            $number.setMin(1);
+            this.bind({ propertyName: 'pageSize', valueComponent: $number });
           });
         }
       }),
@@ -71,10 +71,10 @@ export class PluginSettingsTab extends PluginSettingsTabBase<PluginSettings> {
             desc: 'How far to keep scrolling past the edge before the item opens, as a percentage of the height of the note on screen.',
             name: 'Pull distance',
             render: (setting) => {
-              setting.addNumber((number) => {
-                number.setMin(1);
-                number.setMax(MAX_OVERSCROLL_DISTANCE_PERCENT);
-                this.bind({ propertyName: 'overscrollDistancePercent', valueComponent: number });
+              setting.addNumber(($number) => {
+                $number.setMin(1);
+                $number.setMax(MAX_OVERSCROLL_DISTANCE_PERCENT);
+                this.bind({ propertyName: 'overscrollDistancePercent', valueComponent: $number });
               });
             }
           })
