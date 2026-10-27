@@ -20,15 +20,6 @@ import type { Plugin } from './plugin.ts';
 import { PluginSettingsComponent } from './plugin-settings-component.ts';
 import { PluginSettingsTab } from './plugin-settings-tab.ts';
 
-/*
- * The base's `bind` reads `setPlaceholderValue` on every value component to tell a text-based one apart.
- * The test-mocks components throw on an unmocked read, where a real one yields `undefined`, so the probe is
- * stubbed to its real result.
- */
-vi.mock('@mnaoumov/obsidian-lib/setting-components/text-based-component', () => ({
-  getTextBasedComponentValue: vi.fn(() => null)
-}));
-
 async function createTab(): Promise<PluginSettingsTab> {
   const dataHandler: DataHandler = {
     loadData(): Promise<unknown> {
