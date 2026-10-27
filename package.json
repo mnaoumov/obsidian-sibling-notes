@@ -2,11 +2,11 @@
   "name": "sibling-notes",
   "version": "1.1.0",
   "description": "Step through the notes of a folder in File explorer order, with a navigator bar above and below the note and a folder map.",
-  "type": "module",
-  "main": "main.js",
   "keywords": [],
   "license": "MIT",
   "author": "mnaoumov",
+  "type": "module",
+  "main": "main.js",
   "scripts": {
     "build": "jiti scripts/build.ts",
     "build:clean": "jiti scripts/build-clean.ts",
@@ -36,27 +36,27 @@
     "test:watch": "jiti scripts/test-watch.ts",
     "version": "jiti scripts/version.ts"
   },
-  "overrides": {
-    "typescript": "$typescript",
-    "@puppeteer/browsers": "^3.2.5",
-    "deepmerge-ts": "^8.0.2",
-    "katex": "^0.19.0",
-    "moment": "^2.31.0"
-  },
   "resolutions": {
-    "typescript": "6.0.3",
     "@puppeteer/browsers": "^3.2.5",
     "deepmerge-ts": "^8.0.2",
     "katex": "^0.18.2",
-    "moment": "^2.31.0"
+    "moment": "^2.31.0",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "@puppeteer/browsers": "^3.2.5",
+    "deepmerge-ts": "^8.0.2",
+    "katex": "^0.19.0",
+    "moment": "^2.31.0",
+    "typescript": "$typescript"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
-    "@mnaoumov/obsidian-dev-toolkit": "^5.0.2",
-    "@mnaoumov/obsidian-lib": "^6.0.2",
-    "@mnaoumov/typescript-dev-toolkit": "^3.10.0",
-    "@mnaoumov/typescript-lib": "^1.6.1",
-    "@mnaoumov/typescript-test-toolkit": "^1.0.2",
+    "@mnaoumov/obsidian-dev-toolkit": "^5.3.1",
+    "@mnaoumov/obsidian-lib": "^6.3.0",
+    "@mnaoumov/typescript-dev-toolkit": "^3.13.1",
+    "@mnaoumov/typescript-lib": "^2.0.0",
+    "@mnaoumov/typescript-test-toolkit": "^1.0.3",
     "@obsidian-typings/obsidian-public-latest": "^6.50.0",
     "@tsconfig/strictest": "^2.0.8",
     "@types/node": "^26.6.5",
