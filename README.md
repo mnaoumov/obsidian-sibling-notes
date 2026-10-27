@@ -62,7 +62,7 @@ Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 | [`Explorer Stepper`](https://community.obsidian.md/plugins/explorer-stepper) | Previous/next by name; skips subfolders | Same sequential-navigation goal; follows File explorer order and enters subfolders |
 | [`Folder Reader`](https://community.obsidian.md/plugins/folder-reader) | Continuous reading of all folder notes in name order | Alternative presentation: one editable note at a time |
 | [`Hierarchy Navigator`](https://community.obsidian.md/plugins/hierarchy-navigator) | Per-note parent, sibling and child listing | Same folder-context goal; steps through notes instead of showing all neighbors |
-| [`Neighbouring Files`](https://community.obsidian.md/plugins/neighbouring-files) | Previous/next commands; folder navigation; looping; adjacent folders; swipe gestures | Same sequential-navigation goal; adds note bars, folder map and virtual folder notes |
+| [`Neighbouring Files`](https://community.obsidian.md/plugins/neighbouring-files) | Previous/next commands using the File explorer's built-in sort mode; folder navigation; looping; adjacent folders; mobile button and gestures | Adds top/bottom note bars, folder map and virtual folder notes; reads custom-sort plugins' explorer order |
 | [`Note Chain`](https://community.obsidian.md/plugins/note-chain) | Manually linked note chains; chain-based File explorer sort | Alternative sequence: follows the File explorer's existing order |
 | [`Note Navigator`](https://community.obsidian.md/plugins/note-navigator) | Previous/next folder/vault commands; delete-and-open-next review workflow | Same sequential-navigation goal; adds bars, map and virtual folder view |
 | [`Page Flow`](https://community.obsidian.md/plugins/page-flow) | Page-by-page reading; next file at note end; keyboard triage | Alternative controls: buttons, commands and pull-past-edge navigation |
@@ -70,6 +70,8 @@ Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 | [`Quick Explorer`](https://community.obsidian.md/plugins/quick-explorer) | Title-bar path menus; previous/next folder commands | Same sequential-navigation goal; adds top/bottom buttons and a folder map |
 
 Last searched for similar plugins on 2026-10-26.
+
+Sorting verified on 2026-10-27: `Neighbouring Files` 1.2.3 reads the File explorer's selected name/date sort mode and sorts the folder's files itself. It does not read custom orders supplied by plugins that patch `getSortedFolderItems`; `Sibling Notes` reads that method's result. See the [upstream navigator source](https://github.com/FabianUntermoser/obsidian-neighbouring-files-plugin/blob/1.2.3/src/NeighbouringFileNavigator.ts).
 
 ## Installation
 

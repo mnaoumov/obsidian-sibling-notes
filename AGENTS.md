@@ -9,7 +9,7 @@ This file provides guidance to AI coding agents working with code in this reposi
 What core 1.14.4 and other plugins already do, so the plugin does not rebuild it:
 
 - **Core has no previous or next note in a folder,** as a command or as UI. Bases never shows note bodies.
-- **Commands exist in other plugins:** `Neighbouring Files`, `Note Navigator`, `Page Flow`, `Quick Explorer` and `Explorer Stepper`. None of them puts buttons above and below the note. `Page Flow` reads the rendered tree, which is only partly rendered. The 2026-10-26 prior-art search found that `Neighbouring Files` now documents following File explorer sort order, so the former universal claim that these plugins all ignore custom sorting is unsupported.
+- **Commands exist in other plugins:** `Neighbouring Files`, `Note Navigator`, `Page Flow`, `Quick Explorer` and `Explorer Stepper`. None of them puts buttons above and below the note. `Page Flow` reads the rendered tree, which is only partly rendered. Verified 2026-10-27 against `Neighbouring Files` 1.2.3 and upstream commit `f60783c`: it follows the File explorer's selected built-in name/date sort mode, but sorts `folder.children` itself, without reading `getSortedFolderItems`. A controlled probe confirmed that a custom order from that method is ignored. Its mobile floating button and gestures are additional controls. Keep this sorting distinction specific to `Neighbouring Files`; the other alternatives were not re-verified for custom-sort support.
 - **Continuous scrolling over many notes exists:** `Continuous Mode`, `Folder Reader`, `Book Simulator` and `Simple Journal`. It is out of scope here.
 - The README's `## See also` is the full list from the last prior-art search, with the date it ran.
 
