@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.1.1
+
+- fix: re #1
+- chore(deps): update fast-uri to patched 3.1.9
+- chore: adopt keyword identifier lint rule
+- chore: adopt readonly interface members
+- test: drop obsolete text-component probe patches
+- docs: clarify neighbouring files sorting support
+- docs(readme): combine related resources and plugin comparisons
+- refactor: group src into feature folders
+- docs(readme): add a Similar plugins section from a prior-art search
+
 ## 1.1.0
 
 - test(demo-vault): floor `CodeScript Toolkit` at 15.0.0
