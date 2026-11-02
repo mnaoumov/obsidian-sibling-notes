@@ -53,7 +53,7 @@ Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 
 ## See also
 
-[My other Obsidian resources](https://github.com/mnaoumov/obsidian-resources)
+[My other Obsidian resources](https://mnaoumov.dev/obsidian/)
 
 | Plugin | Features | How `Sibling Notes` differs |
 | --- | --- | --- |
