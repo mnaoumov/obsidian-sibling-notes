@@ -12,14 +12,13 @@ import {
 // Obsidian's plugin guidelines ask for no console output in the default configuration, where the plugin's debug
 // Messages are disabled: https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines#Avoid+unnecessary+logging+to+console
 
-type ConsoleMethod = 'debug' | 'error' | 'info' | 'log' | 'warn';
-
 const PLUGIN_ID = 'sibling-notes';
 
 describe('plugin load', () => {
   it('writes nothing to the console when the plugin is reloaded with its debug messages disabled', async () => {
     const messages = await evalInObsidian({
       async callback({ app, pluginId }): Promise<string[]> {
+        type ConsoleMethod = 'debug' | 'error' | 'info' | 'log' | 'warn';
         const methods: ConsoleMethod[] = ['debug', 'error', 'info', 'log', 'warn'];
         const consoleMethods: Record<ConsoleMethod, (...data: unknown[]) => void> = console;
         const originals = methods.map((method) => [method, consoleMethods[method]] as const);
