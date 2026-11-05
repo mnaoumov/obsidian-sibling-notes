@@ -59,7 +59,7 @@ describe('navigator bar', () => {
       });
     }
 
-    async function clickBarButton(placement: string, action: string): Promise<void> {
+    async function clickNextBarButton(placement: string): Promise<void> {
       await evalInObsidian({
         async callback({ action: actionName, app, lib: { clickElement }, placement: placementName }): Promise<void> {
           const selector = `.sibling-notes-navigator-bar[data-placement="${CSS.escape(placementName)}"] button[data-action="${CSS.escape(actionName)}"]`;
@@ -69,7 +69,7 @@ describe('navigator bar', () => {
           }
           await clickElement({ element: button });
         },
-        input: { action, placement },
+        input: { action: 'next', placement },
         vaultPath
       });
     }
@@ -124,7 +124,7 @@ describe('navigator bar', () => {
       expect(atFirst.bottomBarGap).toBeLessThan(50);
       expect(atFirst.top).toStrictEqual({ disabled: ['home', 'pageUp', 'previous'], position: '1 / 3' });
 
-      await clickBarButton('top', 'next');
+      await clickNextBarButton('top');
       const atSecond = await waitForState('Next from the top bar', (state) => state.activePath === `${FOLDER}/b.md` && state.top?.position === '2 / 3');
       expect(atSecond.editorOrder[0]).toBe('bar:top');
 
@@ -171,7 +171,7 @@ describe('navigator bar', () => {
       expect(reading.readingHeaderOrder).toStrictEqual(['bar:top', 'inline-title', 'metadata-container']);
       expect(reading.readingFooterOrder).toStrictEqual(['bar:bottom', 'embedded-backlinks']);
 
-      await clickBarButton('bottom', 'next');
+      await clickNextBarButton('bottom');
       const atLast = await waitForState('Next from the bottom bar', (state) => state.activePath === `${FOLDER}/c.md` && state.bottom?.position === '3 / 3');
       expect(atLast.bottom).toStrictEqual({ disabled: ['next', 'pageDown', 'end'], position: '3 / 3' });
 

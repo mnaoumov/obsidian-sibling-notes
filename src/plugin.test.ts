@@ -195,7 +195,7 @@ describe('Plugin', () => {
     // An unloaded plugin has no bars left to refresh, so it stops listening. The settings component's own
     // Listeners, added when it loads, before the bars exist, are its own business.
     const barsLoadOrder = ensureNonNullable(navigatorBarOnloadSpy.mock.invocationCallOrder[0]);
-    const barsListenerIndices = onSpy.mock.invocationCallOrder.flatMap((order, index) => order > barsLoadOrder ? [index] : []);
+    const barsListenerIndices = onSpy.mock.invocationCallOrder.map((order, index) => ({ index, order })).filter(({ order }) => order > barsLoadOrder).map(({ index }) => index);
     expect(barsListenerIndices.map((index) => onSpy.mock.calls[index]?.[0])).toStrictEqual(['loadSettings', 'saveSettings']);
     const settingsEventRefs = barsListenerIndices.map((index): unknown => onSpy.mock.results[index]?.value);
     expect(offrefSpy).not.toHaveBeenCalled();

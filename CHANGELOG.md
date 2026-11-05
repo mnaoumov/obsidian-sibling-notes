@@ -7,7 +7,7 @@
 - docs: add issue-filing instructions for AI agents
 - chore(github): give the bug form the field ids bug-report links prefill
 - build(deps): override re2js to ^2.9.1 for GHSA-gg6h-894w-4m9c
-- build(deps): bump typescript-dev-toolkit to ^5.2.0
+- build(deps): bump `typescript-dev-toolkit` to ^5.2.0
 - build(deps): bump @mnaoumov/typescript-dev-toolkit to ^5.1.0
 
 ## 1.1.1
@@ -28,9 +28,9 @@
 - feat: show Up as a folder-up icon everywhere
 - feat: put the top navigator bar above the inline title and properties
 - feat: open the next or previous item by scrolling past a note's edge
-- build(deps): move to obsidian-lib 6 and obsidian-dev-toolkit 5
+- build(deps): move to `obsidian-lib` 6 and `obsidian-dev-toolkit` 5
 - docs: shorten the debugging section
-- chore: replace leftover obsidian-dev-utils references with @mnaoumov/obsidian-lib
+- chore: replace leftover `obsidian-dev-utils` references with @mnaoumov/obsidian-lib
 - docs(readme): lead the Debugging section with `Advanced Debug Mode`
 - docs: link the changelog and point the installation at the community directory listing
 
@@ -38,8 +38,8 @@
 
 - fix(folder-map-sheet): give the bottom sheet a single header row
 - docs: add the desktop and mobile screenshots and the README gallery
-- refactor(navigator-bar): read the renderer's header and footer from obsidian-typings
-- build(deps): lock obsidian-dev-toolkit 3.7.0 so unit tests run on CI
+- refactor(navigator-bar): read the renderer's header and footer from `obsidian-typings`
+- build(deps): lock `obsidian-dev-toolkit` 3.7.0 so unit tests run on CI
 - test: run the Android and desktop integration suites in test:integration
 - docs: finish the demo vault and README, and enforce 100% coverage
 - feat: show the folder map from the navigator bar
