@@ -5,10 +5,10 @@ import type {
   WorkspaceLeaf
 } from 'obsidian';
 
+import { ComponentEx } from '@mnaoumov/obsidian-lib/components/component-ex';
 import { invokeAsyncSafely } from '@mnaoumov/typescript-lib/async';
 import { ViewType } from '@obsidian-typings/obsidian-public-latest/implementations';
 import {
-  Component,
   MarkdownView,
   TFile
 } from 'obsidian';
@@ -87,7 +87,7 @@ const PERCENT = 100;
  * wheel or the finger is over. Only the view's own scroller counts: a wheel over anything inside it that scrolls
  * on its own, such as a code block or an embed with a height of its own, never pulls.
  */
-export class OverscrollComponent extends Component {
+export class OverscrollComponent extends ComponentEx {
   private readonly app: App;
   private context: null | ScrollContext = null;
   private readonly gesture = new OverscrollGesture();

@@ -4,9 +4,9 @@ import type {
   WorkspaceLeaf
 } from 'obsidian';
 
+import { ComponentEx } from '@mnaoumov/obsidian-lib/components/component-ex';
 import { invokeAsyncSafely } from '@mnaoumov/typescript-lib/async';
 import {
-  Component,
   Keymap,
   Platform,
   TFolder
@@ -59,7 +59,7 @@ interface TransientMap {
  * The map opens as a popover on desktop and as a bottom sheet on mobile. Once it is pinned it lives in a
  * side panel instead, and opening the map reveals that panel.
  */
-export class FolderMapComponent extends Component {
+export class FolderMapComponent extends ComponentEx {
   private readonly app: App;
   private readonly siblingNavigator: SiblingNavigator;
   private transientMap: null | TransientMap = null;
