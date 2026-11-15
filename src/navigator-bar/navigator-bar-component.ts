@@ -3,11 +3,11 @@ import type {
   MarkdownEditView
 } from 'obsidian';
 
+import { ComponentEx } from '@mnaoumov/obsidian-lib/components/component-ex';
 import { MonkeyAroundComponent } from '@mnaoumov/obsidian-lib/components/monkey-around-component';
 import { invokeAsyncSafely } from '@mnaoumov/typescript-lib/async';
 import { ViewType } from '@obsidian-typings/obsidian-public-latest/implementations';
 import {
-  Component,
   debounce,
   MarkdownView
 } from 'obsidian';
@@ -67,7 +67,7 @@ const SCROLL_PAST_END_CSS_PROPERTY = '--sibling-notes-scroll-past-end';
  *   section. Either section is re-measured after a change, because the renderer lays sections out by their
  *   measured heights.
  */
-export class NavigatorBarComponent extends Component {
+export class NavigatorBarComponent extends ComponentEx {
   private readonly app: App;
   private readonly bars = new Map<MarkdownView, ViewBars>();
   private readonly folderMapComponent: FolderMapComponent;
