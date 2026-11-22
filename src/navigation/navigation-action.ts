@@ -31,19 +31,19 @@ interface GetNavigationTargetIndexParams {
  * wrap-around: an action that would leave the sequence, or stay where it is, has no target.
  *
  * @param params - The current position, the sequence length, the action and the page size.
- * @returns The target index, or `undefined` when the action is unavailable.
+ * @returns The target index, or `null` when the action is unavailable.
  */
-export function getNavigationTargetIndex(params: GetNavigationTargetIndexParams): number | undefined {
+export function getNavigationTargetIndex(params: GetNavigationTargetIndexParams): null | number {
   const { action, currentIndex, length } = params;
   if (currentIndex < 0 || currentIndex >= length) {
-    return undefined;
+    return null;
   }
 
   const pageSize = Number.isNaN(params.pageSize) ? 1 : Math.max(1, Math.floor(params.pageSize));
   const lastIndex = length - 1;
   const targetIndex = getUnclampedTargetIndex(action, currentIndex, lastIndex, pageSize);
   const clampedTargetIndex = Math.min(lastIndex, Math.max(0, targetIndex));
-  return clampedTargetIndex === currentIndex ? undefined : clampedTargetIndex;
+  return clampedTargetIndex === currentIndex ? null : clampedTargetIndex;
 }
 
 function getUnclampedTargetIndex(action: InFolderNavigationAction, currentIndex: number, lastIndex: number, pageSize: number): number {

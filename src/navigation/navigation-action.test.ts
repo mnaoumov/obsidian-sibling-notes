@@ -16,7 +16,7 @@ describe('getNavigationTargetIndex', () => {
   const LENGTH = 25;
   const PAGE_SIZE = 10;
 
-  function getTarget(action: InFolderNavigationAction, currentIndex: number, pageSize = PAGE_SIZE): number | undefined {
+  function getTarget(action: InFolderNavigationAction, currentIndex: number, pageSize = PAGE_SIZE): null | number {
     return getNavigationTargetIndex({ action, currentIndex, length: LENGTH, pageSize });
   }
 
@@ -38,12 +38,12 @@ describe('getNavigationTargetIndex', () => {
   });
 
   it('does not wrap around: an action at its end has no target', () => {
-    expect(getTarget(NavigationAction.Previous, 0)).toBeUndefined();
-    expect(getTarget(NavigationAction.Home, 0)).toBeUndefined();
-    expect(getTarget(NavigationAction.PageUp, 0)).toBeUndefined();
-    expect(getTarget(NavigationAction.Next, 24)).toBeUndefined();
-    expect(getTarget(NavigationAction.End, 24)).toBeUndefined();
-    expect(getTarget(NavigationAction.PageDown, 24)).toBeUndefined();
+    expect(getTarget(NavigationAction.Previous, 0)).toBeNull();
+    expect(getTarget(NavigationAction.Home, 0)).toBeNull();
+    expect(getTarget(NavigationAction.PageUp, 0)).toBeNull();
+    expect(getTarget(NavigationAction.Next, 24)).toBeNull();
+    expect(getTarget(NavigationAction.End, 24)).toBeNull();
+    expect(getTarget(NavigationAction.PageDown, 24)).toBeNull();
   });
 
   it('treats a page size below one as one, and drops a fraction', () => {
@@ -57,8 +57,8 @@ describe('getNavigationTargetIndex', () => {
   });
 
   it('has no target when the current item is not in the sequence', () => {
-    expect(getTarget(NavigationAction.Next, -1)).toBeUndefined();
-    expect(getNavigationTargetIndex({ action: NavigationAction.Home, currentIndex: 0, length: 0, pageSize: PAGE_SIZE })).toBeUndefined();
+    expect(getTarget(NavigationAction.Next, -1)).toBeNull();
+    expect(getNavigationTargetIndex({ action: NavigationAction.Home, currentIndex: 0, length: 0, pageSize: PAGE_SIZE })).toBeNull();
   });
 
   it('rejects an action it does not know', () => {

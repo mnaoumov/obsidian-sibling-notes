@@ -148,7 +148,7 @@ export class SiblingNavigator {
       length: sequence.length,
       pageSize: this.getPageSize()
     });
-    return targetIndex === undefined ? null : ensureNonNullable(sequence[targetIndex]);
+    return targetIndex === null ? null : ensureNonNullable(sequence[targetIndex]);
   }
 
   /**

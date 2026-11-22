@@ -52,6 +52,7 @@ const REFRESH_DELAY_IN_MILLISECONDS = 50;
  * The space below the bottom bar in the editor: the scroll-past-end space the editor would otherwise put above it.
  */
 const SCROLL_PAST_END_CSS_PROPERTY = '--sibling-notes-scroll-past-end';
+const NO_PADDING = '0px';
 
 /**
  * Puts a navigator bar above and below every open note, and keeps them current.
@@ -196,7 +197,9 @@ export class NavigatorBarComponent extends ComponentEx {
     }
     const contentEl = editView.cm.contentDOM;
     bottomEl.setCssProps({ [SCROLL_PAST_END_CSS_PROPERTY]: contentEl.style.paddingBottom });
-    contentEl.setCssStyles({ paddingBottom: '0px' });
+    // An inline write on purpose: the editor writes this padding inline on every re-measure, and a class would
+    // Lose to it without `!important`.
+    contentEl.setCssStyles({ paddingBottom: NO_PADDING });
   }
 
   private patchEditView(editView: MarkdownEditView): void {

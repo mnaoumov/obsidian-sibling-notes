@@ -201,8 +201,8 @@ describe('NavigatorBarComponent', () => {
     return button;
   }
 
-  function getPlacement(el: Element | null | undefined): string | undefined {
-    return el instanceof HTMLElement ? el.dataset['placement'] : undefined;
+  function getPlacement(el: Element | null | undefined): null | string {
+    return el instanceof HTMLElement ? el.dataset['placement'] ?? null : null;
   }
 
   function showPreview(testView: TestView): void {
