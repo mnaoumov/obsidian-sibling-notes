@@ -22,10 +22,16 @@ const LANDING_POLL_IN_MILLISECONDS = 50;
 const LANDING_TIMEOUT_IN_MILLISECONDS = 2000;
 
 /**
- * Describes what the active leaf shows, so a change of file or of folder can be told.
+ * Opens the virtual folder note of any folder in this vault, by its path from the vault root.
+ *
+ * Manual equivalent: go to the folder with the plugin's commands, or click it on another virtual folder note.
  */
-function getActiveViewState(app: App): string {
-  return JSON.stringify(app.workspace.getMostRecentLeaf()?.getViewState().state ?? null);
+export async function openFolder(app: App, path: string): Promise<void> {
+  if (!app.vault.getFolderByPath(path)) {
+    new Notice(`The demo folder ${path} is missing.`);
+    return;
+  }
+  await app.workspace.getLeaf(false).setViewState({ active: true, state: { folderPath: path }, type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE });
 }
 
 /**
@@ -53,62 +59,12 @@ export async function openMaterialFolder(app: App, relativePath: string): Promis
 }
 
 /**
- * Opens the virtual folder note of any folder in this vault, by its path from the vault root.
- *
- * Manual equivalent: go to the folder with the plugin's commands, or click it on another virtual folder note.
- */
-export async function openFolder(app: App, path: string): Promise<void> {
-  if (!app.vault.getFolderByPath(path)) {
-    new Notice(`The demo folder ${path} is missing.`);
-    return;
-  }
-  await app.workspace.getLeaf(false).setViewState({ active: true, state: { folderPath: path }, type: VIRTUAL_FOLDER_NOTE_VIEW_TYPE });
-}
-
-/**
- * Changes the File explorer's sort order, such as `alphabeticalReverse`, the same as picking one from its
- * sort button. The plugin's steps, bars and maps follow it at once.
- *
- * Manual equivalent: click the sort button at the top of the File explorer and pick an order.
- */
-export async function setFileExplorerSortOrder(app: App, sortOrder: string): Promise<void> {
-  const leaf = app.workspace.getLeavesOfType('file-explorer')[0];
-  if (!leaf) {
-    new Notice('The File explorer is turned off, so there is no sort order to change.');
-    return;
-  }
-  await leaf.loadIfDeferred();
-  (leaf.view as FileExplorerView).setSortOrder(sortOrder);
-  new Notice(`The File explorer now sorts by ${sortOrder}.`);
-}
-
-/**
- * Shows the folder map of the open note: a popover on desktop, a bottom sheet on mobile, or the side panel
- * once the map is pinned.
- *
- * Manual equivalent: click the map button at the end of the navigator bar.
- */
-export function showFolderMap(app: App): void {
-  app.commands.executeCommandById(`${PLUGIN_ID}:show-folder-map`);
-}
-
-/**
  * Pins the folder map to the right side panel.
  *
  * Manual equivalent: click the pin at the top of the folder map.
  */
 export function pinFolderMap(app: App): void {
   app.commands.executeCommandById(`${PLUGIN_ID}:pin-folder-map`);
-}
-
-/**
- * Closes the pinned folder map, so the map button opens a popover again.
- *
- * Manual equivalent: close the folder map's tab in the side panel.
- */
-export function unpinFolderMap(app: App): void {
-  app.workspace.detachLeavesOfType(FOLDER_MAP_VIEW_TYPE);
-  new Notice('The folder map is unpinned.');
 }
 
 /**
@@ -138,7 +94,7 @@ export async function runNavigationCommand(app: App, commandId: string): Promise
  * applies live, like {@link setPageSize}.
  *
  * Manual equivalent: the **Show the top bar** or **Show the bottom bar** toggle in
- * **Settings -> Community plugins -> Sibling Notes**.
+ * **Settings -> Community plugins -> `Sibling Notes`**.
  */
 export async function setBarVisibility(app: App, key: 'showBottomBar' | 'showTopBar', isShown: boolean): Promise<void> {
   await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { [key]: isShown } });
@@ -146,10 +102,27 @@ export async function setBarVisibility(app: App, key: 'showBottomBar' | 'showTop
 }
 
 /**
+ * Changes the File explorer's sort order, such as `alphabeticalReverse`, the same as picking one from its
+ * sort button. The plugin's steps, bars and maps follow it at once.
+ *
+ * Manual equivalent: click the sort button at the top of the File explorer and pick an order.
+ */
+export async function setFileExplorerSortOrder(app: App, sortOrder: string): Promise<void> {
+  const leaf = app.workspace.getLeavesOfType('file-explorer')[0];
+  if (!leaf) {
+    new Notice('The file explorer is turned off, so there is no sort order to change.');
+    return;
+  }
+  await leaf.loadIfDeferred();
+  (leaf.view as FileExplorerView).setSortOrder(sortOrder);
+  new Notice(`The File explorer now sorts by ${sortOrder}.`);
+}
+
+/**
  * Switches one folder-note convention on or off, through its setting. The change applies live, like
  * {@link setPageSize}: an open virtual folder note shows or drops its folder note at once.
  *
- * Manual equivalent: the toggles under **Folder notes** in **Settings -> Community plugins -> Sibling Notes**.
+ * Manual equivalent: the toggles under **Folder notes** in **Settings -> Community plugins -> `Sibling Notes`**.
  */
 export async function setFolderNoteConvention(
   app: App,
@@ -165,7 +138,7 @@ export async function setFolderNoteConvention(
  * `both`. The change applies live, like {@link setPageSize}.
  *
  * Manual equivalent: pick from **Open by scrolling past the edge** in
- * **Settings -> Community plugins -> Sibling Notes**.
+ * **Settings -> Community plugins -> `Sibling Notes`**.
  */
 export async function setOverscrollEdges(app: App, edges: 'both' | 'bottom' | 'none'): Promise<void> {
   await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { overscrollEdges: edges } });
@@ -179,9 +152,36 @@ export async function setOverscrollEdges(app: App, edges: 'both' | 'bottom' | 'n
  * change applies live -- no window reload, and no writing `data.json` behind a running plugin's back, which
  * it would overwrite from memory as it unloads.
  *
- * Manual equivalent: change **Page size** in **Settings -> Community plugins -> Sibling Notes**.
+ * Manual equivalent: change **Page size** in **Settings -> Community plugins -> `Sibling Notes`**.
  */
 export async function setPageSize(app: App, value: number): Promise<void> {
   await configureCommunityPlugin({ app, pluginId: PLUGIN_ID, settings: { pageSize: value } });
   new Notice(`pageSize is now ${String(value)}. It is live -- no reload needed.`);
+}
+
+/**
+ * Shows the folder map of the open note: a popover on desktop, a bottom sheet on mobile, or the side panel
+ * once the map is pinned.
+ *
+ * Manual equivalent: click the map button at the end of the navigator bar.
+ */
+export function showFolderMap(app: App): void {
+  app.commands.executeCommandById(`${PLUGIN_ID}:show-folder-map`);
+}
+
+/**
+ * Closes the pinned folder map, so the map button opens a popover again.
+ *
+ * Manual equivalent: close the folder map's tab in the side panel.
+ */
+export function unpinFolderMap(app: App): void {
+  app.workspace.detachLeavesOfType(FOLDER_MAP_VIEW_TYPE);
+  new Notice('The folder map is unpinned.');
+}
+
+/**
+ * Describes what the active leaf shows, so a change of file or of folder can be told.
+ */
+function getActiveViewState(app: App): string {
+  return JSON.stringify(app.workspace.getMostRecentLeaf()?.getViewState().state ?? null);
 }
