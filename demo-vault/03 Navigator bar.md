@@ -26,6 +26,8 @@ From left to right:
 - Between them, the position: `3 / 4` on `Chapter 2`, because the File explorer shows the subfolder `Appendix` first.
 - The map button shows the [folder map](<./05 Folder map.md>).
 
+A click opens the target in the same tab. Hold `Ctrl` / `Cmd`, or click with the middle button, to open it in a new tab instead, as you would a link.
+
 A button with nowhere to go is greyed out. On `Chapter 3`, the last item, Next, Page down and the last-item button are all greyed out, because the sequence does not wrap around. Every button is also a command, described in [01 Folder navigation](<./01 Folder navigation.md>), so you can bind a hotkey to it.
 
 The bar follows the File explorer. Change its sort order, or rename, add or delete a note in the folder, and the position updates.
