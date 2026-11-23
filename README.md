@@ -57,21 +57,25 @@ Every setting is listed in [02 Settings](<./demo-vault/02 Settings.md>).
 
 | Plugin | Features | How `Sibling Notes` differs |
 | --- | --- | --- |
-| [`Book Simulator`](https://github.com/tu2-atmanand/obsidian-book-simulator) | Unlisted; continuous folder/subfolder book; folder browser | Alternative presentation: one editable note at a time |
-| [`Continuous Mode`](https://community.obsidian.md/plugins/continuous-mode) | Continuous tab-group/folder reading; Scrivenings-style view | Alternative presentation: one editable note at a time |
+| [`Article Navigator`](https://community.obsidian.md/plugins/article-navigator) | Previous/next/see-also links from frontmatter properties; inline cards or floating buttons; reciprocal links kept in sync | Same previous/next-bar goal; the sequence is the folder's File explorer order, with no properties to fill in |
+| [`Book Simulator`](https://github.com/tu2-atmanand/obsidian-book-simulator) | Unlisted; continuous folder/subfolder book; folder browser | Same folder-reading goal; one editable note at a time instead of one joined view |
+| [`Continuous Mode`](https://community.obsidian.md/plugins/continuous-mode) | Continuous tab-group/folder reading; Scrivenings-style view | Same folder-reading goal; one editable note at a time instead of one joined view |
+| [`Current Folder Notes`](https://community.obsidian.md/plugins/current-folder-notes-pamphlet) | Side pane listing the current folder's notes; title filters; chapter-number sort; headings outline | Same folder-listing goal as its pane; adds previous/next bars and commands; follows File explorer order |
 | [`Explorer Stepper`](https://community.obsidian.md/plugins/explorer-stepper) | Previous/next by name; skips subfolders | Same sequential-navigation goal; follows File explorer order and enters subfolders |
-| [`Folder Reader`](https://community.obsidian.md/plugins/folder-reader) | Continuous reading of all folder notes in name order | Alternative presentation: one editable note at a time |
+| [`Folder Reader`](https://community.obsidian.md/plugins/folder-reader) | Continuous reading of all folder notes in name order | Same folder-reading goal; one editable note at a time instead of one joined view |
+| [`Folder Tabulation`](https://community.obsidian.md/plugins/folder-tabulation) | Previous/next commands and view-header buttons; looping; open in the same tab, a new tab, a split or a window; focuses a file already open | Same sequential-navigation goal; adds top/bottom bars, folder map and virtual folder notes; stops at the ends instead of looping |
 | [`Hierarchy Navigator`](https://community.obsidian.md/plugins/hierarchy-navigator) | Per-note parent, sibling and child listing | Same folder-context goal; steps through notes instead of showing all neighbors |
-| [`Neighbouring Files`](https://community.obsidian.md/plugins/neighbouring-files) | Previous/next commands using the File explorer's built-in sort mode; folder navigation; looping; adjacent folders; mobile button and gestures | Adds top/bottom note bars, folder map and virtual folder notes; reads custom-sort plugins' explorer order |
-| [`Note Chain`](https://community.obsidian.md/plugins/note-chain) | Manually linked note chains; chain-based File explorer sort | Alternative sequence: follows the File explorer's existing order |
-| [`Note Navigator`](https://community.obsidian.md/plugins/note-navigator) | Previous/next folder/vault commands; delete-and-open-next review workflow | Same sequential-navigation goal; adds bars, map and virtual folder view |
-| [`Page Flow`](https://community.obsidian.md/plugins/page-flow) | Page-by-page reading; next file at note end; keyboard triage | Alternative controls: buttons, commands and pull-past-edge navigation |
-| [`Playdown`](https://community.obsidian.md/plugins/playdown) | Manual note playlists; progress and reading mark | Alternative sequence: a folder with no playlist to build |
+| [`Neighbouring Files`](https://community.obsidian.md/plugins/neighbouring-files) | Previous/next commands using the File explorer's built-in sort mode; folder navigation; looping; adjacent folders; mobile button and gestures | Same sequential-navigation goal; adds top/bottom note bars, folder map and virtual folder notes; reads custom-sort plugins' explorer order |
+| [`Note Chain`](https://community.obsidian.md/plugins/note-chain) | Manually linked note chains; chain-based File explorer sort | Same previous/next goal over another sequence; follows the File explorer's existing order |
+| [`Note Navigator`](https://community.obsidian.md/plugins/note-navigator) | Previous/next folder/vault commands; delete-and-open-next review workflow | Same sequential-navigation goal; adds bars, map and virtual folder view; has no delete workflow |
+| [`Page Flow`](https://community.obsidian.md/plugins/page-flow) | Page-by-page reading; next file at note end; keyboard triage | Same next-file-at-the-end goal; adds buttons, commands and pull-past-edge navigation |
+| [`Playdown`](https://community.obsidian.md/plugins/playdown) | Manual note playlists; progress and reading mark | Same sequential-reading goal over another sequence; a folder with no playlist to build |
 | [`Quick Explorer`](https://community.obsidian.md/plugins/quick-explorer) | Title-bar path menus; previous/next folder commands | Same sequential-navigation goal; adds top/bottom buttons and a folder map |
-
-Last searched for similar plugins on 2026-10-26.
+| [`textFlow`](https://community.obsidian.md/plugins/textflow) | Editable joined flows built from folders, tags, properties, queries or bookmarks; two-way sync | Same folder-reading goal; one note at a time, with nothing copied or synced |
 
 Sorting verified on 2026-10-27: `Neighbouring Files` 1.2.3 reads the File explorer's selected name/date sort mode and sorts the folder's files itself. It does not read custom orders supplied by plugins that patch `getSortedFolderItems`; `Sibling Notes` reads that method's result. See the [upstream navigator source](https://github.com/FabianUntermoser/obsidian-neighbouring-files-plugin/blob/1.2.3/src/NeighbouringFileNavigator.ts).
+
+Last searched for similar plugins on 2026-11-22.
 
 ## Installation
 
