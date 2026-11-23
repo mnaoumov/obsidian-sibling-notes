@@ -1,5 +1,6 @@
 import type {
   App,
+  PaneType,
   TAbstractFile,
   WorkspaceLeaf
 } from 'obsidian';
@@ -27,6 +28,12 @@ import {
 export interface NavigationOrigin {
   readonly item: null | TAbstractFile;
   readonly leaf: WorkspaceLeaf;
+
+  /**
+   * Where to open the landed item instead of `leaf`: a new tab, split or window, as a modifier click on a
+   * link would. `false` or absent opens it in `leaf`.
+   */
+  readonly paneType?: boolean | PaneType;
 }
 
 /**
@@ -160,9 +167,14 @@ export class SiblingNavigator {
    */
   public async navigate(action: NavigationAction, origin?: NavigationOrigin): Promise<void> {
     const target = this.getTarget(action, origin ? origin.item : this.getCurrentItem());
-    if (target) {
-      await this.open(target, origin?.leaf ?? this.app.workspace.getLeaf(false));
+    if (!target) {
+      return;
     }
+
+    // The new leaf is made only once there is a target, so an unavailable action never leaves an empty tab.
+    const paneType = origin?.paneType ?? false;
+    const leaf = paneType || !origin ? this.app.workspace.getLeaf(paneType) : origin.leaf;
+    await this.open(target, leaf);
   }
 
   /**

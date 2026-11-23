@@ -1,4 +1,7 @@
+import type { PaneType } from 'obsidian';
+
 import {
+  Keymap,
   setIcon,
   setTooltip
 } from 'obsidian';
@@ -17,6 +20,12 @@ export enum NavigatorBarPlacement {
 }
 
 /**
+ * Called when an action button is clicked, or middle-clicked, with its action and where to open the
+ * target: `false` for the bar's own leaf, else the new tab, split or window a link would open in.
+ */
+export type NavigatorBarActionCallback = (action: NavigationAction, paneType: boolean | PaneType) => void;
+
+/**
  * What a bar shows.
  */
 export interface NavigatorBarState {
@@ -32,7 +41,7 @@ export interface NavigatorBarState {
 }
 
 interface NavigatorBarConstructorParams {
-  readonly onAction: (action: NavigationAction) => void;
+  readonly onAction: NavigatorBarActionCallback;
 
   /**
    * Called when a button is hovered or focused, with its action, and with `null` when it is left.
@@ -45,6 +54,8 @@ interface NavigatorBarConstructorParams {
   readonly onMap: (mapButton: HTMLElement) => void;
   readonly placement: NavigatorBarPlacement;
 }
+
+const MIDDLE_BUTTON = 1;
 
 /**
  * The buttons left of the position, in bar order.
@@ -134,15 +145,21 @@ export class NavigatorBar {
     this.positionEl.setText(state.position ? `${String(state.position.index + 1)} / ${String(state.position.length)}` : '');
   }
 
-  private createActionButton(action: NavigationAction, onAction: (action: NavigationAction) => void, onHover: (action: NavigationAction | null) => void): void {
+  private createActionButton(action: NavigationAction, onAction: NavigatorBarActionCallback, onHover: (action: NavigationAction | null) => void): void {
     const definition = NAVIGATION_ACTION_DEFINITIONS[action];
     const button = this.createButton(definition.label);
     button.dataset['action'] = action;
     setIcon(button, definition.icon);
-    button.addEventListener('click', (clickEvent) => {
-      clickEvent.preventDefault();
+    function act(mouseEvent: MouseEvent): void {
+      mouseEvent.preventDefault();
       if (!button.disabled) {
-        onAction(action);
+        onAction(action, Keymap.isModEvent(mouseEvent));
+      }
+    }
+    button.addEventListener('click', act);
+    button.addEventListener('auxclick', (mouseEvent) => {
+      if (mouseEvent.button === MIDDLE_BUTTON) {
+        act(mouseEvent);
       }
     });
     for (const eventName of ['mouseenter', 'focus'] as const) {

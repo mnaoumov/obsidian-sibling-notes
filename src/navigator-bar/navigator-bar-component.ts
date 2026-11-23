@@ -1,6 +1,7 @@
 import type {
   App,
-  MarkdownEditView
+  MarkdownEditView,
+  PaneType
 } from 'obsidian';
 
 import { ComponentEx } from '@mnaoumov/obsidian-lib/components/component-ex';
@@ -165,8 +166,8 @@ export class NavigatorBarComponent extends ComponentEx {
     if (!viewBars) {
       const { folderMapComponent, siblingNavigator } = this;
       const params = {
-        onAction(action: NavigationAction): void {
-          invokeAsyncSafely(() => siblingNavigator.navigate(action, { item: view.file, leaf: view.leaf }));
+        onAction(action: NavigationAction, paneType: boolean | PaneType): void {
+          invokeAsyncSafely(() => siblingNavigator.navigate(action, { item: view.file, leaf: view.leaf, paneType }));
         },
         onHover(action: NavigationAction | null): void {
           folderMapComponent.highlightTarget(action, view.file);

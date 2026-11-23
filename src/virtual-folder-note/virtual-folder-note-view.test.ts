@@ -296,7 +296,7 @@ describe('VirtualFolderNoteView', () => {
     const { app, leaf, navigate, view } = fixture;
     await openView(fixture, 'd');
     getEnterButton(view).click();
-    expect(navigate).toHaveBeenCalledWith(NavigationAction.Enter, { item: getFolder(app, 'd'), leaf });
+    expect(navigate).toHaveBeenCalledWith(NavigationAction.Enter, { item: getFolder(app, 'd'), leaf, paneType: false });
   });
 
   it('says an empty folder is empty, with nothing to enter', async () => {
@@ -356,7 +356,9 @@ describe('VirtualFolderNoteView', () => {
     const folder = getFolder(app, 'd/sub');
 
     getBarButton(view, 'bottom', 'next').click();
-    expect(navigate).toHaveBeenCalledWith(NavigationAction.Next, { item: folder, leaf });
+    expect(navigate).toHaveBeenCalledWith(NavigationAction.Next, { item: folder, leaf, paneType: false });
+    getBarButton(view, 'bottom', 'next').dispatchEvent(new MouseEvent('click', { ctrlKey: true, metaKey: true }));
+    expect(navigate).toHaveBeenLastCalledWith(NavigationAction.Next, { item: folder, leaf, paneType: 'tab' });
 
     const nextButton = getBarButton(view, 'top', 'next');
     nextButton.dispatchEvent(new MouseEvent('mouseenter'));

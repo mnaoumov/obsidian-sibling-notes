@@ -1,4 +1,5 @@
 import type {
+  PaneType,
   TAbstractFile,
   ViewStateResult,
   WorkspaceLeaf
@@ -229,8 +230,8 @@ export class VirtualFolderNoteView extends ItemView {
     return content.slice(getFrontMatterInfo(content).contentStart);
   }
 
-  private navigate(action: NavigationAction): void {
-    invokeAsyncSafely(() => this.siblingNavigator.navigate(action, { item: this._folder, leaf: this.leaf }));
+  private navigate(action: NavigationAction, paneType: boolean | PaneType = false): void {
+    invokeAsyncSafely(() => this.siblingNavigator.navigate(action, { item: this._folder, leaf: this.leaf, paneType }));
   }
 
   /**

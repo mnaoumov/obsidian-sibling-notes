@@ -243,7 +243,9 @@ describe('NavigatorBarComponent', () => {
     const [top] = getBars(editor.sizerEl);
 
     getButton(top, NavigationAction.Next).click();
-    expect(fixture.navigate).toHaveBeenCalledWith(NavigationAction.Next, { item: fixture.file, leaf: view.leaf });
+    expect(fixture.navigate).toHaveBeenCalledWith(NavigationAction.Next, { item: fixture.file, leaf: view.leaf, paneType: false });
+    getButton(top, NavigationAction.Next).dispatchEvent(new MouseEvent('auxclick', { button: 1 }));
+    expect(fixture.navigate).toHaveBeenLastCalledWith(NavigationAction.Next, { item: fixture.file, leaf: view.leaf, paneType: 'tab' });
 
     getButton(top, NavigationAction.Next).dispatchEvent(new MouseEvent('mouseenter'));
     expect(fixture.folderMapComponent.highlightTarget).toHaveBeenCalledWith(NavigationAction.Next, fixture.file);

@@ -75,7 +75,19 @@ describe('NavigatorBar', () => {
     bar.update({ isAvailable: (action) => action === NavigationAction.Next, position: null });
     getButton(bar, 'previous').dispatchEvent(new MouseEvent('click'));
     getButton(bar, 'next').dispatchEvent(new MouseEvent('click'));
-    expect(onAction.mock.calls).toStrictEqual([[NavigationAction.Next]]);
+    expect(onAction.mock.calls).toStrictEqual([[NavigationAction.Next, false]]);
+  });
+
+  it('asks for a new tab on a mod-click or a middle click, and ignores a right click', () => {
+    const { bar, onAction } = createBar(NavigatorBarPlacement.Top);
+    bar.update({ isAvailable: () => true, position: null });
+    const nextButton = getButton(bar, 'next');
+    nextButton.dispatchEvent(new MouseEvent('click', { ctrlKey: true, metaKey: true }));
+    const middleClick = new MouseEvent('auxclick', { button: 1, cancelable: true });
+    getButton(bar, 'up').dispatchEvent(middleClick);
+    getButton(bar, 'end').dispatchEvent(new MouseEvent('auxclick', { button: 2 }));
+    expect(onAction.mock.calls).toStrictEqual([[NavigationAction.Next, 'tab'], [NavigationAction.Up, 'tab']]);
+    expect(middleClick.defaultPrevented).toBe(true);
   });
 
   it('reports the Map button with the button itself', () => {

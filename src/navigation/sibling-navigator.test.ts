@@ -136,6 +136,24 @@ describe('SiblingNavigator', () => {
     expect(fixture.openFile).not.toHaveBeenCalled();
   });
 
+  it('opens in a new leaf of the given pane type, made only when there is a target', async () => {
+    const item = fixture.app.vault.getFileByPath('d/b.md');
+    const leafOpenFile: ReturnType<typeof vi.fn> = vi.fn(() => noopAsync());
+    const leaf = castTo<WorkspaceLeaf>({ openFile: leafOpenFile });
+    const getLeaf = vi.mocked(fixture.app.workspace.getLeaf);
+    getLeaf.mockClear();
+
+    await fixture.navigator.navigate(NavigationAction.Next, { item, leaf, paneType: 'tab' });
+    expect(getLeaf).toHaveBeenCalledWith('tab');
+    expect(castTo<TAbstractFile>(fixture.openFile.mock.calls[0]?.[0]).path).toBe('d/c.md');
+    expect(leafOpenFile).not.toHaveBeenCalled();
+
+    getLeaf.mockClear();
+    const last = fixture.app.vault.getFileByPath('d/e.md');
+    await fixture.navigator.navigate(NavigationAction.Next, { item: last, leaf, paneType: 'tab' });
+    expect(getLeaf).not.toHaveBeenCalled();
+  });
+
   it('enters a folder at its first item, and an empty one at its virtual folder note', async () => {
     const sub = fixture.app.vault.getFolderByPath('d/sub');
     const empty = fixture.app.vault.getFolderByPath('empty');
