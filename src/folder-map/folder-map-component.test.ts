@@ -253,7 +253,7 @@ describe('FolderMapComponent', () => {
       expect(state?.folderPath.map((folder) => folder.path)).toStrictEqual(['d']);
       expect(state?.items.map((item) => item.path)).toStrictEqual(['d/sub', 'd/a.md', 'd/b.md', 'd/c.md']);
       expect(state?.rootName).toBe('My vault');
-      expect(Object.fromEntries([...state?.targets ?? []].map(([action, target]) => [action, target.path]))).toStrictEqual({
+      expect(Object.fromEntries([...(state?.targets ?? [])].map(([action, target]) => [action, target.path]))).toStrictEqual({
         [NavigationAction.End]: 'd/c.md',
         [NavigationAction.Home]: 'd/sub',
         [NavigationAction.Next]: 'd/c.md',
