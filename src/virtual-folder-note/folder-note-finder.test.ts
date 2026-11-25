@@ -67,11 +67,11 @@ describe('findFolderNote', () => {
     expect(find(app)).toBe('p/d/_about_.md');
 
     const outsideApp = createApp(['p/d.md']);
-    registerPlugin(outsideApp, 'folder-note-plugin', { folderNoteType: 'outside' });
+    registerPlugin(outsideApp, 'folder-note-plugin', { folderNoteName: '_about_', folderNoteType: 'outside' });
     expect(find(outsideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteBeside: false })).toBe('p/d.md');
 
     const insideApp = createApp(['p/d/d.md']);
-    registerPlugin(insideApp, 'folder-note-plugin', { folderNoteType: 'inside' });
+    registerPlugin(insideApp, 'folder-note-plugin', { folderNoteName: '_about_', folderNoteType: 'inside' });
     expect(find(insideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
   });
 
@@ -81,11 +81,11 @@ describe('findFolderNote', () => {
     expect(find(app)).toBe('p/d/index.md');
 
     const outsideApp = createApp(['p/d.md']);
-    registerPlugin(outsideApp, 'waypoint', { folderNoteType: 'OUTSIDE_FOLDER' });
+    registerPlugin(outsideApp, 'waypoint', { folderNoteFilename: 'index', folderNoteType: 'OUTSIDE_FOLDER' });
     expect(find(outsideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteBeside: false })).toBe('p/d.md');
 
     const insideApp = createApp(['p/d/d.md']);
-    registerPlugin(insideApp, 'waypoint', { folderNoteType: 'INSIDE_FOLDER' });
+    registerPlugin(insideApp, 'waypoint', { folderNoteFilename: 'index', folderNoteType: 'INSIDE_FOLDER' });
     expect(find(insideApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
   });
 
@@ -99,11 +99,19 @@ describe('findFolderNote', () => {
     expect(find(defaultApp, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
   });
 
-  it('falls back to a note named after the folder when a plugin\'s settings are unusable', () => {
+  it('ignores a plugin whose settings are unusable, leaving the finder\'s own conventions', () => {
     const app = createApp(['p/d/d.md']);
     registerPlugin(app, 'folder-note-plugin', { folderNoteType: 'index' });
     registerPlugin(app, 'waypoint', { folderNoteType: 'CUSTOM_FILENAME' });
     registerPlugin(app, 'obsidian-folder-index', null);
-    expect(find(app, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBe('p/d/d.md');
+    expect(find(app, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBeNull();
+    expect(find(app)).toBe('p/d/d.md');
+  });
+
+  it('takes no setup from a Folder notes plugin that stores its notes in a vault folder', () => {
+    const app = createApp(['p/d/d.md']);
+    registerPlugin(app, 'folder-notes', { folderNoteName: '{{folder_name}}', storageLocation: 'vaultFolder' });
+    expect(find(app, { ...ALL_CONVENTIONS, shouldUseFolderNoteInside: false })).toBeNull();
+    expect(find(app)).toBe('p/d/d.md');
   });
 });

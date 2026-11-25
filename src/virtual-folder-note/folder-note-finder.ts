@@ -7,10 +7,9 @@ import type {
 
 import { MARKDOWN_FILE_EXTENSION } from '@mnaoumov/obsidian-lib/file-system';
 import {
-  FOLDER_NOTES_PLUGIN_ID,
   FolderNoteLocation,
   resolveFolderNote,
-  resolveFolderNoteConfig
+  resolveFolderNotePluginConfigs
 } from '@mnaoumov/obsidian-lib/folder-note';
 
 /**
@@ -33,23 +32,6 @@ export interface FolderNoteConventions {
    */
   readonly shouldUseFolderNoteInside: boolean;
 }
-
-type PluginSettingsRecord = Readonly<Partial<Record<string, unknown>>>;
-
-/**
- * The `Folder Note` plugin's id.
- */
-const FOLDER_NOTE_PLUGIN_ID = 'folder-note-plugin';
-
-/**
- * The `Folder Index` plugin's id.
- */
-const FOLDER_INDEX_PLUGIN_ID = 'obsidian-folder-index';
-
-/**
- * The `Waypoint` plugin's id.
- */
-const WAYPOINT_PLUGIN_ID = 'waypoint';
 
 const INSIDE_NAMED_AFTER_FOLDER = createConfig(FolderNoteLocation.InsideFolder);
 const BESIDE_NAMED_AFTER_FOLDER = createConfig(FolderNoteLocation.ParentFolder);
@@ -76,41 +58,17 @@ export function findFolderNote(app: App, folder: TFolder, conventions: FolderNot
   return null;
 }
 
-function createConfig(location: FolderNoteLocation.InsideFolder | FolderNoteLocation.ParentFolder, name?: string): FolderNoteConfig {
+function createConfig(location: FolderNoteLocation.InsideFolder | FolderNoteLocation.ParentFolder): FolderNoteConfig {
   return {
     extensions: [MARKDOWN_FILE_EXTENSION],
     isHidden: false,
     location,
-    resolveName: (folder): string => name ?? folder.name
+    resolveName: (folder): string => folder.name
   };
 }
 
-function getFolderIndexConfig(settings: PluginSettingsRecord): FolderNoteConfig {
-  const { indexFilename, indexFileUserSpecified } = settings;
-  return indexFileUserSpecified === true && typeof indexFilename === 'string'
-    ? createConfig(FolderNoteLocation.InsideFolder, indexFilename)
-    : INSIDE_NAMED_AFTER_FOLDER;
-}
-
 function getFolderNoteConfigs(app: App, conventions: FolderNoteConventions): FolderNoteConfig[] {
-  const configs: FolderNoteConfig[] = [];
-  if (conventions.shouldReadFolderNotePlugins) {
-    if (app.plugins.getPlugin(FOLDER_NOTES_PLUGIN_ID)) {
-      configs.push(resolveFolderNoteConfig({ app }));
-    }
-    const folderNoteSettings = getPluginSettings(app, FOLDER_NOTE_PLUGIN_ID);
-    if (folderNoteSettings) {
-      configs.push(getFolderNotePluginConfig(folderNoteSettings));
-    }
-    const waypointSettings = getPluginSettings(app, WAYPOINT_PLUGIN_ID);
-    if (waypointSettings) {
-      configs.push(getWaypointConfig(waypointSettings));
-    }
-    const folderIndexSettings = getPluginSettings(app, FOLDER_INDEX_PLUGIN_ID);
-    if (folderIndexSettings) {
-      configs.push(getFolderIndexConfig(folderIndexSettings));
-    }
-  }
+  const configs = conventions.shouldReadFolderNotePlugins ? resolveFolderNotePluginConfigs({ app }) : [];
   if (conventions.shouldUseFolderNoteInside) {
     configs.push(INSIDE_NAMED_AFTER_FOLDER);
   }
@@ -118,50 +76,4 @@ function getFolderNoteConfigs(app: App, conventions: FolderNoteConventions): Fol
     configs.push(BESIDE_NAMED_AFTER_FOLDER);
   }
   return configs;
-}
-
-function getFolderNotePluginConfig(settings: PluginSettingsRecord): FolderNoteConfig {
-  const { folderNoteName, folderNoteType } = settings;
-  switch (folderNoteType) {
-    case 'index': {
-      return typeof folderNoteName === 'string' ? createConfig(FolderNoteLocation.InsideFolder, folderNoteName) : INSIDE_NAMED_AFTER_FOLDER;
-    }
-    case 'outside': {
-      return BESIDE_NAMED_AFTER_FOLDER;
-    }
-    default: {
-      return INSIDE_NAMED_AFTER_FOLDER;
-    }
-  }
-}
-
-/**
- * Returns an enabled plugin's settings object.
- *
- * @param app - The Obsidian app.
- * @param pluginId - The plugin's id.
- * @returns The settings, or `null` when the plugin is not enabled or keeps no settings object.
- */
-function getPluginSettings(app: App, pluginId: string): null | PluginSettingsRecord {
-  const plugin = app.plugins.getPlugin(pluginId);
-  if (!plugin || !('settings' in plugin)) {
-    return null;
-  }
-  const { settings } = plugin;
-  return typeof settings === 'object' && settings !== null ? settings as PluginSettingsRecord : null;
-}
-
-function getWaypointConfig(settings: PluginSettingsRecord): FolderNoteConfig {
-  const { folderNoteFilename, folderNoteType } = settings;
-  switch (folderNoteType) {
-    case 'CUSTOM_FILENAME': {
-      return typeof folderNoteFilename === 'string' ? createConfig(FolderNoteLocation.InsideFolder, folderNoteFilename) : INSIDE_NAMED_AFTER_FOLDER;
-    }
-    case 'OUTSIDE_FOLDER': {
-      return BESIDE_NAMED_AFTER_FOLDER;
-    }
-    default: {
-      return INSIDE_NAMED_AFTER_FOLDER;
-    }
-  }
 }
