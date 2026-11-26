@@ -1,5 +1,26 @@
 # CHANGELOG
 
+## 1.3.0
+
+This release has 2 new features, 1 fix and 5 documentation changes. 8 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
+
+### New
+
+- delete the current file and go to the next item
+- **navigator-bar:** open a step in a new tab on a mod-click or middle click
+
+### Fixed
+
+- **navigation:** land on the next item after Obsidian's own reaction to the deletion
+
+### Documentation
+
+- refresh the See also section
+- use the plugin badge line in the README
+- **changelog:** regroup the published release notes for readers
+- make issue attachments optional and strongly encouraged
+- link to the Obsidian resources page
+
 ## 1.2.0
 
 This release has 1 new feature and 2 documentation changes. 4 maintenance commits (tests, build, CI, refactoring, dependencies) are not listed.
