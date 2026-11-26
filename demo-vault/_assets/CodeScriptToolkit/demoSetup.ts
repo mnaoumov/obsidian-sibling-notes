@@ -12,6 +12,10 @@ const PLUGIN_ID = 'sibling-notes';
 
 const MATERIALS_FOLDER_PATH = 'Materials/01 Folder navigation';
 
+// The throwaway folder the delete walkthrough deletes from, rebuilt on demand so nothing shipped is lost.
+const INBOX_FOLDER_PATH = 'Materials/07 Delete and go to next';
+const INBOX_NOTE_NAMES = ['Article 1', 'Article 2', 'Article 3'];
+
 // The view type of the plugin's virtual folder note.
 const VIRTUAL_FOLDER_NOTE_VIEW_TYPE = 'sibling-notes-virtual-folder-note';
 
@@ -65,6 +69,28 @@ export async function openMaterialFolder(app: App, relativePath: string): Promis
  */
 export function pinFolderMap(app: App): void {
   app.commands.executeCommandById(`${PLUGIN_ID}:pin-folder-map`);
+}
+
+/**
+ * Fills the throwaway inbox folder with its three articles, recreating whichever were deleted, and opens
+ * `Article 2`, the middle one.
+ *
+ * Manual equivalent: create a folder with a few notes you do not need, and open one of them.
+ */
+export async function prepareInbox(app: App): Promise<void> {
+  if (!app.vault.getFolderByPath(INBOX_FOLDER_PATH)) {
+    await app.vault.createFolder(INBOX_FOLDER_PATH);
+  }
+  for (const name of INBOX_NOTE_NAMES) {
+    const path = `${INBOX_FOLDER_PATH}/${name}.md`;
+    if (!app.vault.getFileByPath(path)) {
+      await app.vault.create(path, `# ${name}\n\nA throwaway note for the delete walkthrough.\n`);
+    }
+  }
+  const file = app.vault.getFileByPath(`${INBOX_FOLDER_PATH}/Article 2.md`);
+  if (file) {
+    await app.workspace.getLeaf(false).openFile(file);
+  }
 }
 
 /**
