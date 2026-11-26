@@ -8,5 +8,8 @@ import { registerDemoVaultButtonSuite } from '@mnaoumov/obsidian-dev-toolkit/dem
 // It needs the `CodeScript Toolkit` binary seeded into `demo-vault/.obsidian/plugins/`, which happens the
 // First time you open `demo-vault/` in Obsidian. See CONTRIBUTING.md.
 //
+// The delete button leaves Obsidian's deletion confirmation open, so the suite closes it rather than let it
+// Sit over every later button.
+//
 // Isolation: `npx vitest run --project integration-tests:demo-vault`.
-registerDemoVaultButtonSuite();
+registerDemoVaultButtonSuite({ shouldDismissModals: true });

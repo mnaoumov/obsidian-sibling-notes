@@ -159,6 +159,25 @@ export class SiblingNavigator {
   }
 
   /**
+   * Returns where to land once an item is removed from its folder: the next item, else the previous one,
+   * else the folder itself, which is then empty. Read fresh from the File explorer, so call it before the
+   * removal.
+   *
+   * @param item - The item about to be removed.
+   * @returns The target, or `null` for the only item of the root folder, which has nowhere to land.
+   */
+  public getTargetAfterRemoval(item: TAbstractFile): null | TAbstractFile {
+    const folder = item.parent;
+    if (!folder) {
+      return null;
+    }
+
+    return this.getTarget(NavigationAction.Next, item)
+      ?? this.getTarget(NavigationAction.Previous, item)
+      ?? (folder.isRoot() ? null : folder);
+  }
+
+  /**
    * Performs an action: opens the item it lands on.
    *
    * @param action - The action.

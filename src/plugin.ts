@@ -18,6 +18,7 @@ import {
   FOLDER_MAP_VIEW_TYPE,
   FolderMapView
 } from './folder-map/folder-map-view.ts';
+import { DeleteAndGoToNextCommandHandler } from './navigation/delete-and-go-to-next-command-handler.ts';
 import { NavigationAction } from './navigation/navigation-action.ts';
 import { NavigationCommandHandler } from './navigation/navigation-command-handler.ts';
 import { SiblingNavigator } from './navigation/sibling-navigator.ts';
@@ -114,6 +115,7 @@ export class Plugin extends PluginBase {
     // Reached by downloading the asset by hand. It hides itself on mobile, so no platform guard is needed.
     await this.commandHandlerComponent.registerCommandHandlers(() => [
       ...NAVIGATION_ACTIONS.map((action) => new NavigationCommandHandler({ action, siblingNavigator })),
+      new DeleteAndGoToNextCommandHandler({ app: this.app, siblingNavigator }),
       new FolderMapCommandHandler({ app: this.app, command: FolderMapCommand.Show, folderMapComponent }),
       new FolderMapCommandHandler({ app: this.app, command: FolderMapCommand.Pin, folderMapComponent }),
       new OpenBugReportCommandHandler({

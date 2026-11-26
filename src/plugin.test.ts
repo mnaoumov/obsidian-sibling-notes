@@ -98,7 +98,7 @@ describe('Plugin', () => {
     expect(Plugin.prototype).toBeInstanceOf(ObsidianPlugin);
   });
 
-  it('registers the navigation commands, the folder map commands, the report bug command and the open demo vault command', async () => {
+  it('registers the navigation commands, the delete-and-go-to-next command, the folder map commands, the report bug command and the open demo vault command', async () => {
     const plugin = new Plugin(app, manifest);
     const addCommandSpy = vi.spyOn(plugin, 'addCommand');
     await plugin.onload();
@@ -113,6 +113,7 @@ describe('Plugin', () => {
       'go-page-down',
       'go-to-last',
       'enter-folder',
+      'delete-and-go-to-next',
       'show-folder-map',
       'pin-folder-map',
       'report-bug',

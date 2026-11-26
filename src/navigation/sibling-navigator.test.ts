@@ -209,6 +209,37 @@ describe('SiblingNavigator', () => {
     expect(fixture.navigator.getPosition(fixture.app.vault.getFileByPath('d/c.md'))).toStrictEqual({ index: 2, length: 4 });
   });
 
+  it('lands after a removal on the next item, else the previous one, else the emptied folder', () => {
+    function getTargetPathAfterRemoval(path: string): null | string {
+      const item = fixture.app.vault.getAbstractFileByPath(path);
+      if (!item) {
+        throw new Error(`No item ${path}.`);
+      }
+      return fixture.navigator.getTargetAfterRemoval(item)?.path ?? null;
+    }
+
+    expect(getTargetPathAfterRemoval('d/b.md')).toBe('d/c.md');
+    expect(getTargetPathAfterRemoval('d/e.md')).toBe('d/c.md');
+    expect(getTargetPathAfterRemoval('d/sub/x.md')).toBe('d/sub');
+    expect(fixture.navigator.getTargetAfterRemoval(fixture.app.vault.getRoot())).toBeNull();
+  });
+
+  it('has nowhere to land after removing the only item of the root folder', () => {
+    const onlyPath = 'top.md';
+    vi.mocked(fixture.app.workspace.getLeavesOfType).mockReturnValue([
+      castTo<WorkspaceLeaf>({
+        view: {
+          getSortedFolderItems: (folder: TFolderOriginal) => folder.children.filter((item) => item.path === onlyPath).map((file) => ({ file }))
+        }
+      })
+    ]);
+    const item = fixture.app.vault.getFileByPath(onlyPath);
+    if (!item) {
+      throw new Error('No item.');
+    }
+    expect(fixture.navigator.getTargetAfterRemoval(item)).toBeNull();
+  });
+
   it('opens nothing for an item that is neither a file nor a folder', async () => {
     const leaf = fixture.app.workspace.getLeaf(false);
     await fixture.navigator.open(castTo<TAbstractFile>({ path: 'other' }), leaf);
