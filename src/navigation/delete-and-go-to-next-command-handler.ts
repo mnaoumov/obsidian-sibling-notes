@@ -5,9 +5,12 @@ import type {
 } from 'obsidian';
 
 import { GlobalCommandHandler } from '@mnaoumov/obsidian-lib/command-handlers/global-command-handler';
+import { retryWithTimeout } from '@mnaoumov/typescript-lib/async';
 import { FileView } from 'obsidian';
 
 import type { SiblingNavigator } from './sibling-navigator.ts';
+
+const VIEW_REACTION_POLL_DELAY_IN_MILLISECONDS = 20;
 
 interface DeleteAndGoToNextCommandHandlerConstructorParams {
   readonly app: App;
@@ -17,6 +20,7 @@ interface DeleteAndGoToNextCommandHandlerConstructorParams {
 interface DeletionSubject {
   readonly file: TFile;
   readonly leaf: WorkspaceLeaf;
+  readonly view: FileView;
 }
 
 /**
@@ -52,14 +56,24 @@ export class DeleteAndGoToNextCommandHandler extends GlobalCommandHandler {
       return;
     }
 
-    const { file, leaf } = subject;
+    const { file, leaf, view } = subject;
     // The landing is read before the deletion, while the file still has its place in the sequence.
     const target = this.siblingNavigator.getTargetAfterRemoval(file);
+
     // A cancelled prompt changes nothing. `Delete unlinked attachments` can take the target with the file, and
     // Then Obsidian's default stands.
     if (!await this.app.fileManager.promptForDeletion(file) || !target || this.app.vault.getAbstractFileByPath(target.path) !== target) {
       return;
     }
+
+    // The view reacts to the deletion on its own, from the vault event, by going back in the leaf's history or
+    // Emptying the leaf, and the deletion does not wait for it. While that reaction loads, the leaf is working and
+    // Ignores any other view state, so opening the target then would be dropped.
+    await retryWithTimeout({
+      operationFunction: () => !leaf.working && (leaf.view !== view || view.file !== file),
+      operationName: 'Wait for the view to react to the deletion',
+      retryOptions: { retryDelayInMilliseconds: VIEW_REACTION_POLL_DELAY_IN_MILLISECONDS }
+    });
 
     await this.siblingNavigator.open(target, this.isInWorkspace(leaf) ? leaf : this.app.workspace.getLeaf(false));
   }
@@ -67,7 +81,7 @@ export class DeleteAndGoToNextCommandHandler extends GlobalCommandHandler {
   private getDeletionSubject(): DeletionSubject | null {
     const view = this.app.workspace.getActiveViewOfType(FileView);
     const file = view?.file;
-    return view && file?.parent ? { file, leaf: view.leaf } : null;
+    return view && file?.parent ? { file, leaf: view.leaf, view } : null;
   }
 
   private isInWorkspace(leaf: WorkspaceLeaf): boolean {

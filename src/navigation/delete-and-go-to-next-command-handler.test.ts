@@ -74,6 +74,33 @@ describe('DeleteAndGoToNextCommandHandler', () => {
     expect(fixture.open.mock.calls[0]?.[1]).toBe(fixture.leaf);
   });
 
+  it('waits for the view\'s own reaction to the deletion before it lands', async () => {
+    const fixture = createFixture();
+    const view = createFileView(fixture.app.vault.getFileByPath('d/b.md'), fixture.leaf);
+    vi.mocked(fixture.app.workspace.getActiveViewOfType).mockReturnValue(view);
+    let workingReadCount = 0;
+    Object.defineProperties(fixture.leaf, {
+      view: { value: view },
+      working: {
+        get(): boolean {
+          workingReadCount++;
+          // Busy on the first look, the way a leaf is while it goes back in its history.
+          return workingReadCount === 1;
+        }
+      }
+    });
+    // The reaction keeps the view and loads the previous file into it.
+    fixture.deletionPromptMock.mockImplementation(() => {
+      view.file = fixture.app.vault.getFileByPath('d/a.md');
+      return Promise.resolve(true);
+    });
+
+    await fixture.execute();
+    expect(workingReadCount).toBe(2);
+    expect(castTo<TAbstractFile>(fixture.open.mock.calls[0]?.[0]).path).toBe('d/c.md');
+    expect(fixture.open.mock.calls[0]?.[1]).toBe(fixture.leaf);
+  });
+
   it('lands in the leaf a link would open in when the deleted file\'s leaf is gone', async () => {
     const fixture = createFixture({ isLeafInWorkspace: false });
     await fixture.execute();
