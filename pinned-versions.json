@@ -10,6 +10,13 @@
     "present in the declared section."
   ],
   "pins": {
+    "@microsoft/eslint-plugin-sdl": {
+      "section": "overrides",
+      "why": "Clears minimatch GHSA-g3hv-75wg-m249 (denial of service via brace-pattern amplification, >=7.0.0 <11.0.1). obsidian-dev-toolkit brings eslint-plugin-obsidianmd, which nests @microsoft/eslint-plugin-sdl 1.1.0 (its latest), and that release pins eslint-plugin-n at the exact 17.10.3, which depends on minimatch 9. The scoped override moves only that copy to eslint-plugin-n 17.24.0, the same major, which depends on no minimatch at all. Mirrors the same override in obsidian-alias-quick-switcher (the P21 minimatch-11 recipe). NEVER take the `npm audit fix --force` remedy: it downgrades the toolkit packages.",
+      "check": "node -e \"const fs=require('node:fs');process.stdout.write(JSON.parse(fs.readFileSync('node_modules/eslint-plugin-obsidianmd/node_modules/@microsoft/eslint-plugin-sdl/package.json','utf8')).dependencies['eslint-plugin-n'])\"",
+      "expect": "17.10.3",
+      "manualCheck": "The check reads the exact eslint-plugin-n pin of the sdl copy eslint-plugin-obsidianmd brings. When it admits 17.22.0 or later, or that nested copy disappears and the check fails to read it, remove the override, run npm install and npm audit, and drop both if the audit stays clean."
+    },
     "@puppeteer/browsers": {
       "check": "node -e \"const fs=require('node:fs');process.stdout.write(JSON.parse(fs.readFileSync('node_modules/@wdio/utils/package.json','utf8')).dependencies['@puppeteer/browsers'])\"",
       "expect": "^2.2.0",
@@ -24,19 +31,19 @@
       "section": "overrides",
       "why": "Clears GHSA-ggr8-5vv4-36mx (stack exhaustion merging recursive object graphs), patched in 8.0.0. @wdio/utils declares ^7.0.3 up to 9.30, and obsidian-integration-testing pins webdriverio 9.27.0, so no direct bump reaches it and `npm audit fix --force` only offers a downgrade of obsidian-integration-testing to 1.1.2. The forced major is safe for these consumers: 8.0.0 breaks by renaming the mergeInfo system and aligning the customization shorthand, and both surfaces were measured to behave identically on 7.1.6 and 8.0.1 in the exact shapes the tree uses -- @wdio/config's `deepmergeCustom` with a `mergeArrays` handler reading `meta.key` and returning `utils.actions.defaultMerge`, and webdriver's `deepmergeCustom({ mergeArrays: false })`. A scan of the whole installed tree found no other binding than `deepmerge` and `deepmergeCustom`."
     },
+    "glob": {
+      "section": "overrides",
+      "why": "Clears GHSA-3g3m-2fjr-6pw4 (AbortSignal cancellation bypass, glob >=9 <=14.0.1; patched 14.0.2), and with it the minimatch 9 and 10 copies glob 10 and 13 bring for GHSA-g3hv-75wg-m249. The latest obsidian-integration-testing pins webdriverio 9.27.0, whose @wdio/config and archiver-utils still require glob ^10.2.2 and ^10.0.0, and linkinator 8.1.0 requires glob ^13.0.0. @wdio/config and archiver-utils call only the retained sync API, linkinator only the named async `glob`; glob 14 keeps both with its CommonJS build. No direct dependency update reaches the fix. NEVER take the `npm audit fix --force` remedy: it proposes downgrading obsidian-integration-testing to 1.1.2 and linkinator to 4.1.2. Mirrors the same override in obsidian-labelled-links.",
+      "check": "node -e \"const fs=require('node:fs');for(const p of ['@wdio/config','archiver-utils','linkinator'])console.log(JSON.parse(fs.readFileSync('node_modules/'+p+'/package.json','utf8')).dependencies.glob)\"",
+      "expect": "^10.2.2\n^10.0.0\n^13.0.0",
+      "manualCheck": "Remove the override when all three consumers admit >=14.0.2. Re-run npm audit, the project gate and a glob smoke of all three consumers."
+    },
     "katex": {
       "section": "overrides",
       "why": "Clears GHSA-238p-pmpm-9mq7 (KaTeX prototype pollution bypassing trust restrictions, >=0.11.0 <0.18.2), which also carried the advisories on micromark-extension-math and markdownlint. Reached only through the toolkit packages -> markdownlint -> micromark-extension-math@3.1.0 (its newest release), which declares katex ^0.16.0, so no bump reaches the fix. The 0.x minor jump is safe because nothing here ever runs KaTeX: markdownlint imports only `math` (the micromark syntax extension) from micromark-extension-math, and katex is required solely by its `mathHtml` half, which markdownlint never loads. NEVER take the `npm audit fix --force` remedy: it downgrades the toolkit packages. Mirrors the same override in obsidian-labelled-links.",
       "check": "node -e \"const fs=require('node:fs');process.stdout.write(JSON.parse(fs.readFileSync('node_modules/micromark-extension-math/package.json','utf8')).dependencies.katex)\"",
       "expect": "^0.16.0",
       "manualCheck": "The check reads the range micromark-extension-math declares. When it admits 0.18.2 or later the override and this entry can both go."
-    },
-    "moment": {
-      "section": "overrides",
-      "why": "Clears GHSA-4p3w-j4w9-5jqw (moment path traversal via a crafted non-string locale name, >=2.29.2 <2.31.0), which also carried the advisories on obsidian 1.12.3, eslint-plugin-obsidianmd and @mnaoumov/obsidian-dev-toolkit. Reached through eslint-plugin-obsidianmd -> obsidian@1.12.3, which pins moment at the exact 2.29.4. The direct obsidian@1.14.4 already uses 2.31.0, so the override collapses the tree onto that one copy rather than adding a version; it is a minor move within 2.x. Mirrors the same override in obsidian-labelled-links.",
-      "check": "node -e \"const fs=require('node:fs');process.stdout.write(JSON.parse(fs.readFileSync('node_modules/eslint-plugin-obsidianmd/node_modules/obsidian/package.json','utf8')).dependencies.moment)\"",
-      "expect": "2.29.4",
-      "manualCheck": "The check reads the exact moment pin of the obsidian copy eslint-plugin-obsidianmd brings (it declares obsidian 1.12.3 exactly). When eslint-plugin-obsidianmd moves to an obsidian whose moment is 2.31.0 or later, or that nested copy disappears and the check fails to read it, re-run `npm audit` without the override and drop both if it stays clean."
     },
     "typescript": {
       "check": "node -e \"process.stdout.write(require('typescript-eslint/package.json').peerDependencies.typescript)\"",
