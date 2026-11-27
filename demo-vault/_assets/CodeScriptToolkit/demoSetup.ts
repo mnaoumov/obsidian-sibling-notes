@@ -2,6 +2,7 @@ import type { FileExplorerView } from '@obsidian-typings/obsidian-public-latest'
 import type { App } from 'obsidian';
 
 import { configureCommunityPlugin } from '@mnaoumov/obsidian-lib/community-plugins';
+import { appendCodeBlock } from '@mnaoumov/obsidian-lib/html-element';
 import { Notice } from 'obsidian';
 
 // Shared code for every `code-button` in this vault, so each note's button stays a one-liner instead of a
@@ -104,7 +105,11 @@ export async function prepareInbox(app: App): Promise<void> {
 export async function runNavigationCommand(app: App, commandId: string): Promise<void> {
   const command = app.commands.findCommand(`${PLUGIN_ID}:${commandId}`);
   if (!command?.checkCallback?.(true)) {
-    new Notice(`There is nowhere to go with ${command?.name ?? commandId} from here.`);
+    new Notice(createFragment((fragment) => {
+      fragment.appendText('There is nowhere to go with ');
+      appendCodeBlock(fragment, command?.name ?? commandId);
+      fragment.appendText(' from here.');
+    }));
     return;
   }
   const stateBefore = getActiveViewState(app);
